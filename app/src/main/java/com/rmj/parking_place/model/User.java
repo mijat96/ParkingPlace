@@ -14,6 +14,7 @@ public class User {
     private PaidParkingPlace regularPaidParkingPlace;
     private List<PaidParkingPlace> paidParkingPlacesForFavoritePlaces;
     private List<Punishment> punishments;
+    private Punishment activePunishment;
 
 
     public User() {
@@ -31,6 +32,7 @@ public class User {
         this.regularPaidParkingPlace = null;
         this.paidParkingPlacesForFavoritePlaces = new ArrayList<PaidParkingPlace>();
         this.punishments = new ArrayList<Punishment>();
+        this.activePunishment = null;
     }
 
     public String getUsername() {
@@ -111,6 +113,14 @@ public class User {
 
     public void setPunishments(List<Punishment> punishments) {
         this.punishments = punishments;
+    }
+
+    public Punishment getActivePunishment() {
+        return activePunishment;
+    }
+
+    public void setActivePunishment(Punishment activePunishment) {
+        this.activePunishment = activePunishment;
     }
 
 }

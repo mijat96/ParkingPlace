@@ -1,10 +1,11 @@
 package com.rmj.parking_place.model;
 
-import java.time.LocalDateTime;
+
+import java.util.Date;
 
 public class PaidParkingPlace {
     private ParkingPlace parkingPlace;
-    private LocalDateTime startDateTime;
+    private Date startDateTime;
     private TicketType ticketType;
     private boolean arrogantUser;
 
@@ -12,12 +13,26 @@ public class PaidParkingPlace {
 
     }
 
-    public PaidParkingPlace(ParkingPlace parkingPlace, LocalDateTime startDateTime,
+    public PaidParkingPlace(ParkingPlace parkingPlace) {
+        this.parkingPlace = new ParkingPlace(parkingPlace);
+        this.startDateTime = new Date();
+        this.ticketType = TicketType.REGULAR;
+        this.arrogantUser = false;
+    }
+
+    public PaidParkingPlace(ParkingPlace parkingPlace, Date startDateTime,
                             TicketType ticketType, boolean arrogantUser) {
-        this.parkingPlace = parkingPlace;
+        this.parkingPlace = new ParkingPlace(parkingPlace);
         this.startDateTime = startDateTime;
         this.ticketType = ticketType;
         this.arrogantUser = arrogantUser;
+    }
+
+    public Date getEndDateTime() {
+        Zone zone = this.parkingPlace.getZone();
+        TicketPrice ticketPrice = zone.getTicketPrice(this.ticketType);
+        long duration = ticketPrice.getDuration() * 3600000; // form hours to milliseconds
+        return new Date(this.startDateTime.getTime() + duration);
     }
 
     public ParkingPlace getParkingPlace() {
@@ -28,11 +43,11 @@ public class PaidParkingPlace {
         this.parkingPlace = parkingPlace;
     }
 
-    public LocalDateTime getStartDateTime() {
+    public Date getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(LocalDateTime startDateTime) {
+    public void setStartDateTime(Date startDateTime) {
         this.startDateTime = startDateTime;
     }
 

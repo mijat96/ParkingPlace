@@ -1,0 +1,50 @@
+[
+    {
+      "name": "red_zone",
+      "parkingPlaces": [
+        {
+          "location": {
+            "latitude": 45.292943,
+            "longitude": 19.819809,
+            "address": null
+          },
+          "status": "EMPTY",
+          "zone": null
+        },
+        {
+          "location": {
+            "latitude": 45.292981,
+            "longitude": 19.819819,
+            "address": null
+          },
+          "status": "RESERVED",
+          "zone": null
+        },
+        {
+          "location": {
+            "latitude": 45.293003,
+            "longitude": 19.819865,
+            "address": null
+          },
+          "status": "EMPTY",
+          "zone": null
+        },
+        {
+          "location": {
+            "latitude": 45.293056,
+            "longitude": 19.819881,
+            "address": null
+          },
+          "status": "TAKEN",
+          "zone": null
+        }
+      ],
+      "ticketPrices": [
+        {
+          "duration": 2,
+          "ticketType": "REGULAR",
+          "price": 100.0
+        }
+      ]
+    }
+]

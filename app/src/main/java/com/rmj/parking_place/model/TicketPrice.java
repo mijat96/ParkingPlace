@@ -15,6 +15,12 @@ public class TicketPrice {
         this.price = price;
     }
 
+    public TicketPrice(TicketPrice ticketPrice) {
+        this.duration = ticketPrice.duration;
+        this.ticketType = ticketPrice.ticketType;
+        this.price = ticketPrice.price;
+    }
+
     public int getDuration() {
         return duration;
     }

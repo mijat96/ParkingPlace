@@ -3,4 +3,9 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="colorNorthPanelBackground">#2196F3</color>
+    <color name="colorReserve">#FF7322</color>
+    <color name="colorTake">#F44336</color>
+    <color name="colorDisabledButton">#8A8686</color>
+    <color name="colorLeaveParkingPlace">#4CAF50</color>
 </resources>
