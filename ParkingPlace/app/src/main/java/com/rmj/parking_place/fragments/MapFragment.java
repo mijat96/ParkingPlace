@@ -132,13 +132,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
      * po kom kriterijumu zelimo da dobijamo informacije GSP, MOBILNO(WIFI, MObilni internet), GPS+MOBILNO
      * **/
     private void createMapFragmentAndInflate() {
-        //specificiramo krijterijum da dobijamo informacije sa svih izvora
-        //ako korisnik to dopusti
-        Criteria criteria = new Criteria();
-
-        //sistemskom servisu prosledjujemo taj kriterijum da bi
-        //mogli da dobijamo informacje sa tog izvora
-        provider = locationManager.getBestProvider(criteria, true);
+        setProvider();
 
         //kreiramo novu instancu fragmenta
         mMapFragment = SupportMapFragment.newInstance();
@@ -191,8 +185,22 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 locationManager.requestLocationUpdates(provider, 0, 0, this);
                 Toast.makeText(getContext(), "ACCESS_COARSE_LOCATION", Toast.LENGTH_SHORT).show();
             }
+
+            if (currentLocation != null) {
+                updateCameraPosition(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+            }
         }
 
+    }
+
+    private void setProvider() {
+        //specificiramo krijterijum da dobijamo informacije sa svih izvora
+        //ako korisnik to dopusti
+        Criteria criteria = new Criteria();
+
+        //sistemskom servisu prosledjujemo taj kriterijum da bi
+        //mogli da dobijamo informacje sa tog izvora
+        provider = locationManager.getBestProvider(criteria, true);
     }
 
     @Override
@@ -383,6 +391,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
 
+                        if (provider == null) {
+                            setProvider();
+                        }
                         //Request location updates:
                         locationManager.requestLocationUpdates(provider, 0, 0, this);
                     }
@@ -396,6 +407,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                             Manifest.permission.ACCESS_COARSE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
 
+                        if (provider == null) {
+                            setProvider();
+                        }
                         //Request location updates:
                         locationManager.requestLocationUpdates(provider, 0, 0, this);
                     }
