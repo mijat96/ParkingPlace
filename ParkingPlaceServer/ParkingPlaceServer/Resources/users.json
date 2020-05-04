@@ -1,0 +1,26 @@
+[
+  {
+    "username": "pera",
+    "password": "pera123",
+    "registrationNumber": "NS458TR",
+    "totalNumberOfReservationViolations": 0,
+    "favoritePlaces": [],
+    "reservation": null,
+    "regularPaidParkingPlace": null,
+    "paidParkingPlacesForFavoritePlaces": [],
+    "punishments": [],
+    "activePunishment": null
+  },
+  {
+    "username": "steva",
+    "password": "steva456",
+    "registrationNumber": "NS391GL",
+    "totalNumberOfReservationViolations": 0,
+    "favoritePlaces": [],
+    "reservation": null,
+    "regularPaidParkingPlace": null,
+    "paidParkingPlacesForFavoritePlaces": [],
+    "punishments": [],
+    "activePunishment": null
+  }
+]

@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">ParkingPlace</string>
+    <string name="title_activity_map">Map</string>
+
+    <string name="no">No</string>
+    <string name="sure">Sure</string>
+    <string name="oops">Ooops</string>
+    <string name="location_disabled_message">Your Locations seems to be disabled, do you want to enable it?</string>
+    <string name="btnReserveText">RESERVE</string>
+    <string name="btnTakeText">TAKE</string>
+    <string name="btnLeaveParkingPlaceText">LEAVE PARKING PLACE</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+
+    <string name="splash_screen">Splash Screen</string>
+</resources>
