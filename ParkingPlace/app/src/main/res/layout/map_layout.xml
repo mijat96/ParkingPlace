@@ -8,6 +8,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:id="@+id/map_container" />
+        android:id="@+id/map_container">
+        <LinearLayout
+            android:id="@+id/place_info_frame"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="45dp"
+            android:visibility="gone"
+            android:background="@color/colorNorthPanelBackground">
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -125,6 +126,10 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        ParkingPlaceInfoFragment plf = ParkingPlaceInfoFragment.newInstance();
+        FragmentManager fm = getFragmentManager();
+        fm.beginTransaction().replace(R.id.place_info_frame, plf, "parkingPlaceInfoFragment").commit();
     }
 
     /**
@@ -477,6 +482,10 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                     selectedParkingPlace = null;
                     selectedParkingPlaceMarker = null;
                 }
+
+                if(selectedParkingPlace == null){
+                    mapActivity.hidePlaceIndoFragmet();
+                }
             }
         });
 
@@ -509,7 +518,14 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 updateParkingPlaceMarker(marker, markerIcon);
                 selectedParkingPlaceMarker = marker;
 
+                //izracunati razdaljinu od trenutne lokacije do izabranog markera
                 MapActivity mapActivity = (MapActivity) getActivity();
+
+                float distanceMarkerCurrentLocation = computeDistanceBetweenTwoPoints(selectedParkingPlace.getLocation().getLatitude(),
+                        selectedParkingPlace.getLocation().getLongitude(), currentLocation.getLatitude(), currentLocation.getLongitude());
+
+                mapActivity.showPlaceInfoFragment(selectedParkingPlace, distanceMarkerCurrentLocation);
+
                 if (mapActivity.isInNoneMode()) {
                     mapActivity.setCanReserveMode();
                 }
@@ -538,6 +554,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         if (mapActivity.isInIsReservingMode() || mapActivity.isInCanReserveAndCanTakeMode()) {
             redrawNavigationPath();
         }
+
     }
 
     private void updateCameraPosition(LatLng position) {

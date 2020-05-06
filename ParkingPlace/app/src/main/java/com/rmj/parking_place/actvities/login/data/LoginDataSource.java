@@ -18,7 +18,8 @@ import java.io.IOException;
  */
 public class LoginDataSource {
 
-    private static final String PARKING_PLACE_SERVER_BASE_URL = "https://parkingplaceserver.conveyor.cloud";
+    //private static final String PARKING_PLACE_SERVER_BASE_URL = "https://parkingplaceserver.conveyor.cloud";
+    private static final String PARKING_PLACE_SERVER_BASE_URL = "https://parkingplaceserver-tm8.conveyor.cloud";
     private static final String LOGIN_URL = PARKING_PLACE_SERVER_BASE_URL + "/api/authentication/login";
 
     private TokenUtils tokenUtils;
