@@ -10,8 +10,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -783,4 +786,35 @@ public class MapActivity extends CheckWifiActivity /*AppCompatActivity*/ impleme
         timerForUpdatingParkingPlaces.purge();
     }
 
+    public void showPlaceInfoFragment(ParkingPlace selectedParkingPlace, float distance) {
+        TextView textStatus = (TextView) findViewById(R.id.status);
+        textStatus.setText("Status: " + selectedParkingPlace.getStatus().toString());
+
+        TextView textAddress = (TextView) findViewById(R.id.address);
+        textAddress.setText("Address: " + selectedParkingPlace.getLocation().getAddress());
+
+        TextView textZone = (TextView) findViewById(R.id.zone);
+        textZone.setText("Zone: " + selectedParkingPlace.getZone().getName());
+
+        float distanceKm = distance / 1000;
+        TextView textDistance = (TextView) findViewById(R.id.distance);
+        textDistance.setText("Distance: " + distanceKm + "km");
+
+        //((LinearLayout) findViewById(R.id.place_info_linear_layout)).setVisibility(View.VISIBLE);
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.place_info_frame);
+        linearLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void hidePlaceIndoFragmet() {
+        ((LinearLayout) findViewById(R.id.place_info_frame)).setVisibility(View.GONE);
+        //((LinearLayout) findViewById(R.id.find_parking)).setVisibility(View.GONE);
+
+        /*DisplayMetrics displaymetrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int height = displaymetrics.heightPixels;
+
+        ViewGroup.LayoutParams paramsMap = mapFragment.getView().getLayoutParams();
+        paramsMap.height = height;
+        mapFragment.getView().setLayoutParams(paramsMap);*/
+    }
 }

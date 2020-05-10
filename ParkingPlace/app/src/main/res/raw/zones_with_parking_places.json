@@ -63,6 +63,33 @@
         },
         "status": "EMPTY",
         "zone": null
+      },
+      {
+        "location": {
+          "latitude": 45.261210,
+          "longitude": 19.809082,
+          "address": "Veselina Maslese"
+        },
+        "status": "TAKEN",
+        "zone": null
+      },
+      {
+        "location": {
+          "latitude": 45.261016,
+          "longitude": 19.809167,
+          "address": "Veselina Maslese"
+        },
+        "status": "RESERVED",
+        "zone": null
+      },
+      {
+        "location": {
+          "latitude": 44.6441819,
+          "longitude": 19.81597222222222,
+          "address": "Skupljen"
+        },
+        "status": "EMPTY",
+        "zone": null
       }
     ],
     "parkingPlaceChanges": [],
