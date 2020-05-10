@@ -46,5 +46,39 @@ namespace ParkingPlaceServer.Services
 		{
 			paidParkingPlaceDAO.AddPaidParkingPlace(paidParkingPlace);
 		}
+
+		public bool RemovePaidParkingPlace(User loggedUser, long parkingPlaceId)
+		{
+			if (loggedUser.RegularPaidParkingPlace == null)
+			{
+				return false;
+			}
+
+			if (loggedUser.RegularPaidParkingPlace.ParkingPlace.Id != parkingPlaceId)
+			{
+				return false;
+			}
+
+			List<PaidParkingPlace> paidParkingPlaces = paidParkingPlaceDAO.getPaidParkingPlaces();
+			lock(paidParkingPlaces)
+			{
+				if (paidParkingPlaces.Count == 0)
+				{
+					return false;
+				}
+
+				if (paidParkingPlaces.Contains(loggedUser.RegularPaidParkingPlace))
+				{
+					paidParkingPlaces.Remove(loggedUser.RegularPaidParkingPlace);
+					loggedUser.RegularPaidParkingPlace = null;
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			
+		}
 	}
 }

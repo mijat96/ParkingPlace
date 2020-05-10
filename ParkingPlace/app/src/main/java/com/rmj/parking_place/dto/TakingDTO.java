@@ -2,7 +2,7 @@ package com.rmj.parking_place.dto;
 
 import com.rmj.parking_place.model.TicketType;
 
-public class TakingDTO extends ReservationDTO {
+public class TakingDTO extends DTO {
     private TicketType ticketType;
 
 

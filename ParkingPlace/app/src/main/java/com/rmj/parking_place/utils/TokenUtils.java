@@ -12,6 +12,10 @@ public class TokenUtils {
         sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
     }
 
+    public TokenUtils(SharedPreferences sharedPreferences) {
+        this.sharedPreferences = sharedPreferences;
+    }
+
     public void saveToken(String token) {
         SharedPreferences.Editor edit= sharedPreferences.edit();
         edit.putString("token", token);

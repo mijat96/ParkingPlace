@@ -19,6 +19,13 @@ namespace ParkingPlaceServer.Models
 
 		}
 
+		public Location(double latitude, double longitude)
+		{
+			Latitude = latitude;
+			Longitude = longitude;
+			Address = null;
+		}
+
 		public Location(Location location)
 		{
 			Latitude = location.Latitude;

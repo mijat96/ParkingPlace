@@ -12,12 +12,21 @@
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
+    <string name="prompt_repeat_password">Repeat password</string>
+    <string name="prompt_car_registration_number">Car registration number</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_up">Sign up</string>
+    <string name="action_sign_up_short">Sign up</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
 
     <string name="splash_screen">Splash Screen</string>
+
+    <!-- <string name="PARKING_PLACE_SERVER_BASE_URL">https://parkingplaceserver.conveyor.cloud</string> -->
+    <string name="PARKING_PLACE_SERVER_BASE_URL">https://192.168.1.2:45455</string>
+
+    <string name="NAVIGATION_SERVICE_BASE_URL">http://www.yournavigation.org/api/1.0/gosmore.php</string>
 </resources>

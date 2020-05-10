@@ -57,5 +57,21 @@ namespace ParkingPlaceServer.Services
 					.Where(z => zoneIds.Contains(z.Id))
 					.ToList();
 		}
+
+		public ParkingPlace GetParkingPlace(long parkingPlaceId)
+		{
+			List<Zone> zones = zoneDAO.getZones();
+			foreach(Zone zone in zones)
+			{
+				foreach(ParkingPlace pp in zone.ParkingPlaces)
+				{
+					if (pp.Id == parkingPlaceId)
+					{
+						return pp;
+					}
+				}
+			}
+			return null;
+		}
 	}
 }

@@ -3,6 +3,8 @@
     "id": 1,
     "name": "red_zone",
     "version": 0,
+    "northEast": null,
+    "southWest": null,
     "parkingPlaces": [
       {
         "id": 1,
@@ -65,7 +67,7 @@
         "zone": null
       }
     ],
-    "parkingPlaceChanges": [],
+    "parkingPlaceChanges": {},
     "ticketPrices": [
       {
         "duration": 2,

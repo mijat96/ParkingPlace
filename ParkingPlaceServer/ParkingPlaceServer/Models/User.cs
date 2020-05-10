@@ -59,5 +59,29 @@ namespace ParkingPlaceServer.Models
 
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj is User user &&
+                   Username == user.Username;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = -808327111;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Username);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Password);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(RegistrationNumber);
+            hashCode = hashCode * -1521134295 + CurrentNumberOfReservationViolations.GetHashCode();
+            hashCode = hashCode * -1521134295 + TotalNumberOfReservationViolations.GetHashCode();
+            hashCode = hashCode * -1521134295 + CurrentNumberOfTakingViolations.GetHashCode();
+            hashCode = hashCode * -1521134295 + TotalNumberOfTakingViolations.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<List<Location>>.Default.GetHashCode(FavoritePlaces);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Reservation>.Default.GetHashCode(Reservation);
+            hashCode = hashCode * -1521134295 + EqualityComparer<PaidParkingPlace>.Default.GetHashCode(RegularPaidParkingPlace);
+            hashCode = hashCode * -1521134295 + EqualityComparer<List<PaidParkingPlace>>.Default.GetHashCode(PaidParkingPlacesForFavoritePlaces);
+            hashCode = hashCode * -1521134295 + EqualityComparer<List<Punishment>>.Default.GetHashCode(Punishments);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Punishment>.Default.GetHashCode(ActivePunishment);
+            return hashCode;
+        }
     }
 }

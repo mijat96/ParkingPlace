@@ -10,5 +10,6 @@ namespace ParkingPlaceServer.Services
 	{
 		List<PaidParkingPlace> getPaidParkingPlaces();
 		void AddPaidParkingPlace(PaidParkingPlace paidParkingPlace);
+		bool RemovePaidParkingPlace(User loggedUser, long parkingPlaceId);
 	}
 }

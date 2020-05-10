@@ -17,16 +17,58 @@ namespace ParkingPlaceServer.DAO
             if (zones == null)
             {
                 zones = loadZones();
-                /*foreach (Zone zone in zones)
-                {
-                    foreach (ParkingPlace parkingPlace in zone.ParkingPlaces)
-                    {
-                        parkingPlace.Zone = zone;
-                    }
-                }*/
+                setNorthEastAndSouthWestForZones(zones);
             }
 
             return zones;
+        }
+
+        private void setNorthEastAndSouthWestForZones(List<Zone> zones)
+        {
+            if (zones == null || (zones != null && zones.Count == 0))
+            {
+                return;
+            }
+
+            double maxNorth;
+            double minSouth;
+            double maxEast;
+            double minWest;
+
+            foreach (Zone zone in zones)
+            {
+                maxNorth = double.MinValue;
+                minSouth = double.MaxValue;
+                maxEast = double.MinValue;
+                minWest = double.MaxValue;
+                foreach (ParkingPlace parkingPlace in zone.ParkingPlaces)
+                {
+                    parkingPlace.Zone = zone;
+                    
+                    if (parkingPlace.Location.Latitude > maxNorth)
+                    {
+                        maxNorth = parkingPlace.Location.Latitude;
+                    }
+                    
+                    if (parkingPlace.Location.Latitude < minSouth)
+                    {
+                        minSouth = parkingPlace.Location.Latitude;
+                    }
+
+                    if (parkingPlace.Location.Longitude > maxEast)
+                    {
+                        maxEast = parkingPlace.Location.Longitude;
+                    }
+                    
+                    if (parkingPlace.Location.Longitude < minWest)
+                    {
+                        minWest = parkingPlace.Location.Longitude;
+                    }
+                }
+
+                zone.NorthEast = new Location(maxNorth, maxEast);
+                zone.SouthWest = new Location(minSouth, minWest);
+            }
         }
 
         private List<Zone> loadZones()

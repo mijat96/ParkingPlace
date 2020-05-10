@@ -12,5 +12,6 @@ namespace ParkingPlaceServer.Services
 		List<Zone> getZones();
 		Zone getZone(long zoneId);
 		List<Zone> getZones(long[] zoneIds);
+		ParkingPlace GetParkingPlace(long parkingPlaceId);
 	}
 }

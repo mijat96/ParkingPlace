@@ -1,8 +1,11 @@
 package com.rmj.parking_place.actvities.login.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
+import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.login.data.model.LoggedInUser;
+import com.rmj.parking_place.actvities.login.ui.LoginActivity;
 import com.rmj.parking_place.dto.LoginDTO;
 import com.rmj.parking_place.dto.TokenDTO;
 import com.rmj.parking_place.exceptions.InvalidUsernameOrPasswordException;
@@ -18,16 +21,25 @@ import java.io.IOException;
  */
 public class LoginDataSource {
 
-    private static final String PARKING_PLACE_SERVER_BASE_URL = "https://parkingplaceserver.conveyor.cloud";
-    private static final String LOGIN_URL = PARKING_PLACE_SERVER_BASE_URL + "/api/authentication/login";
+    private static String LOGIN_URL;
 
+    private SharedPreferences sharedPreferences;
     private TokenUtils tokenUtils;
 
     public LoginDataSource(Context context) {
-        this.tokenUtils = new TokenUtils(context);
+        sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        LOGIN_URL = getParkingPlaceServerUrl(context) + "/api/authentication/login";
+        this.tokenUtils = new TokenUtils(sharedPreferences);
     }
 
+    private String getParkingPlaceServerUrl(Context context) {
+        String parkingPlaceServerUrl = sharedPreferences.getString("parkingPlaceServerUrl","");
+        if (parkingPlaceServerUrl.equals("")) {
+            parkingPlaceServerUrl = context.getString(R.string.PARKING_PLACE_SERVER_BASE_URL);
+        }
 
+        return  parkingPlaceServerUrl;
+    }
 
     public Result<LoggedInUser> login(String username, String password) {
         try {
