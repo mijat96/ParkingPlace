@@ -10,6 +10,8 @@ public class Zone {
     private Long id;
     private String name;
     private Long version;
+    private Location northEast;
+    private Location southWest;
     private List<ParkingPlace> parkingPlaces;
     private List<TicketPrice> ticketPrices;
 
@@ -17,10 +19,13 @@ public class Zone {
 
     }
 
-    public Zone(Long id, String name, Long version, List<ParkingPlace> parkingPlaces, List<TicketPrice> ticketPrices) {
+    public Zone(Long id, String name, Long version, Location northEast, Location southWest,
+                    List<ParkingPlace> parkingPlaces, List<TicketPrice> ticketPrices) {
         this.id = id;
         this.name = name;
         this.version = version;
+        this.northEast = northEast;
+        this.southWest = southWest;
         this.parkingPlaces = parkingPlaces;
         this.ticketPrices = ticketPrices;
     }
@@ -30,6 +35,8 @@ public class Zone {
         this.name = zone.name;
         this.parkingPlaces = null;
         this.version = null;
+        this.northEast = null;
+        this.southWest = null;
         this.ticketPrices = new ArrayList<TicketPrice>();
         for (TicketPrice ticketPrice : zone.ticketPrices) {
             this.ticketPrices.add(ticketPrice);
@@ -68,6 +75,22 @@ public class Zone {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Location getNorthEast() {
+        return northEast;
+    }
+
+    public void setNorthEast(Location northEast) {
+        this.northEast = northEast;
+    }
+
+    public Location getSouthWest() {
+        return southWest;
+    }
+
+    public void setSouthWest(Location southWest) {
+        this.southWest = southWest;
     }
 
     public List<ParkingPlace> getParkingPlaces() {

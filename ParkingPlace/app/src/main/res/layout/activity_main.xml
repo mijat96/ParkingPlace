@@ -1,139 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    tools:context=".actvities.MainActivity">
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
 
-    <!-- The main content view -->
-    <RelativeLayout
-        android:id="@+id/mainContent"
+    <include
+        layout="@layout/app_bar_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
-        android:id="@+id/northPanel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <!--android:background="@color/colorNorthPanelBackground"-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
 
-            <Button
-                android:id="@+id/btnReserve"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="left"
-                android:layout_weight=".1"
-                android:background="@color/colorReserve"
-                android:textColor="@android:color/white"
-                android:text="@string/btnReserveText"
-                android:layout_marginRight="3dp"
-                android:onClick="clickOnBtnReserve"/>
-
-            <Button
-                android:id="@+id/btnTake"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="right"
-                android:layout_weight=".1"
-                android:background="@color/colorTake"
-                android:textColor="@android:color/white"
-                android:text="@string/btnTakeText"
-                android:layout_marginLeft="3dp"
-                android:onClick="clickOnBtnTake"/>
-        </LinearLayout>
-        <Button
-            android:id="@+id/btnLeaveParkingPlace"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="@color/colorLeaveParkingPlace"
-            android:textColor="@android:color/white"
-            android:visibility="gone"
-            android:text="@string/btnLeaveParkingPlaceText"
-            android:layout_marginTop="3dp"
-            android:onClick="clickOnBtnLeaveParkingPlace"/>
-        <TextView
-            android:id="@+id/txtRemainingTime"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="3dp"
-            android:visibility="gone"
-            android:textSize="@dimen/text_size"
-            android:gravity="center"/>
-
-
-        <View
-            android:layout_height="0dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:background="@android:color/transparent">
-        </View>
-
-        <ImageButton
-            android:id="@+id/finParkingButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:layout_alignParentRight="true"
-            android:onClick="clickOnBtnFindParkingPlace"
-            android:background="@android:color/transparent"
-            android:src="@drawable/search_parking_button" />
-
-        <LinearLayout
-            android:id="@+id/find_parking_frame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
-        </LinearLayout>
-    </LinearLayout>
-
-    <!--
-    <LinearLayout
-        android:id="@+id/northPanel"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorNorthPanelBackground"
-        android:visibility="gone">
-            <Button
-                android:id="@+id/btnReserve"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/colorReserve"
-                android:textColor="@android:color/white"
-                android:text="@string/btnReserveText"
-                android:enabled="false"
-                android:onClick="clickOnBtnReserve"/>
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="wrap_content"/>
-            <TextView
-                android:id="@+id/txtRemainingTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"
-                android:textSize="@dimen/text_size"/>
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="wrap_content"/>
-            <Button
-                android:id="@+id/btnTake"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/colorTake"
-                android:textColor="@android:color/white"
-                android:text="@string/btnTakeText"
-                android:enabled="false"
-                android:onClick="clickOnBtnTake"/>
-    </LinearLayout>
-    -->
-</FrameLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

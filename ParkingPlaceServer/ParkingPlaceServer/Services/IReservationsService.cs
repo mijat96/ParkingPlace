@@ -10,5 +10,6 @@ namespace ParkingPlaceServer.Services
 	{
 		List<Reservation> getReservations();
 		void AddReservation(Reservation reservation);
+		bool RemoveReservation(User loggedUser);
 	}
 }

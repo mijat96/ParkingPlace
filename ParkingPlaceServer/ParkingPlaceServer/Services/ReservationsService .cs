@@ -46,5 +46,35 @@ namespace ParkingPlaceServer.Services
 		{
 			reservationDAO.AddReservation(reservation);
 		}
+
+		public bool RemoveReservation(User loggedUser)
+		{
+			if (loggedUser.Reservation == null)
+			{
+				return false;
+			}
+
+			List<Reservation> reservations = reservationDAO.getReservations();
+
+			lock (reservations)
+			{
+				if (reservations.Count == 0)
+				{
+					return false;
+				}
+
+				if (reservations.Contains(loggedUser.Reservation))
+				{
+					reservations.Remove(loggedUser.Reservation);
+					loggedUser.Reservation = null;
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			
+		}
 	}
 }

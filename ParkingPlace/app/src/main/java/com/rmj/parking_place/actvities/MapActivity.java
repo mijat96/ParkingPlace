@@ -1,13 +1,16 @@
 package com.rmj.parking_place.actvities;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -21,11 +24,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
+import com.rmj.parking_place.dto.DTO;
 import com.rmj.parking_place.dto.ParkingPlaceChangesDTO;
 import com.rmj.parking_place.dto.ParkingPlaceDTO;
-import com.rmj.parking_place.dto.ReservationDTO;
+import com.rmj.parking_place.dto.ParkingPlacesInitialDTO;
+import com.rmj.parking_place.dto.ParkingPlacesUpdatingDTO;
 import com.rmj.parking_place.dto.TakingDTO;
 import com.rmj.parking_place.exceptions.AlreadyReservedParkingPlaceException;
 import com.rmj.parking_place.exceptions.AlreadyTakenParkingPlaceException;
@@ -46,21 +53,18 @@ import com.rmj.parking_place.utils.GetRequestAsyncTask;
 import com.rmj.parking_place.utils.HttpRequestAndResponseType;
 import com.rmj.parking_place.utils.JsonLoader;
 import com.rmj.parking_place.utils.PostRequestAsyncTask;
+import com.rmj.parking_place.utils.PutRequestAsyncTask;
 import com.rmj.parking_place.utils.Response;
 import com.rmj.parking_place.utils.TokenUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MapActivity extends AppCompatActivity implements AsyncResponse {
-
-    //private static final String PARKING_PLACE_SERVER_BASE_URL = "https://parkingplaceserver.conveyor.cloud";
-    private static final String PARKING_PLACE_SERVER_BASE_URL = "https://parkingplaceserver-tm8.conveyor.cloud";
+public class MapActivity extends CheckWifiActivity /*AppCompatActivity*/ implements AsyncResponse {
 
     private Mode currentMode;
     private Timer timerForReservationOrTakingOfParkingPlace = new Timer();
@@ -73,14 +77,18 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
 
     private double latitude;
     private  double longitude;
+    private SharedPreferences sharedPreferences;
     private TokenUtils tokenUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_map);
 
-        tokenUtils = new TokenUtils(this);
+        sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        tokenUtils = new TokenUtils(sharedPreferences);
+
+        this.zonesForUpdating = new ArrayList<Zone>();
 
         //detectAnyException();
 
@@ -89,6 +97,15 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
         FragmentTransition.to(mapFragment, this, false);
 
         Toast.makeText(this, "onCreate()",Toast.LENGTH_SHORT).show();
+    }
+
+    private String getParkingPlaceServerUrl() {
+        String parkingPlaceServerUrl = sharedPreferences.getString("parkingPlaceServerUrl","");
+        if (parkingPlaceServerUrl.equals("")) {
+            parkingPlaceServerUrl = getString(R.string.PARKING_PLACE_SERVER_BASE_URL);
+        }
+
+        return  parkingPlaceServerUrl;
     }
 
     /*private void detectAnyException() {
@@ -126,7 +143,7 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
     protected void onResume() {
         super.onResume();
         Toast.makeText(this, "onResume()",Toast.LENGTH_SHORT).show();
-        if (zones == null) {
+        if (zones == null || (zones != null && zones.isEmpty())) {
             downloadZones();
         }
         /*else {
@@ -146,7 +163,6 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
     @Override
     protected void onStop() {
         super.onStop();
-        mapFragment.resetDrawingFinished();
         Toast.makeText(this, "onStop()",Toast.LENGTH_SHORT).show();
     }
 
@@ -168,8 +184,8 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
         // List<Zone> zones = JsonLoader.getZones(is);
         //-------------------------------------------------
         // new RequestAsyncTask(this).execute("GET", "https://192.168.1.12:45455/api/zones");
-        new GetRequestAsyncTask(this).execute(PARKING_PLACE_SERVER_BASE_URL + "/api/zones",
-                HttpRequestAndResponseType.GET_ZONES_WITH_PARKING_PLACES.name(), tokenUtils.getToken());
+        new GetRequestAsyncTask(this).execute(getParkingPlaceServerUrl() + "/api/zones",
+                HttpRequestAndResponseType.GET_ZONES.name(), tokenUtils.getToken());
     }
 
     private void updateZoneWithParkingPlaceChanges() {
@@ -177,13 +193,54 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
         // List<Zone> zones = JsonLoader.getZones(is);
         //-------------------------------------------------
         // new RequestAsyncTask(this).execute("GET", "https://192.168.1.12:45455/api/zones");
-        String url = prepareUrlForUpdating(this.zonesForUpdating);
+
+        String url;
+
+        synchronized (this.zonesForUpdating) {
+            url = prepareUrlForUpdatingZones(this.zonesForUpdating);
+        }
+
         new GetRequestAsyncTask(this)
                 .execute(url, HttpRequestAndResponseType.UPDATE_ZONES_WITH_PARKING_PLACES.name(), tokenUtils.getToken());
     }
 
-    private String prepareUrlForUpdating(List<Zone> zones) {
-        String url = PARKING_PLACE_SERVER_BASE_URL + "/api/parkingplaces/changes?";
+    public void selectZonesForUpdating(LatLngBounds currentCameraBounds) {
+        if (this.zones == null || (this.zones != null && this.zones.isEmpty())) {
+            return;
+        }
+
+        com.mapbox.mapboxsdk.geometry.LatLngBounds cameraBounds = convertLatLngBoundsToLatLngBoundsMapboxsdk(currentCameraBounds);
+        com.mapbox.mapboxsdk.geometry.LatLngBounds zoneBounds;
+        com.mapbox.mapboxsdk.geometry.LatLngBounds intersectBounds;
+
+        synchronized (this.zonesForUpdating) {
+            this.zonesForUpdating = new ArrayList<Zone>();
+            for (Zone zone : this.zones) {
+                zoneBounds = makeLatLngBoundsMapboxsdk(zone.getNorthEast(), zone.getSouthWest());
+                intersectBounds = cameraBounds.intersect(zoneBounds);
+                if (intersectBounds != null && !intersectBounds.isEmptySpan()) {
+                    this.zonesForUpdating.add(zone);
+                }
+            }
+        }
+    }
+
+    private com.mapbox.mapboxsdk.geometry.LatLngBounds makeLatLngBoundsMapboxsdk(Location northEast, Location southWest) {
+        return new com.mapbox.mapboxsdk.geometry.LatLngBounds.Builder()
+                .include(new LatLng(northEast.getLatitude(), northEast.getLongitude()))
+                .include(new LatLng(southWest.getLatitude(), southWest.getLongitude()))
+                .build();
+    }
+
+    private com.mapbox.mapboxsdk.geometry.LatLngBounds convertLatLngBoundsToLatLngBoundsMapboxsdk(LatLngBounds bounds) {
+        return new com.mapbox.mapboxsdk.geometry.LatLngBounds.Builder()
+                .include(new LatLng(bounds.northeast.latitude, bounds.northeast.longitude))
+                .include(new LatLng(bounds.southwest.latitude, bounds.southwest.longitude))
+                .build();
+    }
+
+    private String prepareUrlForUpdatingZones(List<Zone> zones) {
+        String url = getParkingPlaceServerUrl() + "/api/parkingplaces/changes?";
 
         StringBuilder sbZoneIds = new StringBuilder();
         StringBuilder sbVersions = new StringBuilder();
@@ -225,6 +282,12 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
         btnReserve.setEnabled(true);
         btnReserve.setBackgroundColor(color);
 
+        color = ContextCompat.getColor(getApplicationContext(), R.color.colorDisabledButton);
+
+        Button btnTake = (Button) findViewById(R.id.btnTake);
+        btnTake.setEnabled(false);
+        btnTake.setBackgroundColor(color);
+
         // ((LinearLayout) findViewById(R.id.northPanel)).setVisibility(View.VISIBLE);
     }
 
@@ -236,6 +299,11 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
         btnTake.setEnabled(true);
         btnTake.setBackgroundColor(color);
 
+        color = ContextCompat.getColor(getApplicationContext(), R.color.colorDisabledButton);
+
+        Button btnReserve = (Button) findViewById(R.id.btnReserve);
+        btnReserve.setEnabled(false);
+        btnReserve.setBackgroundColor(color);
         // ((LinearLayout) findViewById(R.id.northPanel)).setVisibility(View.VISIBLE);
     }
 
@@ -319,9 +387,9 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
             return;
         }
 
-        ReservationDTO dto = null;
+        DTO dto = null;
         try {
-            dto = mapFragment.checkAndPrepareDtoForReservingOnServer();
+            dto = mapFragment.checkAndPrepareAllForReservingOnServer();
         } catch (NotFoundParkingPlaceException | AlreadyTakenParkingPlaceException | AlreadyReservedParkingPlaceException
                 | CurrentLocationUnknownException | MaxAllowedDistanceForReservationException e) {
             Toast.makeText(this, e.getMessage(),Toast.LENGTH_SHORT).show();
@@ -329,7 +397,6 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
         }
 
         reserveParkingPlaceOnServer(dto);
-
     }
 
     private void reserveParkingPlace() {
@@ -343,13 +410,13 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
         }
     }
 
-    private void reserveParkingPlaceOnServer( ReservationDTO dto) {
-        new PostRequestAsyncTask(this, dto).execute(PARKING_PLACE_SERVER_BASE_URL + "/api/parkingplaces/reservation",
+    private void reserveParkingPlaceOnServer(DTO dto) {
+        new PostRequestAsyncTask(this, dto).execute(getParkingPlaceServerUrl() + "/api/parkingplaces/reservation",
                 HttpRequestAndResponseType.RESERVE_PARKING_PLACE.name(), tokenUtils.getToken());
     }
 
     private void takeParkingPlaceOnServer(TakingDTO dto) {
-        new PostRequestAsyncTask(this, dto).execute(PARKING_PLACE_SERVER_BASE_URL + "/api/parkingplaces/taking",
+        new PostRequestAsyncTask(this, dto).execute(getParkingPlaceServerUrl() + "/api/parkingplaces/taking",
                 HttpRequestAndResponseType.TAKE_PARKING_PLACE.name(), tokenUtils.getToken());
     }
 
@@ -367,7 +434,7 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
 
         TakingDTO dto = null;
         try {
-            dto = mapFragment.checkAndPrepareDtoForTakingOnServer();
+            dto = mapFragment.checkAndPrepareAllForTakingOnServer();
         } catch (NotFoundParkingPlaceException | AlreadyReservedParkingPlaceException | AlreadyTakenParkingPlaceException e) {
             Toast.makeText(this, e.getMessage(),Toast.LENGTH_SHORT).show();
             return;
@@ -533,13 +600,29 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
         ((TextView) findViewById(R.id.txtRemainingTime)).setVisibility(View.GONE);
 
         if (timeIsUp) {
+            setNoneMode();
+            mapFragment.finishTakingOfParkingPlace();
             addViolationToUser(false);
             String message = "Your parking time has expired!";
             showDialogWithSingleButton(message, "Close");
         }
+        else {
+            DTO dto = null;
+            try {
+                dto = mapFragment.checkAndPrepareDtoForLeavingParkingPlaceOnServer();
+            } catch (NotFoundParkingPlaceException | AlreadyTakenParkingPlaceException | AlreadyReservedParkingPlaceException
+                    | CurrentLocationUnknownException | MaxAllowedDistanceForReservationException e) {
+                Toast.makeText(this, e.getMessage(),Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        setNoneMode();
-        mapFragment.finishTakingOfParkingPlace();
+            leaveParkingPlaceOnServer(dto);
+        }
+    }
+
+    private void leaveParkingPlaceOnServer(DTO dto) {
+        new PutRequestAsyncTask(this, dto).execute(getParkingPlaceServerUrl() + "/api/parkingplaces/leave",
+                HttpRequestAndResponseType.LEAVE_PARKING_PLACE.name(), tokenUtils.getToken());
     }
 
     private void showDialogWithSingleButton(String messageParam, String buttonTextParam) {
@@ -563,16 +646,16 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
 
     @Override
     public void processFinish(Response response) {
-        if (response.getType() == HttpRequestAndResponseType.GET_ZONES_WITH_PARKING_PLACES) {
-            if (response.getResult().equals("FAIL")) {
-                Toast.makeText(this, "Problem with loading zones with parking places. We will try again.",
+        if (response.getType() == HttpRequestAndResponseType.GET_ZONES) {
+            if (response.getResult().equals("NOT_CONNECTED") || response.getResult().equals("FAIL")) {
+                Toast.makeText(this, "[response_result = " + response.getResult() + "] Problem with loading zones. We will try again.",
                         Toast.LENGTH_SHORT).show();
-                new GetRequestAsyncTask(this).execute(PARKING_PLACE_SERVER_BASE_URL + "/api/zones",
-                        HttpRequestAndResponseType.GET_ZONES_WITH_PARKING_PLACES.name(), tokenUtils.getToken());
+                new GetRequestAsyncTask(this).execute(getParkingPlaceServerUrl() + "/api/zones",
+                        HttpRequestAndResponseType.GET_ZONES.name(), tokenUtils.getToken());
             }
             else {
                 this.zones = JsonLoader.convertJsonToZones(response.getResult());
-                HashMap<Location, ParkingPlace> parkingPlaces = new HashMap<Location, ParkingPlace>();
+               /* HashMap<Location, ParkingPlace> parkingPlaces = new HashMap<Location, ParkingPlace>();
 
                 for (Zone zone : zones) {
                     for (ParkingPlace parkingPlace : zone.getParkingPlaces()) {
@@ -581,27 +664,50 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
                     }
                 }
                 mapFragment.setParkingPlaces(parkingPlaces);
-                mapFragment.drawParkingPlaceMarkersIfCan();
+                mapFragment.drawParkingPlaceMarkersIfCan();*/
             }
         }
         else if (response.getType() == HttpRequestAndResponseType.UPDATE_ZONES_WITH_PARKING_PLACES) {
-            if (response.getResult().equals("FAIL")) {
+            if (response.getResult().equals("NOT_CONNECTED") || response.getResult().equals("FAIL")) {
                 Toast.makeText(this, "Problem with updating zones with parking places.",
                         Toast.LENGTH_SHORT).show();
             }
             else {
-                List<ParkingPlaceChangesDTO> parkingPlaceChangesDTOs =
-                            JsonLoader.convertJsonToParkingPlaceChangesDTOs(response.getResult());
+                ParkingPlacesUpdatingDTO parkingPlacesUpdatingDTO =
+                            JsonLoader.convertJsonToParkingPlacesUpdatingDTO(response.getResult());
+                ArrayList<ParkingPlace> parkingPlacesForAdding = new ArrayList<ParkingPlace>();
                 List<ParkingPlace> parkingPlacesForUpdating = new ArrayList<ParkingPlace>();
 
-                for (ParkingPlaceChangesDTO parkingPlaceChangesDTO : parkingPlaceChangesDTOs) {
+                for (ParkingPlacesInitialDTO parkingPlacesInitialDTO : parkingPlacesUpdatingDTO.getInitials()) {
+                    for (Zone zone : zones) {
+                        if (parkingPlacesInitialDTO.getZoneId().equals(zone.getId())) {
+                            if (parkingPlacesInitialDTO.getVersion() > zone.getVersion()) {
+                                zone.setVersion(parkingPlacesInitialDTO.getVersion());
+                                zone.setParkingPlaces(parkingPlacesInitialDTO.getParkingPlaces());
+                                for (ParkingPlace parkingPlace : zone.getParkingPlaces()) {
+                                    parkingPlace.setZone(zone);
+                                }
+                                parkingPlacesForAdding.addAll(zone.getParkingPlaces());
+                            }
+                        }
+
+                    }
+                }
+                if (!parkingPlacesForAdding.isEmpty()) {
+                    mapFragment.addParkingPlacesAndMarkers(parkingPlacesForAdding);
+                }
+
+                for (ParkingPlaceChangesDTO parkingPlaceChangesDTO : parkingPlacesUpdatingDTO.getChanges()) {
                     for (Zone zone : zones) {
                         if (parkingPlaceChangesDTO.getZoneId().equals(zone.getId())) {
-                            for (ParkingPlaceDTO parkingPlaceDTO : parkingPlaceChangesDTO.getParkingPlaceChanges()) {
-                                for (ParkingPlace parkingPlace : zone.getParkingPlaces()) {
-                                    if (parkingPlaceDTO.getId().equals(parkingPlace.getId())) {
-                                        parkingPlace.setStatus(parkingPlaceDTO.getStatus());
-                                        parkingPlacesForUpdating.add(parkingPlace);
+                            if (parkingPlaceChangesDTO.getVersion() > zone.getVersion()) {
+                                zone.setVersion(parkingPlaceChangesDTO.getVersion());
+                                for (ParkingPlaceDTO parkingPlaceDTO : parkingPlaceChangesDTO.getParkingPlaceChanges()) {
+                                    for (ParkingPlace parkingPlace : zone.getParkingPlaces()) {
+                                        if (parkingPlaceDTO.getId().equals(parkingPlace.getId())) {
+                                            parkingPlace.setStatus(parkingPlaceDTO.getStatus());
+                                            parkingPlacesForUpdating.add(parkingPlace);
+                                        }
                                     }
                                 }
                             }
@@ -609,7 +715,13 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
 
                     }
                 }
-                mapFragment.updateParkingPlaceMarkers(parkingPlacesForUpdating);
+                if (!parkingPlacesForUpdating.isEmpty()) {
+                    mapFragment.updateParkingPlaceMarkers(parkingPlacesForUpdating);
+                }
+
+                if (!parkingPlacesForAdding.isEmpty() || !parkingPlacesForUpdating.isEmpty()) {
+                    mapFragment.tryToFindEmptyParkingPlaceNearbyAndSetMode();
+                }
             }
         }
         else if (response.getType() == HttpRequestAndResponseType.RESERVE_PARKING_PLACE) {
@@ -630,10 +742,41 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
                 takeParkingPlace();
             }
         }
+
+        else if (response.getType() == HttpRequestAndResponseType.LEAVE_PARKING_PLACE) {
+            if (response.getResult().equals("NOT_CONNECTED") || response.getResult().equals("FAIL")) {
+                Toast.makeText(this, "[response_result = " + response.getResult() + "] Problem with leaving parking place.",
+                        Toast.LENGTH_SHORT).show();
+            }
+            else {
+                setNoneMode();
+                mapFragment.finishTakingOfParkingPlace();
+                Toast.makeText(this, "Parking place is empty now (on server).",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private String getCurrentActivity() {
+        ComponentName cn;
+        ActivityManager am = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            cn = am.getAppTasks().get(0).getTaskInfo().topActivity;
+        } else {
+            //noinspection deprecation
+            cn = am.getRunningTasks(1).get(0).topActivity;
+        }
+
+        return cn.getClassName();
     }
 
     @Override
     public void loginAgain() {
+        String currentActivity = getCurrentActivity();
+        if (currentActivity.endsWith("LoginActivity")) { // vec se nalazi na login activity-ju
+            return;
+        }
+
         tokenUtils.removeToken();
         startActivity(new Intent(MapActivity.this, LoginActivity.class));
         Toast.makeText(this, "Please login again.", Toast.LENGTH_SHORT).show();

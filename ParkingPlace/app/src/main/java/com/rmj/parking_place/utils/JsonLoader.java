@@ -3,6 +3,8 @@ package com.rmj.parking_place.utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.rmj.parking_place.dto.ParkingPlaceChangesDTO;
+import com.rmj.parking_place.dto.ParkingPlacesInitialDTO;
+import com.rmj.parking_place.dto.ParkingPlacesUpdatingDTO;
 import com.rmj.parking_place.dto.TokenDTO;
 import com.rmj.parking_place.dto.navigation.NavigationDTO;
 import com.rmj.parking_place.model.Zone;
@@ -65,14 +67,19 @@ public class JsonLoader {
         return navigationDTO;
     }
 
-    public static List<ParkingPlaceChangesDTO> convertJsonToParkingPlaceChangesDTOs(String json) {
-        List<ParkingPlaceChangesDTO> parkingPlaceChangesDTOs = gson.fromJson(json, new TypeToken<List<Zone>>(){}.getType());
-        return parkingPlaceChangesDTOs;
-    }
-
     public static TokenDTO convertJsonToTokenDTO(String json) {
         TokenDTO tokenDTO = gson.fromJson(json, new TypeToken<TokenDTO>(){}.getType());
         return tokenDTO;
+    }
+
+    public static List<ParkingPlacesInitialDTO> convertJsonToParkingPlacesInitialDTOs(String json) {
+        List<ParkingPlacesInitialDTO> parkingPlacesInitialDTOs = gson.fromJson(json, new TypeToken<List<ParkingPlacesInitialDTO>>(){}.getType());
+        return parkingPlacesInitialDTOs;
+    }
+
+    public static ParkingPlacesUpdatingDTO convertJsonToParkingPlacesUpdatingDTO(String json) {
+        ParkingPlacesUpdatingDTO parkingPlacesUpdatingDTO = gson.fromJson(json, new TypeToken<ParkingPlacesUpdatingDTO>(){}.getType());
+        return parkingPlacesUpdatingDTO;
     }
 
 }

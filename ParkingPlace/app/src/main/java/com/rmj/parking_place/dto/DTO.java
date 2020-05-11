@@ -1,17 +1,15 @@
 package com.rmj.parking_place.dto;
 
-import com.rmj.parking_place.model.TicketType;
-
-public class ReservationDTO {
+public class DTO {
     private Long zoneId;
     private Long parkingPlaceId;
 
 
-    public ReservationDTO() {
+    public DTO() {
 
     }
 
-    public ReservationDTO(Long zoneId, Long parkingPlaceId) {
+    public DTO(Long zoneId, Long parkingPlaceId) {
         this.zoneId = zoneId;
         this.parkingPlaceId = parkingPlaceId;
     }

@@ -171,6 +171,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Comparers\ComparerByVersion.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ParkingPlacesController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
@@ -182,9 +183,12 @@
     <Compile Include="DTO\LoginDTO.cs" />
     <Compile Include="DTO\ParkingPlaceChangesDTO.cs" />
     <Compile Include="DTO\ParkingPlaceDTO.cs" />
-    <Compile Include="DTO\ReservationDTO.cs" />
+    <Compile Include="DTO\ParkingPlacesInitialDTO.cs" />
+    <Compile Include="DTO\ParkingPlacesUpdatingDTO.cs" />
+    <Compile Include="DTO\Dto.cs" />
     <Compile Include="DTO\TakingDTO.cs" />
     <Compile Include="DTO\TokenDTO.cs" />
+    <Compile Include="DTO\ZoneDTO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -192,6 +196,7 @@
     <Compile Include="Models\PaidParkingPlace.cs" />
     <Compile Include="Models\ParkingPlace.cs" />
     <Compile Include="Models\ParkingPlaceStatus.cs" />
+    <Compile Include="Models\ParkingPlaceStatusAndVersion.cs" />
     <Compile Include="Models\Punishment.cs" />
     <Compile Include="Models\PunishmentType.cs" />
     <Compile Include="Models\Reservation.cs" />

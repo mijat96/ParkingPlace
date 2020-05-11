@@ -6,12 +6,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,10 +24,12 @@ import android.widget.Toast;
 
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.MapActivity;
+import com.rmj.parking_place.actvities.CheckWifiActivity;
+import com.rmj.parking_place.actvities.RegistrationActivity;
 import com.rmj.parking_place.utils.LoginAsyncTask;
 
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
 
     private LoginViewModel loginViewModel;
 
@@ -126,6 +126,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
     private void updateUiWithUser(LoggedInUserView model) {
         String welcome = getString(R.string.welcome) + model.getDisplayName();
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
@@ -136,5 +141,15 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    public void clickOnBtnRegister(View view) {
+        Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+        startActivity(intent);
     }
 }

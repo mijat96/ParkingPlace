@@ -5,12 +5,12 @@ using System.Web;
 
 namespace ParkingPlaceServer.DTO
 {
-	public class ReservationDTO
+	public class Dto
 	{
 		public long ZoneId { get; set; }
 		public long ParkingPlaceId { get; set; }
 
-		public ReservationDTO()
+		public Dto()
 		{
 
 		}

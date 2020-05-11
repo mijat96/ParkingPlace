@@ -49,25 +49,39 @@ namespace ParkingPlaceServer
 				return;
 			}
 
-			List<Reservation> reservationsForRemoving = new List<Reservation>();
-
-			Zone zone;
-			ParkingPlace parkingPlace;
-
-			foreach (Reservation reservation in reservations)
+			lock (reservations)
 			{
-				if (reservation.EndDateTime < DateTime.Now)
+				List<Reservation> reservationsForRemoving = new List<Reservation>();
+
+				Zone zone;
+				ParkingPlace parkingPlace;
+
+				foreach (Reservation reservation in reservations)
 				{
-					zone = zonesService.getZone(reservation.ParkingPlace.Zone.Id);
-					parkingPlace = zone.getParkingPlace(reservation.ParkingPlace.Id);
-					parkingPlace.Status = ParkingPlaceStatus.EMPTY;
-					reservation.User.AddViolation(true);
-				}
-			}
+					if (reservation.EndDateTime < DateTime.Now)
+					{
+						zone = zonesService.getZone(reservation.ParkingPlace.Zone.Id);
+						lock (zone)
+						{
+							parkingPlace = zone.getParkingPlace(reservation.ParkingPlace.Id);
+							lock (parkingPlace)
+							{
+								parkingPlace.Status = ParkingPlaceStatus.EMPTY;
+							}
 
-			if (reservationsForRemoving.Count > 0)
-			{
-				reservations.RemoveAll(item => reservationsForRemoving.Contains(item));
+							zone.Version++;
+							zone.AddParkingPlaceChange(parkingPlace.Id, parkingPlace.Status);
+						}
+						reservation.User.AddViolation(true);
+
+						reservationsForRemoving.Add(reservation);
+					}
+				}
+
+				if (reservationsForRemoving.Count > 0)
+				{
+					reservations.RemoveAll(item => reservationsForRemoving.Contains(item));
+				}
 			}
 		
 		}
@@ -80,25 +94,39 @@ namespace ParkingPlaceServer
 				return;
 			}
 
-			List<PaidParkingPlace> paidParkingPlacesForRemoving = new List<PaidParkingPlace>();
-
-			Zone zone;
-			ParkingPlace parkingPlace;
-
-			foreach (PaidParkingPlace paidParkingPlace in paidParkingPlaces)
+			lock (paidParkingPlaces)
 			{
-				if (paidParkingPlace.GetEndDateTime() < DateTime.Now)
+				List<PaidParkingPlace> paidParkingPlacesForRemoving = new List<PaidParkingPlace>();
+
+				Zone zone;
+				ParkingPlace parkingPlace;
+
+				foreach (PaidParkingPlace paidParkingPlace in paidParkingPlaces)
 				{
-					zone = zonesService.getZone(paidParkingPlace.ParkingPlace.Zone.Id);
-					parkingPlace = zone.getParkingPlace(paidParkingPlace.ParkingPlace.Id);
-					parkingPlace.Status = ParkingPlaceStatus.EMPTY;
-					paidParkingPlace.User.AddViolation(false);
-				}
-			}
+					if (paidParkingPlace.GetEndDateTime() < DateTime.Now)
+					{
+						zone = zonesService.getZone(paidParkingPlace.ParkingPlace.Zone.Id);
+						lock (zone)
+						{
+							parkingPlace = zone.getParkingPlace(paidParkingPlace.ParkingPlace.Id);
+							lock (parkingPlace)
+							{
+								parkingPlace.Status = ParkingPlaceStatus.EMPTY;
+							}
 
-			if (paidParkingPlacesForRemoving.Count > 0)
-			{
-				paidParkingPlaces.RemoveAll(item => paidParkingPlacesForRemoving.Contains(item));
+							zone.Version++;
+							zone.AddParkingPlaceChange(parkingPlace.Id, parkingPlace.Status);
+						}
+						paidParkingPlace.User.AddViolation(false);
+
+						paidParkingPlacesForRemoving.Add(paidParkingPlace);
+					}
+				}
+
+				if (paidParkingPlacesForRemoving.Count > 0)
+				{
+					paidParkingPlaces.RemoveAll(item => paidParkingPlacesForRemoving.Contains(item));
+				}
 			}
 			
 		}

@@ -12,12 +12,41 @@
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
+    <string name="prompt_repeat_password">Repeat password</string>
+    <string name="prompt_car_registration_number">Car registration number</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_up">Sign up</string>
+    <string name="action_sign_up_short">Sign up</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
 
     <string name="splash_screen">Splash Screen</string>
+
+    <!-- <string name="PARKING_PLACE_SERVER_BASE_URL">https://parkingplaceserver.conveyor.cloud</string> -->
+    <!-- <string name="PARKING_PLACE_SERVER_BASE_URL">https://parkingplaceserver-tm8.conveyor.cloud</string> -->
+    <string name="PARKING_PLACE_SERVER_BASE_URL">https://192.168.1.2:45455</string>
+
+    <string name="NAVIGATION_SERVICE_BASE_URL">http://www.yournavigation.org/api/1.0/gosmore.php</string>
+    <string name="title_activity_base">BaseActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_map_page">MapPage</string>
+    <string name="menu_logout">Logout</string>
+
+    <string name="home_second">Home Second</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>

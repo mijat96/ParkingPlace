@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace ParkingPlaceServer.Controllers
@@ -16,7 +17,7 @@ namespace ParkingPlaceServer.Controllers
 
 
 		[Route("api/authentication/login")]
-		public HttpResponseMessage Post([FromBody] LoginDTO value)
+		public async Task<HttpResponseMessage> Post([FromBody] LoginDTO value)
 		{
 			try
 			{
