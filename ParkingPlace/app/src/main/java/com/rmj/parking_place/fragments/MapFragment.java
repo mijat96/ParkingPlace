@@ -36,8 +36,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.rmj.parking_place.actvities.MapActivity;
 import com.rmj.parking_place.R;
+import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.dialogs.LocationDialog;
 import com.rmj.parking_place.dto.DTO;
 import com.rmj.parking_place.dto.TakingDTO;
@@ -110,6 +110,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     private PaidParkingPlace paidParkingPlace;
     // ----------------------------------------------------
 
+    private MapPageFragment mapPageFragment;
+
     private static final int MAX_ALLOWED_DISTANCE_FOR_RESERVATION = 5000; // meters
 
     private static HashMap<String, Integer> markerIcons;
@@ -143,6 +145,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        mapPageFragment =  (MapPageFragment) getParentFragment();
 
         ParkingPlaceInfoFragment plf = ParkingPlaceInfoFragment.newInstance();
         FragmentManager fm = getFragmentManager();
@@ -273,7 +277,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         }
 
         /*if (currentLocation.hasSpeed()) {
-            ((MapActivity) this.getActivity()).setNoneMode();
+            ((MainActivity) this.getActivity()).setNoneMode();
         }*/
 
         // Toast.makeText(getActivity(), "NEW LOCATION", Toast.LENGTH_SHORT).show();
@@ -291,53 +295,53 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     }
 
     public void tryToFindEmptyParkingPlaceNearbyAndSetMode() {
-        MapActivity mapActivity = (MapActivity) this.getActivity();
+        // MainActivity mainActivity = (MainActivity) this.getActivity();
 
-        if (!mapActivity.isInIsTakingMode()) {
+        if (!mapPageFragment.isInIsTakingMode()) {
             foundedParkingPlaceNearby = tryToFindEmptyParkingPlaceNearby(currentLocation);
 
             if (foundedParkingPlaceNearby != null) {
                 foundedParkingPlaceNearbyMarker = getParkingPlaceMarker(foundedParkingPlaceNearby.getLocation().getLatitude(),
                                                                             foundedParkingPlaceNearby.getLocation().getLongitude());
 
-                if (mapActivity.isInCanReserveMode()) {
+                if (mapPageFragment.isInCanReserveMode()) {
                     if (selectedParkingPlace == null) {
                         throw new NotFoundParkingPlaceException("selectedParkingPlace == null");
                     }
                     else {
-                        mapActivity.setCanReserveAndCanTakeMode();
+                        mapPageFragment.setCanReserveAndCanTakeMode();
                     }
                 }
-                else if (mapActivity.isInIsReservingMode()) {
+                else if (mapPageFragment.isInIsReservingMode()) {
                     if (reservedParkingPlace == null) {
                         throw new NotFoundParkingPlaceException("reservedParkingPlace == null");
                     }
                     else if (foundedParkingPlaceNearby.equals(reservedParkingPlace)) {
-                        mapActivity.setIsReservingAndCanTakeMode();
+                        mapPageFragment.setIsReservingAndCanTakeMode();
                     }
                     else {
                         Toast.makeText(getActivity(), "As long as you have a parking place reserved,"
                                 + " you cannot take another parking place.", Toast.LENGTH_SHORT).show();
                     }
                 }
-                else if (mapActivity.isInIsReservingAndCanTakeMode()) {
+                else if (mapPageFragment.isInIsReservingAndCanTakeMode()) {
                     if (!foundedParkingPlaceNearby.equals(reservedParkingPlace)) {
-                        mapActivity.setIsReservingMode();
+                        mapPageFragment.setIsReservingMode();
                     }
                 }
                 else {
-                    mapActivity.setCanTakeMode();
+                    mapPageFragment.setCanTakeMode();
                 }
             }
             else {
-                if (mapActivity.isInIsReservingAndCanTakeMode()) {
-                    mapActivity.setIsReservingMode();
+                if (mapPageFragment.isInIsReservingAndCanTakeMode()) {
+                    mapPageFragment.setIsReservingMode();
                 }
-                else if (mapActivity.isInCanReserveAndCanTakeMode()) {
-                    mapActivity.setCanReserveMode();
+                else if (mapPageFragment.isInCanReserveAndCanTakeMode()) {
+                    mapPageFragment.setCanReserveMode();
                 }
-                else if (mapActivity.isInCanTakeMode()) {
-                    mapActivity.setNoneMode();
+                else if (mapPageFragment.isInCanTakeMode()) {
+                    mapPageFragment.setNoneMode();
                 }
             }
         }
@@ -486,20 +490,20 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             }*/
         }
 
-        final MapActivity mapActivity = (MapActivity) getActivity();
+        // final MainActivity mainActivity = (MainActivity) getActivity();
 
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                boolean canReserveMode = mapActivity.isInCanReserveMode();
-                boolean canReserveAndCanTakeMode = mapActivity.isInCanReserveAndCanTakeMode();
+                boolean canReserveMode = mapPageFragment.isInCanReserveMode();
+                boolean canReserveAndCanTakeMode = mapPageFragment.isInCanReserveAndCanTakeMode();
 
                 if (canReserveMode || canReserveAndCanTakeMode) {
                     if (canReserveMode) {
-                        mapActivity.setNoneMode();
+                        mapPageFragment.setNoneMode();
                     }
                     else if (canReserveAndCanTakeMode) {
-                        mapActivity.setCanTakeMode();
+                        mapPageFragment.setCanTakeMode();
                     }
                 }
 
@@ -508,10 +512,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                     updateParkingPlaceMarker(selectedParkingPlaceMarker, markerIcon);
                     selectedParkingPlace = null;
                     selectedParkingPlaceMarker = null;
-                }
 
-                if(selectedParkingPlace == null){
-                    mapActivity.hidePlaceIndoFragmet();
+                    mapPageFragment.hidePlaceIndoFragmet();
                 }
             }
         });
@@ -544,24 +546,24 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 updateParkingPlaceMarker(marker, markerIcon);
                 selectedParkingPlaceMarker = marker;
 
-                //izracunati razdaljinu od trenutne lokacije do izabranog markera
-                MapActivity mapActivity = (MapActivity) getActivity();
+                // izracunati razdaljinu od trenutne lokacije do izabranog markera
+                // MainActivity mainActivity = (MainActivity) getActivity();
 
                 float distanceMarkerCurrentLocation = computeDistanceBetweenTwoPoints(selectedParkingPlace.getLocation().getLatitude(),
                         selectedParkingPlace.getLocation().getLongitude(), currentLocation.getLatitude(), currentLocation.getLongitude());
 
-                mapActivity.showPlaceInfoFragment(selectedParkingPlace, distanceMarkerCurrentLocation);
+                mapPageFragment.showPlaceInfoFragment(selectedParkingPlace, distanceMarkerCurrentLocation);
 
-                if (mapActivity.isInNoneMode()) {
-                    mapActivity.setCanReserveMode();
+                if (mapPageFragment.isInNoneMode()) {
+                    mapPageFragment.setCanReserveMode();
                 }
-                else if (mapActivity.isInCanTakeMode()) {
+                else if (mapPageFragment.isInCanTakeMode()) {
                     if (foundedParkingPlaceNearby.equals(selectedParkingPlace)) {
                         Toast.makeText(getActivity(), "Ovo mesto ne mozete rezervisati, ali mozete zauzeti!",
                                 Toast.LENGTH_SHORT).show();
                     }
                     else {
-                        mapActivity.setCanReserveAndCanTakeMode();
+                        mapPageFragment.setCanReserveAndCanTakeMode();
                     }
                 }
 
@@ -570,7 +572,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             }
         });
 
-        map.setOnCameraChangeListener(new OnCameraChangeListenerImplementation(map, (MapActivity) getActivity()));
+        map.setOnCameraChangeListener(new OnCameraChangeListenerImplementation(map, mapPageFragment));
 
         if (currentLocation != null) {
             // currentLocationMarker = addMarker(currentLocation, "CURRENT_LOCATION");
@@ -579,7 +581,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         }
 
         drawParkingPlaceMarkersIfCan();
-        if (mapActivity.isInIsReservingMode() || mapActivity.isInCanReserveAndCanTakeMode()) {
+        if (mapPageFragment.isInIsReservingMode() || mapPageFragment.isInCanReserveAndCanTakeMode()) {
             redrawNavigationPath();
         }
 
@@ -689,8 +691,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             return null;
         }
 
-        MapActivity mapActivity = (MapActivity) getActivity();
-        boolean reservingMode = mapActivity.isInIsReservingMode() || mapActivity.isInIsReservingAndCanTakeMode();
+        // MainActivity mainActivity = (MainActivity) getActivity();
+        boolean reservingMode = mapPageFragment.isInIsReservingMode() || mapPageFragment.isInIsReservingAndCanTakeMode();
         if (reservingMode) {
             if (reservedParkingPlace == null) {
                 throw  new NotFoundParkingPlaceException("reservedParkingPlace == null");
@@ -800,8 +802,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         updateParkingPlaceMarker(reservedParkingPlaceMarker, newParkingPlaceStatus.name());
         getNavigation();
 
-        final MapActivity mapActivity = (MapActivity) getActivity();
-        mapActivity.startTimerForReservationOrTakingOfParkingPlace(reservation.getEndDateTime().getTime(), true);
+        // final MainActivity mainActivity = (MainActivity) getActivity();
+        mapPageFragment.startTimerForReservationOrTakingOfParkingPlace(reservation.getEndDateTime().getTime(), true);
     }
 
     private void getNavigation() {
@@ -836,8 +838,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         Date endDateTime = paidParkingPlace.getEndDateTime();
         long endDateTimeInMillis = endDateTime.getTime();
 
-        final MapActivity mapActivity = (MapActivity) getActivity();
-        mapActivity.startTimerForReservationOrTakingOfParkingPlace(endDateTimeInMillis, false);
+        // final MainActivity mainActivity = (MainActivity) getActivity();
+        mapPageFragment.startTimerForReservationOrTakingOfParkingPlace(endDateTimeInMillis, false);
     }
 
     public TakingDTO checkAndPrepareAllForTakingOnServer() throws NotFoundParkingPlaceException, AlreadyReservedParkingPlaceException, AlreadyTakenParkingPlaceException {
@@ -905,7 +907,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     public void checkSelectedParkingPlaceAndSetMode() {
         if (selectedParkingPlace != null) {
-            ((MapActivity) getActivity()).setCanReserveMode();
+            // ((MainActivity) getActivity()).setCanReserveMode();
+            mapPageFragment.setCanReserveMode();
         }
     }
 
@@ -957,7 +960,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     @Override
     public void loginAgain() {
-        ((MapActivity) getActivity()).loginAgain();
+        ((MainActivity) getActivity()).loginAgain();
     }
 
     private void redrawNavigationPath() {

@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
+import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.utils.TokenUtils;
 
 public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*/ {
@@ -73,7 +74,7 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
             });
 
             // uloguj se
-            // loginIfNotLoggedOrGoToMapActivity();
+            // loginIfNotLoggedOrGoToMainActivity();
         }
 
         private void showDialogForCurrentPrivateIpAddress() {
@@ -93,7 +94,7 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
                             saveParkingPlaceServerUrl(parkingPlaceServerUrlEditText.getText().toString());
 
                             // uloguj se
-                            loginIfNotLoggedOrGoToMapActivity();
+                            loginIfNotLoggedOrGoToMainActivity();
 
                             dialog.cancel();
                         }
@@ -122,7 +123,7 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
     /**
      * Proveri da li je logovan user, ako nije registruj ga.
      */
-    private void loginIfNotLoggedOrGoToMapActivity()
+    private void loginIfNotLoggedOrGoToMainActivity()
     {
         startNextActivity();
         finish(); // da nebi mogao da ode back na splash
@@ -133,7 +134,7 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
     {
         Class classVar;
         if (tokenUtils.isLogged()) {
-            classVar = MapActivity.class;
+            classVar = MainActivity.class;
         }
         else {
             classVar = LoginActivity.class;
