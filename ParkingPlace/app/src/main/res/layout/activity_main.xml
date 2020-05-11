@@ -16,8 +16,8 @@
         android:id="@+id/northPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/colorNorthPanelBackground">
+        android:orientation="vertical">
+        <!--android:background="@color/colorNorthPanelBackground"-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -66,6 +66,34 @@
             android:visibility="gone"
             android:textSize="@dimen/text_size"
             android:gravity="center"/>
+
+
+        <View
+            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent">
+        </View>
+
+        <ImageButton
+            android:id="@+id/finParkingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_alignParentRight="true"
+            android:onClick="clickOnBtnFindParkingPlace"
+            android:background="@android:color/transparent"
+            android:src="@drawable/search_parking_button" />
+
+        <LinearLayout
+            android:id="@+id/find_parking_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+        </LinearLayout>
     </LinearLayout>
 
     <!--

@@ -92,6 +92,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     private PaidParkingPlace paidParkingPlace;
     private Reservation reservation;
 
+
     private static final int MAX_ALLOWED_DISTANCE_FOR_RESERVATION = 5000; // meters
 
     private static HashMap<String, Integer> markerIcons;
@@ -128,8 +129,11 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         ParkingPlaceInfoFragment plf = ParkingPlaceInfoFragment.newInstance();
+        FindParkingFragment fpf = FindParkingFragment.newInstance();
+
         FragmentManager fm = getFragmentManager();
         fm.beginTransaction().replace(R.id.place_info_frame, plf, "parkingPlaceInfoFragment").commit();
+        fm.beginTransaction().replace(R.id.find_parking_frame, fpf, "findParkinfFragment").commit();
     }
 
     /**
@@ -464,6 +468,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
+                //Toast.makeText(getActivity(), latLng.toString(), Toast.LENGTH_SHORT).show();
+                mapActivity.setClickedLocation(latLng);
                 boolean canReserveMode = mapActivity.isInCanReserveMode();
                 boolean canReserveAndCanTakeMode = mapActivity.isInCanReserveAndCanTakeMode();
 
@@ -484,7 +490,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 }
 
                 if(selectedParkingPlace == null){
-                    mapActivity.hidePlaceIndoFragmet();
+                    mapActivity.hidePlaceInfoFragmet();
                 }
             }
         });
@@ -518,9 +524,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 updateParkingPlaceMarker(marker, markerIcon);
                 selectedParkingPlaceMarker = marker;
 
-                //izracunati razdaljinu od trenutne lokacije do izabranog markera
                 MapActivity mapActivity = (MapActivity) getActivity();
 
+                //izracunata je razdaljina vazdusne linije
                 float distanceMarkerCurrentLocation = computeDistanceBetweenTwoPoints(selectedParkingPlace.getLocation().getLatitude(),
                         selectedParkingPlace.getLocation().getLongitude(), currentLocation.getLatitude(), currentLocation.getLongitude());
 
@@ -557,7 +563,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     }
 
-    private void updateCameraPosition(LatLng position) {
+    public void updateCameraPosition(LatLng position) {
         if(map != null) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(position).zoom(15).build();
@@ -848,6 +854,10 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     public void setParkingPlaces(HashMap<com.rmj.parking_place.model.Location, ParkingPlace> parkingPlaces) {
         this.parkingPlaces = parkingPlaces;
+    }
+
+    public HashMap<com.rmj.parking_place.model.Location, ParkingPlace> getParkingPlaces() {
+        return this.parkingPlaces;
     }
 
     @Override

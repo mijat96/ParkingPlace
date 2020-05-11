@@ -3,6 +3,8 @@ package com.rmj.parking_place.actvities;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,10 +13,14 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
 import com.rmj.parking_place.dto.ParkingPlaceChangesDTO;
@@ -27,7 +33,9 @@ import com.rmj.parking_place.exceptions.CurrentLocationUnknownException;
 import com.rmj.parking_place.exceptions.InvalidModeException;
 import com.rmj.parking_place.exceptions.MaxAllowedDistanceForReservationException;
 import com.rmj.parking_place.exceptions.NotFoundParkingPlaceException;
+import com.rmj.parking_place.fragments.FindParkingFragment;
 import com.rmj.parking_place.fragments.MapFragment;
+import com.rmj.parking_place.fragments.ParkingPlaceInfoFragment;
 import com.rmj.parking_place.model.Location;
 import com.rmj.parking_place.model.Mode;
 import com.rmj.parking_place.model.ParkingPlace;
@@ -41,6 +49,7 @@ import com.rmj.parking_place.utils.PostRequestAsyncTask;
 import com.rmj.parking_place.utils.Response;
 import com.rmj.parking_place.utils.TokenUtils;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,10 +66,13 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
     private Timer timerForReservationOrTakingOfParkingPlace = new Timer();
     private Timer timerForUpdatingParkingPlaces = new Timer();
     private MapFragment mapFragment;
-
+    private LatLng clickedLocation;
+    private String chosedSearchMethod;
     private List<Zone> zones = null;
     private List<Zone> zonesForUpdating = null;
 
+    private double latitude;
+    private  double longitude;
     private TokenUtils tokenUtils;
 
     @Override
@@ -662,16 +674,178 @@ public class MapActivity extends AppCompatActivity implements AsyncResponse {
         linearLayout.setVisibility(View.VISIBLE);
     }
 
-    public void hidePlaceIndoFragmet() {
+    public void hidePlaceInfoFragmet() {
         ((LinearLayout) findViewById(R.id.place_info_frame)).setVisibility(View.GONE);
-        //((LinearLayout) findViewById(R.id.find_parking)).setVisibility(View.GONE);
+        clickedLocation = null;
+    }
 
-        /*DisplayMetrics displaymetrics = new DisplayMetrics();
+    public void clickOnBtnFindParkingPlace(View view) {
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int height = displaymetrics.heightPixels;
+
+        ViewGroup.LayoutParams paramsMap = mapFragment.getView().getLayoutParams();
+        paramsMap.height = height/2;
+        mapFragment.getView().setLayoutParams(paramsMap);
+
+        EditText editTextLocation = (EditText) findViewById(R.id.location_text_input);
+
+        if(clickedLocation == null){
+            editTextLocation.setText("not selected");
+        }else
+        {
+            editTextLocation.setText("selected");
+        }
+
+        //LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        //layoutParams.setMargins(0, height/2, 0, 0);
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.find_parking_frame);
+        //linearLayout.setLayoutParams(layoutParams);
+        linearLayout.setVisibility(View.VISIBLE);
+
+        ImageButton findParkingButton = (ImageButton) findViewById(R.id.finParkingButton);
+        findParkingButton.setVisibility(View.GONE);
+    }
+
+    public void onCheckboxSearchClicked(View view){
+        boolean checked = ((CheckBox) view).isChecked();
+        CheckBox markerCheckBox =(CheckBox) findViewById(R.id.markerCheckBox);
+        CheckBox zoneCheckBox =(CheckBox) findViewById(R.id.zoneCheckBox);
+        CheckBox addressCheckBox =(CheckBox) findViewById(R.id.addressCheckBox);
+        EditText editTextAddress = (EditText) findViewById(R.id.address_text_input);
+        EditText editTextZone = (EditText) findViewById(R.id.zone_text_input);
+        EditText editTextMarker = (EditText) findViewById(R.id.location_text_input);
+        EditText editTextlocationDistance = (EditText) findViewById(R.id.location_distance_text_input);
+
+        switch(view.getId()) {
+            case R.id.addressCheckBox:
+                if (checked){
+                    chosedSearchMethod = "address";
+                    markerCheckBox.setChecked(false);
+                    zoneCheckBox.setChecked(false);
+                    editTextZone.setFocusable(false);
+                    editTextMarker.setFocusable(false);
+                    editTextlocationDistance.setFocusable(false);
+                    editTextAddress.setFocusable(true);
+                    editTextAddress.setFocusableInTouchMode(true);
+                    editTextAddress.requestFocus();
+                }
+                else{
+                    chosedSearchMethod = "";
+                    editTextAddress.setFocusable(false);
+                }
+                break;
+            case R.id.zoneCheckBox:
+                if (checked){
+                    chosedSearchMethod = "zone";
+                    markerCheckBox.setChecked(false);
+                    addressCheckBox.setChecked(false);
+                    editTextAddress.setFocusable(false);
+                    editTextMarker.setFocusable(false);
+                    editTextlocationDistance.setFocusable(false);
+                    editTextZone.setFocusable(true);
+                    editTextZone.setFocusableInTouchMode(true);
+                    editTextZone.requestFocus();
+                }
+                else{
+                    chosedSearchMethod = "";
+                    editTextZone.setFocusable(false);
+                }
+                break;
+            case R.id.markerCheckBox:
+                if (checked){
+                    chosedSearchMethod = "marker";
+                    addressCheckBox.setChecked(false);
+                    zoneCheckBox.setChecked(false);
+                    editTextZone.setFocusable(false);
+                    editTextAddress.setFocusable(false);
+                    editTextlocationDistance.setFocusable(true);
+                    editTextlocationDistance.setFocusableInTouchMode(true);
+                    editTextlocationDistance.requestFocus();
+                }
+                else{
+                    chosedSearchMethod = "";
+                    editTextMarker.setFocusable(false);
+                    editTextlocationDistance.setFocusable(false);
+                }
+                break;
+            // TODO: Veggie sandwich
+        }
+    }
+
+    public void onClickHideFindFragmentButton(View view){
+        ((LinearLayout) findViewById(R.id.find_parking_frame)).setVisibility(View.GONE);
+        DisplayMetrics displaymetrics = new DisplayMetrics();
         this.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int height = displaymetrics.heightPixels;
 
         ViewGroup.LayoutParams paramsMap = mapFragment.getView().getLayoutParams();
         paramsMap.height = height;
-        mapFragment.getView().setLayoutParams(paramsMap);*/
+        mapFragment.getView().setLayoutParams(paramsMap);
+
+        ImageButton findParkingButton = (ImageButton) findViewById(R.id.finParkingButton);
+        findParkingButton.setVisibility(View.VISIBLE);
+    }
+
+    public void clickOnBtnSearchParkingPlace(View view){
+        EditText editTextAddress = (EditText) findViewById(R.id.address_text_input);
+        String addressTextInput = editTextAddress.getText().toString();
+        EditText editTextZone = (EditText) findViewById(R.id.zone_text_input);
+        String zoneTextInput = editTextZone.getText().toString();
+        EditText editTextLocation = (EditText) findViewById(R.id.location_text_input);
+        EditText editTextDistance = (EditText) findViewById(R.id.location_distance_text_input);
+        float distance = Float.parseFloat(editTextDistance.getText().toString());
+
+        HashMap<com.rmj.parking_place.model.Location, ParkingPlace> places = mapFragment.getParkingPlaces();
+        ArrayList<ParkingPlace> parkingPlaces = new ArrayList<ParkingPlace>();
+        zones = getZones();
+        for (ParkingPlace parkingPlace: places.values()) {
+            if(!addressTextInput.matches("") && addressTextInput.equals(parkingPlace.getLocation().getAddress()) && chosedSearchMethod.matches("address")){
+                Toast.makeText(this, "search address",Toast.LENGTH_SHORT).show();
+                parkingPlaces.add(parkingPlace);
+            } else if(!zoneTextInput.matches("") && zoneTextInput.equals(parkingPlace.getZone().getName()) && chosedSearchMethod.matches("zone")){
+                Toast.makeText(this, "search address",Toast.LENGTH_SHORT).show();
+                parkingPlaces.add(parkingPlace);
+            } else if(!editTextLocation.getText().toString().matches("") && editTextLocation.getText().toString().matches("selected")
+                    && chosedSearchMethod.matches("marker")){
+                float distanceMarkerCurrentLocation = computeDistanceBetweenTwoPoints(latitude, longitude,
+                        parkingPlace.getLocation().getLatitude(), parkingPlace.getLocation().getLongitude());
+                if(distanceMarkerCurrentLocation <= distance*1000){
+                    parkingPlaces.add(parkingPlace);
+                }
+                //Toast.makeText(this, "search location",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "select search method and fill in the field",Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if (!parkingPlaces.isEmpty()) {
+            FragmentManager fm = getSupportFragmentManager();
+            MapFragment fragm = (MapFragment) fm.findFragmentById(R.id.mainContent);
+            double latitude = parkingPlaces.get(0).getLocation().getLatitude();
+            double longitude = parkingPlaces.get(0).getLocation().getLongitude();
+            LatLng lng = new LatLng(latitude, longitude);
+            fragm.updateCameraPosition(lng);
+        }
+    }
+
+    private List<Zone> getZones() {
+        InputStream is = getResources().openRawResource(R.raw.zones_with_parking_places);
+        List<Zone> zones = JsonLoader.getZones(is);
+        return zones;
+    }
+
+    float computeDistanceBetweenTwoPoints(double latitudeA, double longitudeA, double latitudeB, double longitudeB) {
+        float[] results = new float[1];
+        android.location.Location.distanceBetween(latitudeA, longitudeA, latitudeB, longitudeB, results);
+        return results[0];
+    }
+
+    public void setClickedLocation(LatLng latLng){
+        clickedLocation = latLng;
+        latitude = latLng.latitude;
+        longitude = latLng.longitude;
+        EditText editTextLocation = (EditText) findViewById(R.id.location_text_input);
+        editTextLocation.setText("selected");
     }
 }
