@@ -297,6 +297,10 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     public void tryToFindEmptyParkingPlaceNearbyAndSetMode() {
         // MainActivity mainActivity = (MainActivity) this.getActivity();
 
+        if (mapPageFragment == null) {
+            mapPageFragment = (MapPageFragment) getParentFragment();
+        }
+
         if (!mapPageFragment.isInIsTakingMode()) {
             foundedParkingPlaceNearby = tryToFindEmptyParkingPlaceNearby(currentLocation);
 

@@ -23,8 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rmj.parking_place.R;
-import com.rmj.parking_place.actvities.MapActivity;
 import com.rmj.parking_place.actvities.CheckWifiActivity;
+import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.actvities.RegistrationActivity;
 import com.rmj.parking_place.utils.LoginAsyncTask;
 
@@ -135,7 +135,7 @@ public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
         String welcome = getString(R.string.welcome) + model.getDisplayName();
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
 
-        Intent nextIntent = new Intent(LoginActivity.this, MapActivity.class);
+        Intent nextIntent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(nextIntent);
     }
 

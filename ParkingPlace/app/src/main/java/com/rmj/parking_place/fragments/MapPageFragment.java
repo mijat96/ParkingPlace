@@ -102,6 +102,36 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_map_page, container, false);
 
+        Button btnReserve = (Button) view.findViewById(R.id.btnReserve);
+        btnReserve.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                clickOnBtnReserve(v);
+            }
+        });
+
+        Button btnTake = (Button) view.findViewById(R.id.btnTake);
+        btnTake.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                clickOnBtnTake(v);
+            }
+        });
+
+        Button btnLeaveParkingPlace = (Button) view.findViewById(R.id.btnLeaveParkingPlace);
+        btnLeaveParkingPlace.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                clickOnBtnLeaveParkingPlace(v);
+            }
+        });
+
         mapFragment = new MapFragment();
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.mapContent, mapFragment)

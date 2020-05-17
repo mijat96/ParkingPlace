@@ -3,7 +3,6 @@ package com.rmj.parking_place.listener;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.rmj.parking_place.actvities.MapActivity;
 import com.rmj.parking_place.fragments.MapPageFragment;
 
 public class OnCameraChangeListenerImplementation implements GoogleMap.OnCameraChangeListener {
