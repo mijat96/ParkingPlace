@@ -23,11 +23,11 @@
             android:textAlignment="center"/>
 
         <Button
+            android:id="@+id/closeSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="X"
-            android:layout_gravity="right"
-            android:onClick="onClickHideFindFragmentButton"/>
+            android:layout_gravity="right"/>
 
         <CheckBox
             android:id="@+id/addressCheckBox"
@@ -36,8 +36,7 @@
             android:text="Address"
             android:textColor="#fff"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:onClick="onCheckboxSearchClicked"/>
+            android:textStyle="bold"/>
         <EditText
             android:id="@+id/address_text_input"
             android:layout_width="wrap_content"
@@ -53,8 +52,7 @@
             android:text="Zone"
             android:textColor="#fff"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:onClick="onCheckboxSearchClicked"/>
+            android:textStyle="bold"/>
         <EditText
             android:id="@+id/zone_text_input"
             android:layout_width="wrap_content"
@@ -70,8 +68,7 @@
             android:text="Marker location"
             android:textColor="#fff"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:onClick="onCheckboxSearchClicked"/>
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/location_text_input"
@@ -97,7 +94,6 @@
             android:layout_gravity="end"
             android:paddingTop="5dp"
             android:paddingBottom="15dp"
-            android:layout_alignParentRight="true"
-            android:onClick="clickOnBtnSearchParkingPlace"/>
+            android:layout_alignParentRight="true"/>
     </LinearLayout>
 </LinearLayout>

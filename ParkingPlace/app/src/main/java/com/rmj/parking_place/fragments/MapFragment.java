@@ -111,7 +111,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     // ----------------------------------------------------
 
     private MapPageFragment mapPageFragment;
-
+    private FindParkingFragment findParkingFragment;
 
     private static final int MAX_ALLOWED_DISTANCE_FOR_RESERVATION = 5000; // meters
 
@@ -128,9 +128,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     private boolean dialogAllowUserLocationWasDisplayed;
 
     /*public static MapFragment newInstance() {
-
         MapFragment mpf = new MapFragment();
-
         return mpf;
     }*/
 
@@ -149,12 +147,15 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         mapPageFragment =  (MapPageFragment) getParentFragment();
 
-        ParkingPlaceInfoFragment plf = ParkingPlaceInfoFragment.newInstance();
+       /* ParkingPlaceInfoFragment plf = ParkingPlaceInfoFragment.newInstance();
         FindParkingFragment fpf = FindParkingFragment.newInstance();
+        FragmentManager fm = getChildFragmentManager();*/
+       /* fm.beginTransaction().replace(R.id.place_info_frame, plf, "parkingPlaceInfoFragment").commit();
+        fm.beginTransaction().replace(R.id.find_parking_frame, fpf, "findParkinfFragment").commit();*/
+    }
 
-        FragmentManager fm = getFragmentManager();
-        fm.beginTransaction().replace(R.id.place_info_frame, plf, "parkingPlaceInfoFragment").commit();
-        fm.beginTransaction().replace(R.id.find_parking_frame, fpf, "findParkinfFragment").commit();
+    public void setFindParkingFragment(FindParkingFragment findParkingFragment){
+        this.findParkingFragment = findParkingFragment;
     }
 
     /**
@@ -301,12 +302,17 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     public void tryToFindEmptyParkingPlaceNearbyAndSetMode() {
         // MainActivity mainActivity = (MainActivity) this.getActivity();
 
+        if(mapPageFragment == null)
+        {
+            mapPageFragment = (MapPageFragment) getParentFragment();
+        }
+
         if (!mapPageFragment.isInIsTakingMode()) {
             foundedParkingPlaceNearby = tryToFindEmptyParkingPlaceNearby(currentLocation);
 
             if (foundedParkingPlaceNearby != null) {
                 foundedParkingPlaceNearbyMarker = getParkingPlaceMarker(foundedParkingPlaceNearby.getLocation().getLatitude(),
-                                                                            foundedParkingPlaceNearby.getLocation().getLongitude());
+                        foundedParkingPlaceNearby.getLocation().getLongitude());
 
                 if (mapPageFragment.isInCanReserveMode()) {
                     if (selectedParkingPlace == null) {
@@ -372,7 +378,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             // Should we show an explanation?
 
             // if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-               if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
@@ -474,8 +480,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         if (checkLocationPermission()) {
             if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
+                    ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
 
                 if (provider == null) {
                     setProvider();
@@ -499,10 +505,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                //Toast.makeText(getActivity(), latLng.toString(), Toast.LENGTH_SHORT).show();
-                mapActivity.setClickedLocation(latLng);
-                boolean canReserveMode = mapActivity.isInCanReserveMode();
-                boolean canReserveAndCanTakeMode = mapActivity.isInCanReserveAndCanTakeMode();
+                boolean canReserveMode = mapPageFragment.isInCanReserveMode();
+                boolean canReserveAndCanTakeMode = mapPageFragment.isInCanReserveAndCanTakeMode();
 
                 if (canReserveMode || canReserveAndCanTakeMode) {
                     if (canReserveMode) {
@@ -519,9 +523,10 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                     selectedParkingPlace = null;
                     selectedParkingPlaceMarker = null;
 
-                if(selectedParkingPlace == null){
-                    mapActivity.hidePlaceInfoFragmet();
+                    mapPageFragment.hidePlaceIndoFragmet();
                 }
+
+                findParkingFragment.setClickedLocation(latLng);
             }
         });
 
@@ -553,9 +558,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 updateParkingPlaceMarker(marker, markerIcon);
                 selectedParkingPlaceMarker = marker;
 
-                MapActivity mapActivity = (MapActivity) getActivity();
+                // izracunati razdaljinu od trenutne lokacije do izabranog markera
+                // MainActivity mainActivity = (MainActivity) getActivity();
 
-                //izracunata je razdaljina vazdusne linije
                 float distanceMarkerCurrentLocation = computeDistanceBetweenTwoPoints(selectedParkingPlace.getLocation().getLatitude(),
                         selectedParkingPlace.getLocation().getLongitude(), currentLocation.getLatitude(), currentLocation.getLongitude());
 
@@ -594,7 +599,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     }
 
-    private void updateCameraPosition(LatLng position, boolean withAnimation) {
+    public void updateCameraPosition(LatLng position, boolean withAnimation) {
         if(map != null) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(position).zoom(15).build();
@@ -654,10 +659,10 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         Marker marker = map.addMarker(
                 new MarkerOptions()
-                    .title("YOUR_POSITON")
-                    .anchor(0.5f,0.5f) // centriramo marker na odgovarajuce koordinate
-                    .icon(BitmapDescriptorFactory.fromResource(resourceId))
-                    .position(loc)
+                        .title("YOUR_POSITON")
+                        .anchor(0.5f,0.5f) // centriramo marker na odgovarajuce koordinate
+                        .icon(BitmapDescriptorFactory.fromResource(resourceId))
+                        .position(loc)
         );
         marker.setFlat(true);
 
@@ -684,7 +689,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     private float computeDistanceBetweenTwoPoints(com.rmj.parking_place.model.Location pointA,
                                                   com.rmj.parking_place.model.Location pointB) {
         return computeDistanceBetweenTwoPoints(pointA.getLatitude(), pointA.getLongitude(),
-                                                pointB.getLatitude(), pointB.getLongitude());
+                pointB.getLatitude(), pointB.getLongitude());
     }
 
     private float computeDistanceBetweenTwoPoints(double latitudeA, double longitudeA, double latitudeB, double longitudeB) {
@@ -708,8 +713,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         for (ParkingPlace parkingPlace : parkingPlaces.values()) {
             if ((parkingPlace.getStatus() == ParkingPlaceStatus.EMPTY
-                || (reservingMode && parkingPlace.equals(reservedParkingPlace))
-                && parkingPlaceIsNearby(parkingPlace, location))) {
+                    || (reservingMode && parkingPlace.equals(reservedParkingPlace))
+                    && parkingPlaceIsNearby(parkingPlace, location))) {
                 return  parkingPlace;
             }
         }
@@ -719,9 +724,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     private boolean parkingPlaceIsNearby(ParkingPlace parkingPlace, Location location) {
         float distance = computeDistanceBetweenTwoPoints(parkingPlace.getLocation().getLatitude(),
-                        parkingPlace.getLocation().getLongitude(), location.getLatitude(), location.getLongitude());
-       // distance (meteres)
-       // return distance < 0.5;
+                parkingPlace.getLocation().getLongitude(), location.getLatitude(), location.getLongitude());
+        // distance (meteres)
+        // return distance < 0.5;
         return distance < 1.0;
     }
 
@@ -765,8 +770,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             throw new CurrentLocationUnknownException("Current location unknown!");
         }
         else if ((distance = computeDistanceBetweenTwoPoints(currentLocation.getLatitude(), currentLocation.getLongitude(),
-            selectedParkingPlace.getLocation().getLatitude(), selectedParkingPlace.getLocation().getLongitude()))
-            > MAX_ALLOWED_DISTANCE_FOR_RESERVATION) {
+                selectedParkingPlace.getLocation().getLatitude(), selectedParkingPlace.getLocation().getLongitude()))
+                > MAX_ALLOWED_DISTANCE_FOR_RESERVATION) {
             throw new MaxAllowedDistanceForReservationException("Max allowed distance for reservation is "
                     + MAX_ALLOWED_DISTANCE_FOR_RESERVATION + " meters, but your distance is " + distance + " meters.");
         }
@@ -786,7 +791,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         potentiallyReservedParkingPlace = selectedParkingPlace;
         if (selectedParkingPlaceMarker == null) {
             selectedParkingPlaceMarker = getParkingPlaceMarker(selectedParkingPlace.getLocation().getLatitude(),
-                                                                selectedParkingPlace.getLocation().getLongitude());
+                    selectedParkingPlace.getLocation().getLongitude());
         }
         else {
             potentiallyReservedParkingPlaceMarker = selectedParkingPlaceMarker;
@@ -869,7 +874,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         potentiallyTakenParkingPlace = foundedParkingPlaceNearby;
         if (foundedParkingPlaceNearby == null) {
             foundedParkingPlaceNearbyMarker = getParkingPlaceMarker(foundedParkingPlaceNearby.getLocation().getLatitude(),
-                                                                foundedParkingPlaceNearby.getLocation().getLongitude());
+                    foundedParkingPlaceNearby.getLocation().getLongitude());
         }
         else {
             potentiallyTakenParkingPlaceMarker = foundedParkingPlaceNearbyMarker;
@@ -920,8 +925,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     }
 
     /*
-    * Za ovu metodu se koristi 'synchronized' jer moze biti pozvana ili kad se downloaduju podaci ili kad je mapa spremna
-    * */
+     * Za ovu metodu se koristi 'synchronized' jer moze biti pozvana ili kad se downloaduju podaci ili kad je mapa spremna
+     * */
     public void drawParkingPlaceMarkersIfCan() {
         if (map != null && parkingPlaces != null) {
             parkingPlaceMarkers = createParkingPlaceMarkers(parkingPlaces.values());
@@ -948,16 +953,12 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         this.parkingPlaces = parkingPlaces;
     }
 
-    public HashMap<com.rmj.parking_place.model.Location, ParkingPlace> getParkingPlaces() {
-        return this.parkingPlaces;
-    }
-
     @Override
     public void processFinish(Response response) {
         if (response.getType() == HttpRequestAndResponseType.NAVIGATION) {
             if (response.getResult().equals("NOT_CONNECTED") || response.getResult().equals("FAIL")) {
                 Toast.makeText(getActivity(), "[response_result = " + response.getResult()
-                                + "] Problem with loading navigation path. We will try again.", Toast.LENGTH_SHORT).show();
+                        + "] Problem with loading navigation path. We will try again.", Toast.LENGTH_SHORT).show();
                 getNavigation();
             }
             NavigationResponse navigationResponse = (NavigationResponse) response;
@@ -995,7 +996,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             points.add(point);
         }
 
-       drawNavigationPathUsingPoints(points);
+        drawNavigationPathUsingPoints(points);
     }
 
     private void drawNavigationPathUsingPoints(List<LatLng> points) {
@@ -1034,5 +1035,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         }
 
         return new DTO(paidParkingPlace.getParkingPlace().getZone().getId(), paidParkingPlace.getParkingPlace().getId());
+    }
+
+    public HashMap<com.rmj.parking_place.model.Location, ParkingPlace> getParkingPlaces(){
+        return parkingPlaces;
     }
 }

@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
 import com.rmj.parking_place.dto.DTO;
@@ -60,6 +59,7 @@ import com.rmj.parking_place.utils.TokenUtils;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -227,15 +227,15 @@ public class MapActivity extends CheckWifiActivity /*AppCompatActivity*/ impleme
 
     private com.mapbox.mapboxsdk.geometry.LatLngBounds makeLatLngBoundsMapboxsdk(Location northEast, Location southWest) {
         return new com.mapbox.mapboxsdk.geometry.LatLngBounds.Builder()
-                .include(new LatLng(northEast.getLatitude(), northEast.getLongitude()))
-                .include(new LatLng(southWest.getLatitude(), southWest.getLongitude()))
+                .include(new com.mapbox.mapboxsdk.geometry.LatLng(northEast.getLatitude(), northEast.getLongitude()))
+                .include(new com.mapbox.mapboxsdk.geometry.LatLng(southWest.getLatitude(), southWest.getLongitude()))
                 .build();
     }
 
     private com.mapbox.mapboxsdk.geometry.LatLngBounds convertLatLngBoundsToLatLngBoundsMapboxsdk(LatLngBounds bounds) {
         return new com.mapbox.mapboxsdk.geometry.LatLngBounds.Builder()
-                .include(new LatLng(bounds.northeast.latitude, bounds.northeast.longitude))
-                .include(new LatLng(bounds.southwest.latitude, bounds.southwest.longitude))
+                .include(new com.mapbox.mapboxsdk.geometry.LatLng(bounds.northeast.latitude, bounds.northeast.longitude))
+                .include(new com.mapbox.mapboxsdk.geometry.LatLng(bounds.southwest.latitude, bounds.southwest.longitude))
                 .build();
     }
 
@@ -261,11 +261,11 @@ public class MapActivity extends CheckWifiActivity /*AppCompatActivity*/ impleme
 
         int color = ContextCompat.getColor(getApplicationContext(), R.color.colorDisabledButton);
 
-        Button btnReserve = (Button) findViewById(R.id.btnReserve);
+        Button btnReserve = (Button) mapFragment.getView().findViewById(R.id.btnReserve);
         btnReserve.setEnabled(false);
         btnReserve.setBackgroundColor(color);
 
-        Button btnTake = (Button) findViewById(R.id.btnTake);
+        Button btnTake = (Button) mapFragment.getView().findViewById(R.id.btnTake);
         btnTake.setEnabled(false);
         btnTake.setBackgroundColor(color);
 
@@ -798,7 +798,7 @@ public class MapActivity extends CheckWifiActivity /*AppCompatActivity*/ impleme
         timerForUpdatingParkingPlaces.purge();
     }
 
-    public void showPlaceInfoFragment(ParkingPlace selectedParkingPlace, float distance) {
+    /*public void showPlaceInfoFragment(ParkingPlace selectedParkingPlace, float distance) {
         TextView textStatus = (TextView) findViewById(R.id.status);
         textStatus.setText("Status: " + selectedParkingPlace.getStatus().toString());
 
@@ -939,7 +939,7 @@ public class MapActivity extends CheckWifiActivity /*AppCompatActivity*/ impleme
         EditText editTextDistance = (EditText) findViewById(R.id.location_distance_text_input);
         float distance = Float.parseFloat(editTextDistance.getText().toString());
 
-        HashMap<com.rmj.parking_place.model.Location, ParkingPlace> places = mapFragment.getParkingPlaces();
+        HashMap<Location, ParkingPlace> places = mapFragment.getParkingPlaces();
         ArrayList<ParkingPlace> parkingPlaces = new ArrayList<ParkingPlace>();
         zones = getZones();
         for (ParkingPlace parkingPlace: places.values()) {
@@ -964,11 +964,11 @@ public class MapActivity extends CheckWifiActivity /*AppCompatActivity*/ impleme
 
         if (!parkingPlaces.isEmpty()) {
             FragmentManager fm = getSupportFragmentManager();
-            MapFragment fragm = (MapFragment) fm.findFragmentById(R.id.mainContent);
+            MapFragment fragm = (MapFragment) fm.findFragmentById(R.id.mapContent);
             double latitude = parkingPlaces.get(0).getLocation().getLatitude();
             double longitude = parkingPlaces.get(0).getLocation().getLongitude();
             LatLng lng = new LatLng(latitude, longitude);
-            fragm.updateCameraPosition(lng);
+            fragm.updateCameraPosition(lng, true);
         }
     }
 
@@ -990,5 +990,6 @@ public class MapActivity extends CheckWifiActivity /*AppCompatActivity*/ impleme
         longitude = latLng.longitude;
         EditText editTextLocation = (EditText) findViewById(R.id.location_text_input);
         editTextLocation.setText("selected");
-    }
+    }*/
+
 }
