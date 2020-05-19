@@ -39,28 +39,28 @@ namespace ParkingPlaceServer.Services
 		}
 
 
-		public List<Zone> getZones()
+		public List<Zone> GetZones()
 		{
-			return zoneDAO.getZones();
+			return zoneDAO.GetZones();
 		}
 
-		public Zone getZone(long id)
+		public Zone GetZone(long id)
 		{
-			return zoneDAO.getZones()
+			return zoneDAO.GetZones()
 					.Where(z => z.Id == id)
 					.Single();
 		}
 
-		public List<Zone> getZones(long[] zoneIds)
+		public List<Zone> GetZones(long[] zoneIds)
 		{
-			return zoneDAO.getZones()
+			return zoneDAO.GetZones()
 					.Where(z => zoneIds.Contains(z.Id))
 					.ToList();
 		}
 
 		public ParkingPlace GetParkingPlace(long parkingPlaceId)
 		{
-			List<Zone> zones = zoneDAO.getZones();
+			List<Zone> zones = zoneDAO.GetZones();
 			foreach(Zone zone in zones)
 			{
 				foreach(ParkingPlace pp in zone.ParkingPlaces)

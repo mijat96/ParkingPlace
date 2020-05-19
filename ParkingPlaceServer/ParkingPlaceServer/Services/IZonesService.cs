@@ -9,9 +9,12 @@ namespace ParkingPlaceServer.Services
 {
 	public interface IZonesService
 	{
-		List<Zone> getZones();
-		Zone getZone(long zoneId);
-		List<Zone> getZones(long[] zoneIds);
+		List<Zone> GetZones();
+
+		Zone GetZone(long zoneId);
+		
+		List<Zone> GetZones(long[] zoneIds);
+		
 		ParkingPlace GetParkingPlace(long parkingPlaceId);
 	}
 }

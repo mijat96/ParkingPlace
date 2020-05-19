@@ -37,9 +37,9 @@ namespace ParkingPlaceServer.Services
 			reservationDAO = new ReservationDAO();
 		}
 
-		public List<Reservation> getReservations()
+		public List<Reservation> GetReservations()
 		{
-			return reservationDAO.getReservations();
+			return reservationDAO.GetReservations();
 		}
 
 		public void AddReservation(Reservation reservation)
@@ -54,7 +54,7 @@ namespace ParkingPlaceServer.Services
 				return false;
 			}
 
-			List<Reservation> reservations = reservationDAO.getReservations();
+			List<Reservation> reservations = reservationDAO.GetReservations();
 
 			lock (reservations)
 			{

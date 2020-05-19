@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import android.content.Context;
 import android.util.Patterns;
 
 import com.rmj.parking_place.R;
@@ -16,9 +17,11 @@ public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
+    private LoginActivity loginActivity;
     private LoginRepository loginRepository;
 
-    LoginViewModel(LoginRepository loginRepository) {
+    LoginViewModel(LoginActivity loginActivity, LoginRepository loginRepository) {
+        this.loginActivity = loginActivity;
         this.loginRepository = loginRepository;
     }
 
@@ -30,7 +33,7 @@ public class LoginViewModel extends ViewModel {
         return loginResult;
     }
 
-    public void login(LoginActivity loginActivity, String username, String password) {
+    public void login(String username, String password) {
         // can be launched in a separate asynchronous job
         final Result<LoggedInUser> result = loginRepository.login(username, password);
 

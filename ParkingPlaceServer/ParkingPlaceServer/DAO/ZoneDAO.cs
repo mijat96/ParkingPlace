@@ -12,18 +12,18 @@ namespace ParkingPlaceServer.DAO
 	{
         private List<Zone> zones = null;
 
-        public List<Zone> getZones()
+        public List<Zone> GetZones()
         {
             if (zones == null)
             {
-                zones = loadZones();
-                setNorthEastAndSouthWestForZones(zones);
+                zones = LoadZones();
+                SetNorthEastAndSouthWestForZones(zones);
             }
 
             return zones;
         }
 
-        private void setNorthEastAndSouthWestForZones(List<Zone> zones)
+        private void SetNorthEastAndSouthWestForZones(List<Zone> zones)
         {
             if (zones == null || (zones != null && zones.Count == 0))
             {
@@ -71,7 +71,7 @@ namespace ParkingPlaceServer.DAO
             }
         }
 
-        private List<Zone> loadZones()
+        private List<Zone> LoadZones()
         {
             string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "zones_with_parking_places.json");
             List<Zone> zones;

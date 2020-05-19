@@ -11,17 +11,14 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.rmj.parking_place.App;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
-import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.utils.TokenUtils;
 
 public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*/ {
 
     private static int SPLASH_TIME_OUT = 3000; // splash ce biti vidljiv minimum SPLASH_TIME_OUT milisekundi
-
-    private SharedPreferences sharedPreferences;
-    private TokenUtils tokenUtils;
 
 
     @Override
@@ -29,9 +26,6 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-
-        sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
-        tokenUtils = new TokenUtils(sharedPreferences);
 
         // uradi inicijalizaciju u pozadinksom threadu
         new InitTask().execute();
@@ -81,7 +75,7 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
             Context context = SplashScreenActivity.this;
 
             final EditText parkingPlaceServerUrlEditText = new EditText(context);
-            String parkingPlaceServerUrl = getParkingPlaceServerUrl();
+            String parkingPlaceServerUrl = App.getParkingPlaceServerUrl();
             parkingPlaceServerUrlEditText.setText(parkingPlaceServerUrl);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -91,7 +85,7 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
                     // .setPositiveButton()
                     .setNeutralButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            saveParkingPlaceServerUrl(parkingPlaceServerUrlEditText.getText().toString());
+                            App.saveParkingPlaceServerUrl(parkingPlaceServerUrlEditText.getText().toString());
 
                             // uloguj se
                             loginIfNotLoggedOrGoToMainActivity();
@@ -103,21 +97,6 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
             alert.setCanceledOnTouchOutside(false);
             alert.show();
         }
-    }
-
-    private void saveParkingPlaceServerUrl(String parkingPlaceServerUrl) {
-        SharedPreferences.Editor edit= sharedPreferences.edit();
-        edit.putString("parkingPlaceServerUrl", parkingPlaceServerUrl);
-        edit.commit();
-    }
-
-    private String getParkingPlaceServerUrl() {
-        String parkingPlaceServerUrl = sharedPreferences.getString("parkingPlaceServerUrl","");
-        if (parkingPlaceServerUrl.equals("")) {
-            parkingPlaceServerUrl = getString(R.string.PARKING_PLACE_SERVER_BASE_URL);
-        }
-
-        return  parkingPlaceServerUrl;
     }
 
     /**
@@ -133,7 +112,7 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
     private void startNextActivity()
     {
         Class classVar;
-        if (tokenUtils.isLogged()) {
+        if (TokenUtils.isLogged()) {
             classVar = MainActivity.class;
         }
         else {

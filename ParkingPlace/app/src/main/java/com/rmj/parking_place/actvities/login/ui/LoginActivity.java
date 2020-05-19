@@ -23,8 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rmj.parking_place.R;
-import com.rmj.parking_place.actvities.CheckWifiActivity;
 import com.rmj.parking_place.actvities.MainActivity;
+import com.rmj.parking_place.actvities.CheckWifiActivity;
 import com.rmj.parking_place.actvities.RegistrationActivity;
 import com.rmj.parking_place.utils.LoginAsyncTask;
 
@@ -109,7 +109,7 @@ public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    new LoginAsyncTask(loginViewModel, that).execute(usernameEditText.getText().toString(),
+                    new LoginAsyncTask(loginViewModel).execute(usernameEditText.getText().toString(),
                             passwordEditText.getText().toString());
                 }
                 return false;
@@ -120,7 +120,7 @@ public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                new LoginAsyncTask(loginViewModel, that).execute(usernameEditText.getText().toString(),
+                new LoginAsyncTask(loginViewModel).execute(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString());
             }
         });

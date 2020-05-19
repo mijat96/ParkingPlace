@@ -26,7 +26,7 @@ namespace ParkingPlaceServer.Controllers
 			}
 
 			// ZoneDTO se koristi samo da se sad ne bi slali ParkingPlaces iz Zone, vec se salje prazna lista
-			List<ZoneDTO> zoneDTOs = zonesService.getZones()
+			List<ZoneDTO> zoneDTOs = zonesService.GetZones()
 												.Select(zone => new ZoneDTO(zone))
 												.ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, zoneDTOs);

@@ -3,36 +3,28 @@ package com.rmj.parking_place.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.rmj.parking_place.App;
+
 
 public class TokenUtils {
 
-    private SharedPreferences sharedPreferences;
-
-    public TokenUtils(Context context) {
-        sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
-    }
-
-    public TokenUtils(SharedPreferences sharedPreferences) {
-        this.sharedPreferences = sharedPreferences;
-    }
-
-    public void saveToken(String token) {
-        SharedPreferences.Editor edit= sharedPreferences.edit();
+    public static void saveToken(String token) {
+        SharedPreferences.Editor edit = App.getSharedPreferences().edit();
         edit.putString("token", token);
         edit.commit();
     }
 
-    public String getToken() {
-        String token = sharedPreferences.getString("token","");
+    public static String getToken() {
+        String token = App.getSharedPreferences().getString("token","");
         return token;
     }
 
-    public boolean isLogged() {
+    public static boolean isLogged() {
         return getToken() != "";
     }
 
-    public void removeToken() {
-        SharedPreferences.Editor edit= sharedPreferences.edit();
+    public static void removeToken() {
+        SharedPreferences.Editor edit= App.getSharedPreferences().edit();
         edit.remove("token");
         edit.commit();
     }

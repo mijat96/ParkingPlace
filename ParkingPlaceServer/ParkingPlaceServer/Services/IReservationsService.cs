@@ -8,8 +8,10 @@ namespace ParkingPlaceServer.Services
 {
 	public interface IReservationsService
 	{
-		List<Reservation> getReservations();
+		List<Reservation> GetReservations();
+		
 		void AddReservation(Reservation reservation);
+
 		bool RemoveReservation(User loggedUser);
 	}
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mapPageFrameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
     tools:context=".fragments.MapPageFragment">
 
     <!-- The map content view -->
@@ -32,7 +32,7 @@
                 android:background="@color/colorReserve"
                 android:textColor="@android:color/white"
                 android:text="@string/btnReserveText"
-                android:layout_marginRight="3dp"/>
+                android:layout_marginRight="3dp" />
 
             <Button
                 android:id="@+id/btnTake"
@@ -63,46 +63,32 @@
             android:visibility="gone"
             android:textSize="@dimen/text_size"
             android:gravity="center"/>
+
+        <LinearLayout
+            android:id="@+id/place_info_frame"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:visibility="gone"/>
     </LinearLayout>
 
-    <!--
     <LinearLayout
-        android:id="@+id/northPanel"
-        android:orientation="horizontal"
+        android:id="@+id/find_parking_frame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorNorthPanelBackground"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
         android:visibility="gone">
-            <Button
-                android:id="@+id/btnReserve"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/colorReserve"
-                android:textColor="@android:color/white"
-                android:text="@string/btnReserveText"
-                android:enabled="false"
-                android:onClick="clickOnBtnReserve"/>
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="wrap_content"/>
-            <TextView
-                android:id="@+id/txtRemainingTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"
-                android:textSize="@dimen/text_size"/>
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="wrap_content"/>
-            <Button
-                android:id="@+id/btnTake"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/colorTake"
-                android:textColor="@android:color/white"
-                android:text="@string/btnTakeText"
-                android:enabled="false"
-                android:onClick="clickOnBtnTake"/>
     </LinearLayout>
-    -->
+
+    <ImageButton
+        android:id="@+id/findParkingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_gravity="bottom|right"
+        android:background="@android:color/transparent"
+        android:src="@drawable/search_parking_button" />
 </FrameLayout>

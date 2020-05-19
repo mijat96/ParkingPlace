@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 using System.Web.Http;
 
 namespace ParkingPlaceServer.Controllers
@@ -17,11 +18,11 @@ namespace ParkingPlaceServer.Controllers
 
 
 		[Route("api/authentication/login")]
-		public async Task<HttpResponseMessage> Post([FromBody] LoginDTO value)
+		public async Task<HttpResponseMessage> PostLogin([FromBody] LoginDTO value)
 		{
 			try
 			{
-				string token = usersService.login(value.Username, value.Password);
+				string token = usersService.Login(value.Username, value.Password);
 				return Request.CreateResponse(HttpStatusCode.OK, new TokenDTO(token));
 			}
 			catch(InvalidUsernameOrPasswordException e)
@@ -32,6 +33,20 @@ namespace ParkingPlaceServer.Controllers
 			
 		}
 
+		[Route("api/authentication/register")]
+		public async Task<HttpResponseMessage> PostRegister([FromBody] RegistrationDTO value)
+		{
+			try
+			{
+				usersService.Register(value.Username, value.Password, value.RepeatPassword, value.CarRegistrationNumber);
+				return Request.CreateResponse(HttpStatusCode.OK);
+			}
+			catch (Exception e)
+			{
+				return Request.CreateResponse(HttpStatusCode.BadRequest, e.Message);
+			}
 
+
+		}
 	}
 }

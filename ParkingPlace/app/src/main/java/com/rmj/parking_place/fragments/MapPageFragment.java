@@ -1,32 +1,38 @@
 package com.rmj.parking_place.fragments;
 
-import android.app.ActivityManager;
-import android.content.ComponentName;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.transition.Slide;
+import androidx.transition.Transition;
+import androidx.transition.TransitionManager;
 
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.rmj.parking_place.App;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.MainActivity;
-import com.rmj.parking_place.actvities.login.ui.LoginActivity;
 import com.rmj.parking_place.dto.DTO;
 import com.rmj.parking_place.dto.ParkingPlaceChangesDTO;
 import com.rmj.parking_place.dto.ParkingPlaceDTO;
@@ -43,7 +49,6 @@ import com.rmj.parking_place.model.Location;
 import com.rmj.parking_place.model.Mode;
 import com.rmj.parking_place.model.ParkingPlace;
 import com.rmj.parking_place.model.Zone;
-import com.rmj.parking_place.tools.FragmentTransition;
 import com.rmj.parking_place.utils.AsyncResponse;
 import com.rmj.parking_place.utils.GetRequestAsyncTask;
 import com.rmj.parking_place.utils.HttpRequestAndResponseType;
@@ -55,6 +60,7 @@ import com.rmj.parking_place.utils.TokenUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -64,17 +70,24 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
     private Mode currentMode;
     private Timer timerForReservationOrTakingOfParkingPlace = new Timer();
     private Timer timerForUpdatingParkingPlaces = new Timer();
+
     private MapFragment mapFragment;
+    private ParkingPlaceInfoFragment parkingPlaceInfoFragment;
+    private FindParkingFragment findParkingFragment;
 
     private List<Zone> zones = null;
     private List<Zone> zonesForUpdating = null;
 
-    private SharedPreferences sharedPreferences;
-    private TokenUtils tokenUtils;
-
     private MainActivity mainActivity;
     private View view;
 
+    private com.google.android.gms.maps.model.LatLng clickedLocation;
+    private String chosedSearchMethod;
+
+    private double latitude;
+    private  double longitude;
+
+    private boolean findParkingFragmentShowed = false;
 
     public MapPageFragment() {
         // Required empty public constructor
@@ -85,9 +98,6 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         super.onCreate(savedInstanceState);
 
         mainActivity = (MainActivity) getActivity();
-
-        sharedPreferences = mainActivity.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
-        tokenUtils = new TokenUtils(sharedPreferences);
 
         this.zonesForUpdating = new ArrayList<Zone>();
 
@@ -102,53 +112,52 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_map_page, container, false);
 
-        Button btnReserve = (Button) view.findViewById(R.id.btnReserve);
-        btnReserve.setOnClickListener(new View.OnClickListener()
-        {
+        Button reserveBtn = (Button) view.findViewById(R.id.btnReserve);
+        reserveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 clickOnBtnReserve(v);
             }
         });
 
-        Button btnTake = (Button) view.findViewById(R.id.btnTake);
-        btnTake.setOnClickListener(new View.OnClickListener()
-        {
+        Button takeBtn = (Button) view.findViewById(R.id.btnTake);
+        takeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 clickOnBtnTake(v);
             }
         });
 
-        Button btnLeaveParkingPlace = (Button) view.findViewById(R.id.btnLeaveParkingPlace);
-        btnLeaveParkingPlace.setOnClickListener(new View.OnClickListener()
-        {
+        Button leaveBtn = (Button) view.findViewById(R.id.btnLeaveParkingPlace);
+        leaveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 clickOnBtnLeaveParkingPlace(v);
             }
         });
 
+        ImageButton findBtn = (ImageButton) view.findViewById(R.id.findParkingButton);
+        findBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickOnBtnFindParkingPlace(v);
+            }
+        });
+
+        parkingPlaceInfoFragment = ParkingPlaceInfoFragment.newInstance();
         mapFragment = new MapFragment();
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.mapContent, mapFragment)
-                .commit();
+        findParkingFragment = new FindParkingFragment();
+
+        FragmentManager fm = getChildFragmentManager();
+        fm.beginTransaction()
+            .replace(R.id.place_info_frame, parkingPlaceInfoFragment, "parkingPlaceInfoFragment")
+            .replace(R.id.mapContent, mapFragment, "mapFragment")
+            .replace(R.id.find_parking_frame, findParkingFragment, "findParkinfFragment")
+            .commit();
 
         setNoneMode();
 
         return view;
-    }
-
-    private String getParkingPlaceServerUrl() {
-        String parkingPlaceServerUrl = sharedPreferences.getString("parkingPlaceServerUrl","");
-        if (parkingPlaceServerUrl.equals("")) {
-            parkingPlaceServerUrl = getString(R.string.PARKING_PLACE_SERVER_BASE_URL);
-        }
-
-        return  parkingPlaceServerUrl;
     }
 
     @Override
@@ -191,13 +200,14 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         Toast.makeText(mainActivity, "onDestroy()",Toast.LENGTH_SHORT).show();
     }
 
+
     private void downloadZones() {
         // InputStream is = getResources().openRawResource(R.raw.zones_with_parking_places);
         // List<Zone> zones = JsonLoader.getZones(is);
         //-------------------------------------------------
         // new RequestAsyncTask(this).execute("GET", "https://192.168.1.12:45455/api/zones");
-        new GetRequestAsyncTask(this).execute(getParkingPlaceServerUrl() + "/api/zones",
-                HttpRequestAndResponseType.GET_ZONES.name(), tokenUtils.getToken());
+        new GetRequestAsyncTask(this).execute(App.getParkingPlaceServerUrl() + "/api/zones",
+                HttpRequestAndResponseType.GET_ZONES.name(), TokenUtils.getToken());
     }
 
     private void updateZoneWithParkingPlaceChanges() {
@@ -213,7 +223,7 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         }
 
         new GetRequestAsyncTask(this)
-                .execute(url, HttpRequestAndResponseType.UPDATE_ZONES_WITH_PARKING_PLACES.name(), tokenUtils.getToken());
+                .execute(url, HttpRequestAndResponseType.UPDATE_ZONES_WITH_PARKING_PLACES.name(), TokenUtils.getToken());
     }
 
     public void selectZonesForUpdating(LatLngBounds currentCameraBounds) {
@@ -252,7 +262,7 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
     }
 
     private String prepareUrlForUpdatingZones(List<Zone> zones) {
-        String url = getParkingPlaceServerUrl() + "/api/parkingplaces/changes?";
+        String url = App.getParkingPlaceServerUrl() + "/api/parkingplaces/changes?";
 
         StringBuilder sbZoneIds = new StringBuilder();
         StringBuilder sbVersions = new StringBuilder();
@@ -423,13 +433,13 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
     }
 
     private void reserveParkingPlaceOnServer(DTO dto) {
-        new PostRequestAsyncTask(this, dto).execute(getParkingPlaceServerUrl() + "/api/parkingplaces/reservation",
-                HttpRequestAndResponseType.RESERVE_PARKING_PLACE.name(), tokenUtils.getToken());
+        new PostRequestAsyncTask(this, dto).execute(App.getParkingPlaceServerUrl() + "/api/parkingplaces/reservation",
+                HttpRequestAndResponseType.RESERVE_PARKING_PLACE.name(), TokenUtils.getToken());
     }
 
     private void takeParkingPlaceOnServer(TakingDTO dto) {
-        new PostRequestAsyncTask(this, dto).execute(getParkingPlaceServerUrl() + "/api/parkingplaces/taking",
-                HttpRequestAndResponseType.TAKE_PARKING_PLACE.name(), tokenUtils.getToken());
+        new PostRequestAsyncTask(this, dto).execute(App.getParkingPlaceServerUrl() + "/api/parkingplaces/taking",
+                HttpRequestAndResponseType.TAKE_PARKING_PLACE.name(), TokenUtils.getToken());
     }
 
     public void clickOnBtnTake(View view) {
@@ -633,8 +643,8 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
     }
 
     private void leaveParkingPlaceOnServer(DTO dto) {
-        new PutRequestAsyncTask(this, dto).execute(getParkingPlaceServerUrl() + "/api/parkingplaces/leave",
-                HttpRequestAndResponseType.LEAVE_PARKING_PLACE.name(), tokenUtils.getToken());
+        new PutRequestAsyncTask(this, dto).execute(App.getParkingPlaceServerUrl() + "/api/parkingplaces/leave",
+                HttpRequestAndResponseType.LEAVE_PARKING_PLACE.name(), TokenUtils.getToken());
     }
 
     private void showDialogWithSingleButton(String messageParam, String buttonTextParam) {
@@ -661,8 +671,8 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
             if (response.getResult().equals("NOT_CONNECTED") || response.getResult().equals("FAIL")) {
                 Toast.makeText(mainActivity, "[response_result = " + response.getResult() + "] Problem with loading zones. We will try again.",
                         Toast.LENGTH_SHORT).show();
-                new GetRequestAsyncTask(this).execute(getParkingPlaceServerUrl() + "/api/zones",
-                        HttpRequestAndResponseType.GET_ZONES.name(), tokenUtils.getToken());
+                new GetRequestAsyncTask(this).execute(App.getParkingPlaceServerUrl() + "/api/zones",
+                        HttpRequestAndResponseType.GET_ZONES.name(), TokenUtils.getToken());
             }
             else {
                 this.zones = JsonLoader.convertJsonToZones(response.getResult());
@@ -789,7 +799,7 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         timerForUpdatingParkingPlaces.purge();
     }
 
-    public void showPlaceInfoFragment(ParkingPlace selectedParkingPlace, float distance) {
+    /*public void showPlaceInfoFragment(ParkingPlace selectedParkingPlace, float distance) {
         TextView textStatus = (TextView) view.findViewById(R.id.status);
         textStatus.setText("Status: " + selectedParkingPlace.getStatus().toString());
 
@@ -806,19 +816,215 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         //((LinearLayout) findViewById(R.id.place_info_linear_layout)).setVisibility(View.VISIBLE);
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.place_info_frame);
         linearLayout.setVisibility(View.VISIBLE);
-    }
+    }*/
 
     public void hidePlaceIndoFragmet() {
-        ((LinearLayout) view.findViewById(R.id.place_info_frame)).setVisibility(View.GONE);
-        //((LinearLayout) findViewById(R.id.find_parking)).setVisibility(View.GONE);
+        // view.findViewById(R.id.place_info_frame).setVisibility(View.GONE);
+        showOrHideParkingPlaceInfoFragmentWithTransition(false);
+        clickedLocation = null;
+    }
 
+    public void showPlaceInfoFragment(ParkingPlace selectedParkingPlace, float distance) {
+        TextView textStatus = (TextView) view.findViewById(R.id.status);
+        textStatus.setText("Status: " + selectedParkingPlace.getStatus().toString());
+
+        TextView textAddress = (TextView) view.findViewById(R.id.address);
+        textAddress.setText("Address: " + selectedParkingPlace.getLocation().getAddress());
+
+        TextView textZone = (TextView) view.findViewById(R.id.zone);
+        textZone.setText("Zone: " + selectedParkingPlace.getZone().getName());
+
+        float distanceKm = distance / 1000;
+        TextView textDistance = (TextView) view.findViewById(R.id.distance);
+        textDistance.setText("Distance: " + distanceKm + "km");
+
+        //((LinearLayout) findViewById(R.id.place_info_linear_layout)).setVisibility(View.VISIBLE);
+        //LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.place_info_frame);
+        // linearLayout.setVisibility(View.VISIBLE);
+        showOrHideParkingPlaceInfoFragmentWithTransition(true);
+    }
+
+    /*public void hidePlaceInfoFragmet() {
+        ((LinearLayout) view.findViewById(R.id.place_info_frame)).setVisibility(View.GONE);
+        clickedLocation = null;
+    }*/
+
+    public void clickOnBtnFindParkingPlace(View v) {
         /*DisplayMetrics displaymetrics = new DisplayMetrics();
-        this.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        mainActivity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int height = displaymetrics.heightPixels;
+
+        ViewGroup.LayoutParams paramsMap = mapFragment.getView().getLayoutParams();
+        paramsMap.height = height/2;
+        mapFragment.getView().setLayoutParams(paramsMap);*/
+
+        findParkingFragmentShowed = true;
+
+        findParkingFragment.setTextToSelected(clickedLocation == null);
+
+        //LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        //layoutParams.setMargins(0, height/2, 0, 0);
+        //linearLayout.setLayoutParams(layoutParams);
+
+        view.findViewById(R.id.findParkingButton).setVisibility(View.GONE);
+
+        //view.findViewById(R.id.find_parking_frame).setVisibility(View.VISIBLE);
+        /*View findParkingFrame = view.findViewById(R.id.find_parking_frame);
+        findParkingFrame.animate()
+                .translationY(findParkingFrame.getHeight())
+                .alpha(1.0f)
+                .setDuration(500)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        findParkingFrame.setVisibility(View.VISIBLE);
+                    }
+                })
+                .start();*/
+        showOrHideFindParkingFragmentWithTransition(true);
+
+        mapFragment.changePositionOfGoogleLogo(false);
+        mapFragment.changePositionOfMyLocationButton(false);
+    }
+
+    private void showOrHideFindParkingFragmentWithTransition(boolean show) {
+        Transition transition = new Slide(Gravity.BOTTOM);
+        transition.setDuration(800);
+        transition.addTarget(R.id.find_parking_frame);
+
+        ViewGroup parent = view.findViewById(R.id.mapPageFrameLayout);
+        TransitionManager.beginDelayedTransition(parent, transition);
+        view.findViewById(R.id.find_parking_frame).setVisibility(show ? View.VISIBLE : View.GONE );
+    }
+
+    private void showOrHideParkingPlaceInfoFragmentWithTransition(boolean show) {
+        Transition transition = new Slide(Gravity.BOTTOM);
+        transition.setDuration(800);
+        transition.addTarget(R.id.place_info_frame);
+
+        ViewGroup parent = view.findViewById(R.id.northPanel);
+        TransitionManager.beginDelayedTransition(parent, transition);
+        view.findViewById(R.id.place_info_frame).setVisibility(show ? View.VISIBLE : View.GONE );
+    }
+
+    public void returnGoogleLogoOnStartPosition() {
+        mapFragment.changePositionOfGoogleLogo(true);
+    }
+
+
+    /*public void onClickHideFindFragmentButton(View view){
+        ((LinearLayout) view.findViewById(R.id.find_parking_frame)).setVisibility(View.GONE);
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        mainActivity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int height = displaymetrics.heightPixels;
 
         ViewGroup.LayoutParams paramsMap = mapFragment.getView().getLayoutParams();
         paramsMap.height = height;
-        mapFragment.getView().setLayoutParams(paramsMap);*/
+        mapFragment.getView().setLayoutParams(paramsMap);
+
+        ImageButton findParkingButton = (ImageButton) view.findViewById(R.id.findParkingButton);
+        findParkingButton.setVisibility(View.VISIBLE);
+    }*/
+
+    /*public void clickOnBtnSearchParkingPlace(View view){
+        EditText editTextAddress = (EditText) view.findViewById(R.id.address_text_input);
+        String addressTextInput = editTextAddress.getText().toString();
+        EditText editTextZone = (EditText) view.findViewById(R.id.zone_text_input);
+        String zoneTextInput = editTextZone.getText().toString();
+        EditText editTextLocation = (EditText) view.findViewById(R.id.location_text_input);
+        EditText editTextDistance = (EditText) view.findViewById(R.id.location_distance_text_input);
+        float distance = Float.parseFloat(editTextDistance.getText().toString());
+
+        HashMap<Location, ParkingPlace> places = mapFragment.getParkingPlaces();
+        ArrayList<ParkingPlace> parkingPlaces = new ArrayList<ParkingPlace>();
+        zones = getZones();
+        for (ParkingPlace parkingPlace: places.values()) {
+            if(!addressTextInput.matches("") && addressTextInput.equals(parkingPlace.getLocation().getAddress()) && chosedSearchMethod.matches("address")){
+                Toast.makeText(mainActivity, "search address",Toast.LENGTH_SHORT).show();
+                parkingPlaces.add(parkingPlace);
+            } else if(!zoneTextInput.matches("") && zoneTextInput.equals(parkingPlace.getZone().getName()) && chosedSearchMethod.matches("zone")){
+                Toast.makeText(mainActivity, "search address",Toast.LENGTH_SHORT).show();
+                parkingPlaces.add(parkingPlace);
+            } else if(!editTextLocation.getText().toString().matches("") && editTextLocation.getText().toString().matches("selected")
+                    && chosedSearchMethod.matches("marker")){
+                float distanceMarkerCurrentLocation = computeDistanceBetweenTwoPoints(latitude, longitude,
+                        parkingPlace.getLocation().getLatitude(), parkingPlace.getLocation().getLongitude());
+                if(distanceMarkerCurrentLocation <= distance*1000){
+                    parkingPlaces.add(parkingPlace);
+                }
+                //Toast.makeText(this, "search location",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(mainActivity, "select search method and fill in the field",Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if (!parkingPlaces.isEmpty()) {
+            FragmentManager fm = getFragmentManager();
+            MapFragment fragm = (MapFragment) fm.findFragmentById(R.id.mapContent);
+            double latitude = parkingPlaces.get(0).getLocation().getLatitude();
+            double longitude = parkingPlaces.get(0).getLocation().getLongitude();
+            com.google.android.gms.maps.model.LatLng lng = new com.google.android.gms.maps.model.LatLng(latitude, longitude);
+            fragm.updateCameraPosition(lng, true);
+        }
+    }*/
+
+    public List<Zone> getZones() {
+        /*InputStream is = getResources().openRawResource(R.raw.zones_with_parking_places);
+        List<Zone> zones = JsonLoader.getZones(is);*/
+        return zones;
+    }
+
+
+
+
+    public void setInvisibilityOfMapPageFragmenView() {
+        ((LinearLayout) view.findViewById(R.id.find_parking_frame)).setVisibility(View.GONE);
+    }
+
+
+    public void setVisibilityOfFindParkingButton() {
+        ImageButton findParkingButton = (ImageButton) view.findViewById(R.id.findParkingButton);
+        findParkingButton.setVisibility(View.VISIBLE);
+    }
+
+    public int getFindParkingFragmentHeight() {
+        return findParkingFragment.getHeight();
+    }
+
+    public void setClickedLocation(com.google.android.gms.maps.model.LatLng latLng) {
+        findParkingFragment.setClickedLocation(latLng);
+    }
+
+    public HashMap<Location, ParkingPlace> getParkingPlaces() {
+        return mapFragment.getParkingPlaces();
+    }
+
+    public void setInvisibilityOfFindParkingFragment() {
+        /*View findParkingFrame = view.findViewById(R.id.find_parking_frame);
+        findParkingFrame.animate()
+                .translationY(findParkingFrame.getHeight())
+                .alpha(0.0f)
+                .setDuration(500)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        findParkingFrame.setVisibility(View.GONE);
+                    }
+                })
+                .start();
+         */
+        showOrHideFindParkingFragmentWithTransition(false);
+        findParkingFragmentShowed = false;
+    }
+
+    public boolean isFindParkingFragmentShowed() {
+        return findParkingFragmentShowed;
+    }
+
+    public int getFindParkingButtonHeight() {
+        return view.findViewById(R.id.findParkingButton).getHeight();
     }
 
 }

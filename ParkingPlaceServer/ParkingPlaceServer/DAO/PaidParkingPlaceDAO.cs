@@ -10,7 +10,7 @@ namespace ParkingPlaceServer.Services
 	{
         private List<PaidParkingPlace> paidParkingPlaces = null;
 
-        public List<PaidParkingPlace> getPaidParkingPlaces()
+        public List<PaidParkingPlace> GetPaidParkingPlaces()
         {
             if (paidParkingPlaces == null)
             {

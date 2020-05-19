@@ -10,17 +10,20 @@ namespace ParkingPlaceServer.Services
 	{
         private List<User> users = null;
 
-        public List<User> getUsers()
-        {
-            if (users == null)
+        public List<User> Users
+        { 
+            get
             {
-                users = loadUsers();
-            }
+                if (users == null)
+                {
+                    users = LoadUsers();
+                }
 
-            return users;
+                return users;
+            }
         }
 
-        private List<User> loadUsers()
+        private List<User> LoadUsers()
         {
             string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "users.json");
             List<User> users;
@@ -32,5 +35,11 @@ namespace ParkingPlaceServer.Services
 
             return users;
         }
-    }
+
+		public void AddUser(string username, string password, string carRegistrationNumber)
+		{
+            User user = new User(username, password, carRegistrationNumber);
+            users.Add(user);
+		}
+	}
 }

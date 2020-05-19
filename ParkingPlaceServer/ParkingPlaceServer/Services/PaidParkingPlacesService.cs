@@ -37,9 +37,9 @@ namespace ParkingPlaceServer.Services
 			paidParkingPlaceDAO = new PaidParkingPlaceDAO();
 		}
 
-		public List<PaidParkingPlace> getPaidParkingPlaces()
+		public List<PaidParkingPlace> GetPaidParkingPlaces()
 		{
-			return paidParkingPlaceDAO.getPaidParkingPlaces();
+			return paidParkingPlaceDAO.GetPaidParkingPlaces();
 		}
 
 		public void AddPaidParkingPlace(PaidParkingPlace paidParkingPlace)
@@ -59,7 +59,7 @@ namespace ParkingPlaceServer.Services
 				return false;
 			}
 
-			List<PaidParkingPlace> paidParkingPlaces = paidParkingPlaceDAO.getPaidParkingPlaces();
+			List<PaidParkingPlace> paidParkingPlaces = paidParkingPlaceDAO.GetPaidParkingPlaces();
 			lock(paidParkingPlaces)
 			{
 				if (paidParkingPlaces.Count == 0)

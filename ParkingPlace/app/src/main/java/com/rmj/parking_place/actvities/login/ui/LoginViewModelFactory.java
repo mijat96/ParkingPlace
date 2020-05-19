@@ -15,10 +15,10 @@ import com.rmj.parking_place.actvities.login.data.LoginRepository;
  */
 public class LoginViewModelFactory implements ViewModelProvider.Factory {
 
-    private Context context;
+    private LoginActivity loginActivity;
 
-    public LoginViewModelFactory(Context context) {
-        this.context = context;
+    public LoginViewModelFactory(LoginActivity loginActivity) {
+        this.loginActivity = loginActivity;
     }
 
     @NonNull
@@ -26,7 +26,7 @@ public class LoginViewModelFactory implements ViewModelProvider.Factory {
     @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(LoginViewModel.class)) {
-            return (T) new LoginViewModel(LoginRepository.getInstance(new LoginDataSource(context)));
+            return (T) new LoginViewModel(loginActivity, LoginRepository.getInstance(new LoginDataSource()));
         } else {
             throw new IllegalArgumentException("Unknown ViewModel class");
         }

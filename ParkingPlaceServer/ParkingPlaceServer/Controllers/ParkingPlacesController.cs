@@ -33,7 +33,7 @@ namespace ParkingPlaceServer.Controllers
 			Zone zone = null;
 			try
 			{
-				zone = zonesService.getZone(value.ZoneId);
+				zone = zonesService.GetZone(value.ZoneId);
 			}
 			catch (Exception e)
 			{
@@ -60,7 +60,7 @@ namespace ParkingPlaceServer.Controllers
 				}
 
 				parkingPlace.Status = ParkingPlaceStatus.RESERVED;
-				reservationsService.AddReservation(new Reservation(parkingPlace, usersService.getLoggedUser(token)));
+				reservationsService.AddReservation(new Reservation(parkingPlace, usersService.GetLoggedUser(token)));
 
 				lock (parkingPlace.Zone)
 				{
@@ -81,14 +81,14 @@ namespace ParkingPlaceServer.Controllers
 				return Request.CreateResponse(HttpStatusCode.Unauthorized);
 			}
 
-			User loggedUser = usersService.getLoggedUser(token);
+			User loggedUser = usersService.GetLoggedUser(token);
 
 			bool reservationFoundedAndRemoved = reservationsService.RemoveReservation(loggedUser);
 
 			Zone zone = null;
 			try
 			{
-				zone = zonesService.getZone(value.ZoneId);
+				zone = zonesService.GetZone(value.ZoneId);
 			}
 			catch (Exception e)
 			{
@@ -141,7 +141,7 @@ namespace ParkingPlaceServer.Controllers
 				return Request.CreateResponse(HttpStatusCode.Unauthorized);
 			}
 
-			User loggedUser = usersService.getLoggedUser(token);
+			User loggedUser = usersService.GetLoggedUser(token);
 
 			bool paidParkingPlaceFoundedAndRemoved = paidParkingPlacesService.RemovePaidParkingPlace(loggedUser, value.ParkingPlaceId);
 
@@ -150,7 +150,7 @@ namespace ParkingPlaceServer.Controllers
 				Zone zone = null;
 				try
 				{
-					zone = zonesService.getZone(value.ZoneId);
+					zone = zonesService.GetZone(value.ZoneId);
 				}
 				catch (Exception e)
 				{
@@ -209,7 +209,7 @@ namespace ParkingPlaceServer.Controllers
 				return Request.CreateResponse(HttpStatusCode.Unauthorized);
 			}
 
-			List<Zone> zones = zonesService.getZones(zoneIds);
+			List<Zone> zones = zonesService.GetZones(zoneIds);
 
 			List<ParkingPlaceChangesDTO> changes = new List<ParkingPlaceChangesDTO>();
 			List<ParkingPlacesInitialDTO> initials = new List<ParkingPlacesInitialDTO>();

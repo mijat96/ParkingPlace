@@ -22,6 +22,7 @@
             android:title="@string/menu_map_page" />
         <item
             android:id="@+id/nav_logout"
-            android:title="@string/menu_logout" />
+            android:title="@string/menu_logout"
+            android:onClick="clickOnItemLogout"/>
     </group>
 </menu>

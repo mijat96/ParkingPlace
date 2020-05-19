@@ -8,11 +8,14 @@ namespace ParkingPlaceServer.Services
 {
 	public interface IUsersService
 	{
-		List<User> getUsers();
+		List<User> GetUsers();
 		
-		User getUser(string username);
+		User GetUser(string username);
 
-		User getLoggedUser(string token);
-		string login(string username, string password);
+		User GetLoggedUser(string token);
+
+		string Login(string username, string password);
+		
+		void Register(string username, string password, string repeatPassword, string carRegistrationNumber);
 	}
 }

@@ -6,15 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Menu;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 import com.rmj.parking_place.R;
-import com.rmj.parking_place.actvities.CheckWifiActivity;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
 import com.rmj.parking_place.utils.TokenUtils;
 
@@ -23,14 +19,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
-    private TokenUtils tokenUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,39 +32,26 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
+        /*FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        /*
-        drawer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MenuItem menuItem = (MenuItem) v;
-                if (menuItem.getItemId() == R.id.nav_logout) {
-                    tokenUtils.removeToken();
-                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                }
-            }
         });*/
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_map_page, R.id.nav_logout)
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_map_page)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
-        tokenUtils = new TokenUtils(this);
     }
 
     @Override
@@ -93,7 +74,7 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity {
             return;
         }
 
-        tokenUtils.removeToken();
+        TokenUtils.removeToken();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
         Toast.makeText(this, "Please login again.", Toast.LENGTH_SHORT).show();
     }
@@ -109,5 +90,10 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity {
         }
 
         return cn.getClassName();
+    }
+
+    public void clickOnItemLogout(MenuItem item) {
+        TokenUtils.removeToken();
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
     }
 }

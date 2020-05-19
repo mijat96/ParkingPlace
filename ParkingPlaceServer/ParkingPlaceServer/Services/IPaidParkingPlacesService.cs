@@ -8,8 +8,10 @@ namespace ParkingPlaceServer.Services
 {
 	public interface IPaidParkingPlacesService
 	{
-		List<PaidParkingPlace> getPaidParkingPlaces();
+		List<PaidParkingPlace> GetPaidParkingPlaces();
+
 		void AddPaidParkingPlace(PaidParkingPlace paidParkingPlace);
+		
 		bool RemovePaidParkingPlace(User loggedUser, long parkingPlaceId);
 	}
 }

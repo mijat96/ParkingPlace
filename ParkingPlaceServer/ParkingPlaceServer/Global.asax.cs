@@ -43,7 +43,7 @@ namespace ParkingPlaceServer
 
 		private static void CheckAndHandleReservations()
 		{
-			List<Reservation> reservations = reservationsService.getReservations();
+			List<Reservation> reservations = reservationsService.GetReservations();
 			if (reservations.Count == 0)
 			{
 				return;
@@ -60,10 +60,10 @@ namespace ParkingPlaceServer
 				{
 					if (reservation.EndDateTime < DateTime.Now)
 					{
-						zone = zonesService.getZone(reservation.ParkingPlace.Zone.Id);
+						zone = zonesService.GetZone(reservation.ParkingPlace.Zone.Id);
 						lock (zone)
 						{
-							parkingPlace = zone.getParkingPlace(reservation.ParkingPlace.Id);
+							parkingPlace = zone.GetParkingPlace(reservation.ParkingPlace.Id);
 							lock (parkingPlace)
 							{
 								parkingPlace.Status = ParkingPlaceStatus.EMPTY;
@@ -88,7 +88,7 @@ namespace ParkingPlaceServer
 
 		private static void CheckAndHandlePaidParkingPlaces()
 		{
-			List<PaidParkingPlace> paidParkingPlaces = paidParkingPlacesService.getPaidParkingPlaces();
+			List<PaidParkingPlace> paidParkingPlaces = paidParkingPlacesService.GetPaidParkingPlaces();
 			if (paidParkingPlaces.Count == 0)
 			{
 				return;
@@ -105,10 +105,10 @@ namespace ParkingPlaceServer
 				{
 					if (paidParkingPlace.GetEndDateTime() < DateTime.Now)
 					{
-						zone = zonesService.getZone(paidParkingPlace.ParkingPlace.Zone.Id);
+						zone = zonesService.GetZone(paidParkingPlace.ParkingPlace.Zone.Id);
 						lock (zone)
 						{
-							parkingPlace = zone.getParkingPlace(paidParkingPlace.ParkingPlace.Id);
+							parkingPlace = zone.GetParkingPlace(paidParkingPlace.ParkingPlace.Id);
 							lock (parkingPlace)
 							{
 								parkingPlace.Status = ParkingPlaceStatus.EMPTY;

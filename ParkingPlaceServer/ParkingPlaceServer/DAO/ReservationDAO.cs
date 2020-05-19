@@ -12,7 +12,7 @@ namespace ParkingPlaceServer.Services
 
         private List<Reservation> reservations = null;
 
-        public List<Reservation> getReservations()
+        public List<Reservation> GetReservations()
         {
             if (reservations == null)
             {

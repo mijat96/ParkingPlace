@@ -2,7 +2,6 @@ package com.rmj.parking_place.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.rmj.parking_place.dto.ParkingPlaceChangesDTO;
 import com.rmj.parking_place.dto.ParkingPlacesInitialDTO;
 import com.rmj.parking_place.dto.ParkingPlacesUpdatingDTO;
 import com.rmj.parking_place.dto.TokenDTO;

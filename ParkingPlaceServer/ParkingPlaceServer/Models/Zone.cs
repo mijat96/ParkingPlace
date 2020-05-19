@@ -59,7 +59,7 @@ namespace ParkingPlaceServer.Models
 			}
 		}
 
-		public ParkingPlace getParkingPlace(long parkingPlaceId)
+		public ParkingPlace GetParkingPlace(long parkingPlaceId)
 		{
 			if (ParkingPlaces == null)
 			{
