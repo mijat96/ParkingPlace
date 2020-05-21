@@ -15,21 +15,24 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
-        android:name="com.rmj.parking_place.App"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".actvities.AddOrEditFavoritePlaceActivity"></activity>
+        <activity
+            android:name=".actvities.SelectLocationActivity"
+            android:label="@string/select_location_title" />
         <activity
             android:name=".actvities.MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
-        <activity android:name=".actvities.RegistrationActivity"
-            android:label="@string/title_activity_registration"/>
-
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".actvities.RegistrationActivity"
+            android:label="@string/title_activity_registration" />
         <activity android:name=".actvities.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

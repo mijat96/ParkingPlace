@@ -1,5 +1,6 @@
 package com.rmj.parking_place.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,17 +19,24 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.MainActivity;
+import com.rmj.parking_place.actvities.SelectLocationActivity;
 import com.rmj.parking_place.model.Location;
 import com.rmj.parking_place.model.ParkingPlace;
 import com.rmj.parking_place.model.Zone;
+import com.rmj.parking_place.utils.GeocoderUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+
 public class FindParkingFragment extends Fragment {
+
+    private static final int PICK_MAP_POINT_REQUEST = 999;  // The request code
 
     private View view;
     private String chosedSearchMethod;
@@ -90,6 +99,14 @@ public class FindParkingFragment extends Fragment {
             }
         });
 
+        Button selectLocationBtn = (Button) view.findViewById(R.id.selectLocationBtn);
+        selectLocationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               pickPointOnMap();
+            }
+        });
+
         Button search_parking_button = (Button) view.findViewById(R.id.search_parking_button);
         search_parking_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,13 +118,33 @@ public class FindParkingFragment extends Fragment {
         return view;
     }
 
+
+    private void pickPointOnMap() {
+        Intent pickPointIntent = new Intent(mainActivity, SelectLocationActivity.class);
+        startActivityForResult(pickPointIntent, PICK_MAP_POINT_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_MAP_POINT_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                LatLng latLng = (LatLng) data.getParcelableExtra("picked_point");
+                setClickedLocation(latLng);
+                Toast.makeText(mainActivity, "Point Chosen: (" + latLng.latitude + ", "
+                        + latLng.longitude + ")", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     public void setTextToSelected(boolean selectedLocation){
-        EditText editTextLocation = (EditText) view.findViewById(R.id.location_text_input);
+        TextView textLocation = (TextView) view.findViewById(R.id.location_text);
 
         if(selectedLocation){
-            editTextLocation.setText("not selected");
+            textLocation.setText("not selected");
         }else{
-            editTextLocation.setText("selected");
+            textLocation.setText("selected");
         }
     }
 
@@ -131,7 +168,7 @@ public class FindParkingFragment extends Fragment {
         String addressTextInput = editTextAddress.getText().toString();
         EditText editTextZone = (EditText) view.findViewById(R.id.zone_text_input);
         String zoneTextInput = editTextZone.getText().toString();
-        EditText editTextLocation = (EditText) view.findViewById(R.id.location_text_input);
+        TextView textLocation = (TextView) view.findViewById(R.id.location_text);
         EditText editTextDistance = (EditText) view.findViewById(R.id.location_distance_text_input);
         float distance = 0;
         if(!editTextDistance.getText().toString().matches("")){
@@ -146,18 +183,22 @@ public class FindParkingFragment extends Fragment {
             if(!addressTextInput.matches("") && addressTextInput.equals(parkingPlace.getLocation().getAddress()) && chosedSearchMethod.matches("address")){
                 Toast.makeText(mainActivity, "search address",Toast.LENGTH_SHORT).show();
                 parkingPlaces.add(parkingPlace);
-            } else if(!zoneTextInput.matches("") && zoneTextInput.equals(parkingPlace.getZone().getName()) && chosedSearchMethod.matches("zone")){
+            }
+            else if(!zoneTextInput.matches("") && zoneTextInput.equals(parkingPlace.getZone().getName()) && chosedSearchMethod.matches("zone")){
                 Toast.makeText(mainActivity, "search address",Toast.LENGTH_SHORT).show();
                 parkingPlaces.add(parkingPlace);
-            } else if(!editTextLocation.getText().toString().matches("") && editTextLocation.getText().toString().matches("selected")
-                    && chosedSearchMethod.matches("marker")){
+            }
+            /*else if(!textLocation.getText().toString().matches("") && textLocation.getText().toString().matches("selected")
+                    && chosedSearchMethod.matches("marker")) {*/
+            else if(clickedLocation != null && chosedSearchMethod.matches("marker")) {
                 float distanceMarkerCurrentLocation = computeDistanceBetweenTwoPoints(latitude, longitude,
                         parkingPlace.getLocation().getLatitude(), parkingPlace.getLocation().getLongitude());
                 if(distanceMarkerCurrentLocation <= distance*1000){
                     parkingPlaces.add(parkingPlace);
                 }
                 //Toast.makeText(this, "search location",Toast.LENGTH_SHORT).show();
-            } else {
+            }
+            else {
                 Toast.makeText(mainActivity, "select search method and fill in the field",Toast.LENGTH_SHORT).show();
             }
         }
@@ -185,7 +226,8 @@ public class FindParkingFragment extends Fragment {
         CheckBox addressCheckBox =(CheckBox) view.findViewById(R.id.addressCheckBox);
         EditText editTextAddress = (EditText) view.findViewById(R.id.address_text_input);
         EditText editTextZone = (EditText) view.findViewById(R.id.zone_text_input);
-        EditText editTextMarker = (EditText) view.findViewById(R.id.location_text_input);
+        TextView textMarker = (TextView) view.findViewById(R.id.location_text);
+        Button selectLocationBtn = (Button) view.findViewById(R.id.selectLocationBtn);
         EditText editTextlocationDistance = (EditText) view.findViewById(R.id.location_distance_text_input);
 
         switch(v.getId()) {
@@ -195,7 +237,8 @@ public class FindParkingFragment extends Fragment {
                     markerCheckBox.setChecked(false);
                     zoneCheckBox.setChecked(false);
                     editTextZone.setFocusable(false);
-                    editTextMarker.setFocusable(false);
+                    textMarker.setFocusable(false);
+                    selectLocationBtn.setEnabled(false);
                     editTextlocationDistance.setFocusable(false);
                     editTextAddress.setFocusable(true);
                     editTextAddress.setFocusableInTouchMode(true);
@@ -212,7 +255,8 @@ public class FindParkingFragment extends Fragment {
                     markerCheckBox.setChecked(false);
                     addressCheckBox.setChecked(false);
                     editTextAddress.setFocusable(false);
-                    editTextMarker.setFocusable(false);
+                    textMarker.setFocusable(false);
+                    selectLocationBtn.setEnabled(false);
                     editTextlocationDistance.setFocusable(false);
                     editTextZone.setFocusable(true);
                     editTextZone.setFocusableInTouchMode(true);
@@ -230,25 +274,29 @@ public class FindParkingFragment extends Fragment {
                     zoneCheckBox.setChecked(false);
                     editTextZone.setFocusable(false);
                     editTextAddress.setFocusable(false);
+                    selectLocationBtn.setEnabled(true);
                     editTextlocationDistance.setFocusable(true);
                     editTextlocationDistance.setFocusableInTouchMode(true);
                     editTextlocationDistance.requestFocus();
                 }
                 else{
                     chosedSearchMethod = "";
-                    editTextMarker.setFocusable(false);
+                    textMarker.setFocusable(false);
                     editTextlocationDistance.setFocusable(false);
                 }
                 break;
         }
     }
 
-    public void setClickedLocation(com.google.android.gms.maps.model.LatLng latLng){
+    public void setClickedLocation(LatLng latLng){
         clickedLocation = latLng;
         latitude = latLng.latitude;
         longitude = latLng.longitude;
-        EditText editTextLocation = (EditText) view.findViewById(R.id.location_text_input);
-        editTextLocation.setText("selected");
+        TextView locationText = view.findViewById(R.id.location_text);
+        String fullAddress = GeocoderUtils.getAddressFromLatLng(latLng);
+        String address = fullAddress.split(",")[0];
+        locationText.setText(address);
+        // locationText.setTooltipText(fullAddress);
     }
 
 

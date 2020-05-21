@@ -75,5 +75,52 @@
         "price": 100.0
       }
     ]
+  },
+  {
+    "id": 2,
+    "name": "blue_zone",
+    "version": 0,
+    "northEast": null,
+    "southWest": null,
+    "parkingPlaces": [
+      {
+        "id": 7,
+        "location": {
+          "latitude": 45.260536,
+          "longitude": 19.809327,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 8,
+        "location": {
+          "latitude": 45.260590,
+          "longitude": 19.809297,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 9,
+        "location": {
+          "latitude": 45.260640,
+          "longitude": 19.809256,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      }
+    ],
+    "parkingPlaceChanges": {},
+    "ticketPrices": [
+      {
+        "duration": 2,
+        "ticketType": "REGULAR",
+        "price": 100.0
+      }
+    ]
   }
 ]

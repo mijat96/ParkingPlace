@@ -72,13 +72,32 @@
             android:textSize="16sp"
             android:textStyle="bold"/>
 
-        <EditText
-            android:id="@+id/location_text_input"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="false"
-            android:inputType="text"
-            android:hint="Choose ocation"/>
+            android:orientation="horizontal"
+            android:layout_marginLeft="3dp">
+            <TextView
+                android:id="@+id/location_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:layout_marginRight="10dp"
+                android:textAlignment="center"
+                android:textSize="@dimen/text_size_for_selected_location"
+                android:textColor="@color/colorBorder"
+                android:background="@drawable/background_with_border"
+                android:hint="Choose location"/>
+
+            <Button
+                android:id="@+id/selectLocationBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:enabled="false"
+                android:text="Select location..."/>
+
+        </LinearLayout>
 
         <EditText
             android:id="@+id/location_distance_text_input"

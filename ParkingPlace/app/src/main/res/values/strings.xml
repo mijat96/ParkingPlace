@@ -49,4 +49,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_registration">Sign up</string>
+    <string name="select_location_title">Select location</string>
+    <string name="confirm_btn_text">Confirm</string>
+    <string name="menu_favorite_places">FavoritePlaces</string>
 </resources>

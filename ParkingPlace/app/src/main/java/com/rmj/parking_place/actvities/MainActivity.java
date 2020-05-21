@@ -12,8 +12,13 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
+import com.rmj.parking_place.fragments.FindParkingFragment;
+import com.rmj.parking_place.fragments.MapPageFragment;
+import com.rmj.parking_place.fragments.favorite_places.FavoritePlacesFragment;
+import com.rmj.parking_place.model.FavoritePlace;
 import com.rmj.parking_place.utils.TokenUtils;
 
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -21,7 +26,8 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
 
-public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity {
+public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
+                            implements FavoritePlacesFragment.OnListFragmentInteractionListener {
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -46,7 +52,7 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_map_page)
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_map_page, R.id.nav_favorite_places)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -96,4 +102,10 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity {
         TokenUtils.removeToken();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
     }
+
+    @Override
+    public void onListFragmentInteraction(FavoritePlace item) {
+        Toast.makeText(this, item.getName(), Toast.LENGTH_SHORT).show();
+    }
+
 }

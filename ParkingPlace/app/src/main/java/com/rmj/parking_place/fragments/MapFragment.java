@@ -520,7 +520,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                     mapPageFragment.hidePlaceIndoFragmet();
                 }
 
-                mapPageFragment.setClickedLocation(latLng);
+                // mapPageFragment.setClickedLocation(latLng);
 
                 if (mapPageFragment.isFindParkingFragmentShowed()) {
                     mapPageFragment.returnGoogleLogoOnStartPosition();
@@ -602,6 +602,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     }
 
     public void changePositionOfMyLocationButton(boolean showOnStartPosition) {
+        
         View mapView = mMapFragment.getView();
         if (mapView != null &&
                 mapView.findViewById(Integer.parseInt("1")) != null) {

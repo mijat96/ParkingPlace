@@ -8,4 +8,12 @@
     <color name="colorTake">#F44336</color>
     <color name="colorDisabledButton">#8A8686</color>
     <color name="colorLeaveParkingPlace">#4CAF50</color>
+
+    <color name="colorBorder">#FF9800</color>
+
+    <color name="colorLocationPinUp">#ED1515</color>
+    <color name="colorAddBtn">#4CAF50</color>
+    <color name="colorEditBtn">#2196F3</color>
+    <color name="colorRemoveBtn">#F44336</color>
+    <color name="color_stroke">#FFC107</color>
 </resources>

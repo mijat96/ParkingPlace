@@ -21,6 +21,13 @@
             android:icon="@drawable/baseline_map_24"
             android:title="@string/menu_map_page" />
         <item
+            android:id="@+id/nav_favorite_places"
+            android:icon="@drawable/baseline_favorite_24"
+            android:title="@string/menu_favorite_places" />
+    </group>
+
+    <group>
+        <item
             android:id="@+id/nav_logout"
             android:title="@string/menu_logout"
             android:onClick="clickOnItemLogout"/>
