@@ -1,24 +1,15 @@
 package com.rmj.parking_place.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,14 +22,16 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.rmj.parking_place.App;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.MainActivity;
+import com.rmj.parking_place.dialogs.DialogForSelectingTicketType;
+import com.rmj.parking_place.dialogs.NotificationDialog;
 import com.rmj.parking_place.dto.DTO;
 import com.rmj.parking_place.dto.ParkingPlaceChangesDTO;
 import com.rmj.parking_place.dto.ParkingPlaceDTO;
 import com.rmj.parking_place.dto.ParkingPlacesInitialDTO;
 import com.rmj.parking_place.dto.ParkingPlacesUpdatingDTO;
+import com.rmj.parking_place.dto.ReservingDTO;
 import com.rmj.parking_place.dto.TakingDTO;
 import com.rmj.parking_place.exceptions.AlreadyReservedParkingPlaceException;
 import com.rmj.parking_place.exceptions.AlreadyTakenParkingPlaceException;
@@ -46,18 +39,15 @@ import com.rmj.parking_place.exceptions.CurrentLocationUnknownException;
 import com.rmj.parking_place.exceptions.InvalidModeException;
 import com.rmj.parking_place.exceptions.MaxAllowedDistanceForReservationException;
 import com.rmj.parking_place.exceptions.NotFoundParkingPlaceException;
+import com.rmj.parking_place.listener.OnCreateViewFinishedListenerImplementation;
 import com.rmj.parking_place.model.Location;
 import com.rmj.parking_place.model.Mode;
 import com.rmj.parking_place.model.ParkingPlace;
+import com.rmj.parking_place.model.TicketType;
 import com.rmj.parking_place.model.Zone;
-import com.rmj.parking_place.utils.AsyncResponse;
-import com.rmj.parking_place.utils.GetRequestAsyncTask;
-import com.rmj.parking_place.utils.HttpRequestAndResponseType;
-import com.rmj.parking_place.utils.JsonLoader;
-import com.rmj.parking_place.utils.PostRequestAsyncTask;
-import com.rmj.parking_place.utils.PutRequestAsyncTask;
-import com.rmj.parking_place.utils.Response;
-import com.rmj.parking_place.utils.TokenUtils;
+import com.rmj.parking_place.service.ParkingPlaceServerUtils;
+import com.rmj.parking_place.utils.ParametersForUpdatingZones;
+import com.rmj.parking_place.utils.TimerWithEndDateTime;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,11 +56,18 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MapPageFragment extends Fragment implements AsyncResponse {
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+
+public class MapPageFragment extends Fragment {
+
+    private NotificationDialog dialogForExpiredReservationOrTakingParkingPlace;
+    private DialogForSelectingTicketType dialogForSelectingTicketType;
 
     private Mode currentMode;
-    private Timer timerForReservationOrTakingOfParkingPlace = new Timer();
-    private Timer timerForUpdatingParkingPlaces = new Timer();
+    private TimerWithEndDateTime timerForReservationOrTakingOfParkingPlace;
+    private Timer timerForUpdatingParkingPlaces;
 
     private MapFragment mapFragment;
     private ParkingPlaceInfoFragment parkingPlaceInfoFragment;
@@ -82,14 +79,6 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
     private MainActivity mainActivity;
     private View view;
 
-    private com.google.android.gms.maps.model.LatLng clickedLocation;
-    private String chosedSearchMethod;
-
-    private double latitude;
-    private  double longitude;
-
-    private boolean findParkingFragmentShowed = false;
-
     public MapPageFragment() {
         // Required empty public constructor
     }
@@ -100,11 +89,48 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
 
         mainActivity = (MainActivity) getActivity();
 
-        this.zonesForUpdating = new ArrayList<Zone>();
+
+        if (savedInstanceState == null) {
+            this.zonesForUpdating = new ArrayList<Zone>();
+            // TODO load reservation or paidParkingPlace with regular ticket and start timer if needed
+        }
+        else {
+            zones = savedInstanceState.getParcelableArrayList("zones");
+            zonesForUpdating = savedInstanceState.getParcelableArrayList("zonesForUpdating");
+        }
 
         //detectAnyException();
 
         Toast.makeText(getActivity(), "onCreate()",Toast.LENGTH_SHORT).show();
+    }
+
+    private void setCurrentModeAgain() {
+        switch (currentMode) {
+            case NONE:
+                setNoneMode();
+                break;
+            case CAN_RESERVE:
+                setCanReserveMode();
+                break;
+            case CAN_RESERVE_AND_CAN_TAKE:
+                setCanReserveAndCanTakeMode();
+                break;
+            case IS_RESERVING:
+                setIsReservingMode();
+                break;
+            case IS_RESERVING_AND_CAN_TAKE:
+                setIsReservingAndCanTakeMode();
+                break;
+            case CAN_TAKE:
+                setCanTakeMode();
+                break;
+            case IS_TAKING:
+                setIsTakingMode();
+                break;
+            default:
+                setNoneMode();
+                break;
+        }
     }
 
     @Override
@@ -141,24 +167,133 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         findBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clickOnBtnFindParkingPlace(v);
+                clickOnBtnFindParkingPlace();
             }
         });
 
-        parkingPlaceInfoFragment = ParkingPlaceInfoFragment.newInstance();
-        mapFragment = new MapFragment();
-        findParkingFragment = new FindParkingFragment();
-
         FragmentManager fm = getChildFragmentManager();
-        fm.beginTransaction()
-            .replace(R.id.place_info_frame, parkingPlaceInfoFragment, "parkingPlaceInfoFragment")
-            .replace(R.id.mapContent, mapFragment, "mapFragment")
-            .replace(R.id.find_parking_frame, findParkingFragment, "findParkinfFragment")
-            .commit();
 
-        setNoneMode();
+        if (savedInstanceState == null) {
+            setNoneMode();
+
+            mapFragment = new MapFragment();
+            // mapFragment = (MapFragment) fm.findFragmentById(R.id.map_fragment_id);
+
+            parkingPlaceInfoFragment = ParkingPlaceInfoFragment.newInstance();
+            findParkingFragment = new FindParkingFragment();
+
+
+            fm.beginTransaction()
+                    .replace(R.id.place_info_frame, parkingPlaceInfoFragment, "parkingPlaceInfoFragment")
+                    .replace(R.id.mapContent, mapFragment, "mapFragment")
+                    .replace(R.id.find_parking_frame, findParkingFragment, "findParkingFragment")
+                    .commit();
+        }
+        else {
+            String currentModeStr = savedInstanceState.getString("currentMode");
+            currentMode = Mode.valueOf(currentModeStr);
+            setCurrentModeAgain();
+
+            if (isInIsReservingMode() || isInIsReservingAndCanTakeMode() || isInIsTakingMode()) {
+                long endDateTimeInMillis = savedInstanceState.getLong("endDateTimeInMillis");
+                boolean reservation = savedInstanceState.getBoolean("reservation");
+                startTimerForReservationOrTakingOfParkingPlace(endDateTimeInMillis, reservation);
+            }
+
+            boolean dialogForExpiredReservationOrTakingParkingPlaceIsShowing =
+                        savedInstanceState.getBoolean("dialogForExpiredReservationOrTakingParkingPlaceIsShowing");
+            if (dialogForExpiredReservationOrTakingParkingPlaceIsShowing) {
+                String dialogMessage = savedInstanceState.getString("dialogForExpiredReservationOrTakingParkingPlaceMessage");
+                dialogForExpiredReservationOrTakingParkingPlace = new NotificationDialog(dialogMessage, mainActivity);
+                dialogForExpiredReservationOrTakingParkingPlace.showDialog();
+            }
+
+            boolean dialogForSelectingTicketTypeIsShowing = savedInstanceState.getBoolean("dialogForSelectingTicketTypeIsShowing");
+            if (dialogForSelectingTicketTypeIsShowing) {
+                boolean dialogForSelectingTicketTypeOnlyRegularTicket =
+                                savedInstanceState.getBoolean("dialogForSelectingTicketTypeOnlyRegularTicket");
+                dialogForSelectingTicketType = new DialogForSelectingTicketType(dialogForSelectingTicketTypeOnlyRegularTicket,
+                                                                                                        this);
+                dialogForSelectingTicketType.showDialog();
+            }
+
+            // mapFragment = (MapFragment) fm.findFragmentById(R.id.mapContent);
+            mapFragment =  (MapFragment) fm.getFragment(savedInstanceState, "mapFragment");
+            // parkingPlaceInfoFragment = (ParkingPlaceInfoFragment) fm.findFragmentById(R.id.place_info_frame);
+            parkingPlaceInfoFragment =  (ParkingPlaceInfoFragment) fm.getFragment(savedInstanceState,
+                                                                            "parkingPlaceInfoFragment");
+            // findParkingFragment = () fm.findFragmentById(R.id.find_parking_frame);
+            findParkingFragment =  (FindParkingFragment) fm.getFragment(savedInstanceState, "findParkingFragment");
+            findParkingFragment.setOnCreateViewFinishedListener(new OnCreateViewFinishedListenerImplementation(mapFragment));
+            recoverVisibleFragments(savedInstanceState);
+        }
 
         return view;
+    }
+
+    private void recoverVisibleFragments(Bundle savedInstanceState) {
+        boolean parkingPlaceInfoFragmentVisible = savedInstanceState.getBoolean("parkingPlaceInfoFragmentVisible");
+        boolean findParkingPlaceFragmentVisible = savedInstanceState.getBoolean("findParkingPlaceFragmentVisible");
+
+
+        if (parkingPlaceInfoFragmentVisible) {
+            // mapFragment.showPlaceInfoFragment();
+            showOrHideParkingPlaceInfoFragmentWithTransition(true);
+        }
+
+        if (findParkingPlaceFragmentVisible) {
+            // clickOnBtnFindParkingPlace();
+            view.findViewById(R.id.findParkingButton).setVisibility(View.GONE);
+            showOrHideFindParkingFragmentWithTransition(true);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString("currentMode", currentMode.name());
+
+        // Save the fragment's instance
+        FragmentManager fm = getChildFragmentManager();
+        fm.putFragment(outState, "mapFragment", mapFragment);
+        fm.putFragment(outState, "parkingPlaceInfoFragment", parkingPlaceInfoFragment);
+        fm.putFragment(outState, "findParkingFragment", findParkingFragment);
+
+
+        outState.putBoolean("parkingPlaceInfoFragmentVisible", isParkingPlaceInfoFragmentVisible());
+        outState.putBoolean("findParkingPlaceFragmentVisible", isFindParkingPlaceFragmentVisible());
+
+        boolean dialogForExpiredReservationOrTakingParkingPlaceIsShowing =
+                                                dialogForExpiredReservationOrTakingParkingPlace != null
+                                                && dialogForExpiredReservationOrTakingParkingPlace.isShowing();
+        outState.putBoolean("dialogForExpiredReservationOrTakingParkingPlaceIsShowing",
+                                dialogForExpiredReservationOrTakingParkingPlaceIsShowing);
+        if (dialogForExpiredReservationOrTakingParkingPlaceIsShowing) {
+            outState.putString("dialogForExpiredReservationOrTakingParkingPlaceMessage",
+                    dialogForExpiredReservationOrTakingParkingPlace.getMessage());
+        }
+
+        boolean dialogForSelectingTicketTypeIsShowing = dialogForSelectingTicketType != null
+                                                         && dialogForSelectingTicketType.isShowing();
+        outState.putBoolean("dialogForSelectingTicketTypeIsShowing", dialogForSelectingTicketTypeIsShowing);
+        if (dialogForSelectingTicketTypeIsShowing) {
+            outState.putBoolean("dialogForSelectingTicketTypeOnlyRegularTicket",
+                                dialogForSelectingTicketType.isOnlyRegularTicket());
+        }
+
+        if (zones != null) {
+            outState.putParcelableArrayList("zones", (ArrayList<Zone>) zones);
+        }
+
+        if (zonesForUpdating != null) {
+            outState.putParcelableArrayList("zonesForUpdating", (ArrayList<Zone>) zonesForUpdating);
+        }
+
+        if (timerForReservationOrTakingOfParkingPlace != null && timerForReservationOrTakingOfParkingPlace.isStarted()) {
+            outState.putLong("endDateTimeInMillis", timerForReservationOrTakingOfParkingPlace.getEndDateTimeInMillis());
+            outState.putBoolean("reservation", timerForReservationOrTakingOfParkingPlace.isReservation());
+        }
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -179,7 +314,23 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
             mapFragment.drawParkingPlaceMarkersIfCan();
         }*/
 
+        checkTimerForReservationOrTakingOfParkingPlaceAndStartIfNeeded();
+
         startTimerForUpdatingParkingPlaces();
+    }
+
+    private void checkTimerForReservationOrTakingOfParkingPlaceAndStartIfNeeded() {
+        if (isInIsReservingMode() || isInIsReservingAndCanTakeMode() || isInIsTakingMode()) {
+            if (timerForReservationOrTakingOfParkingPlace == null) {
+                throw new RuntimeException("timerForReservationOrTakingOfParkingPlace == null");
+            }
+
+            if (!timerForReservationOrTakingOfParkingPlace.isStarted()) {
+                startTimerForReservationOrTakingOfParkingPlace(
+                        timerForReservationOrTakingOfParkingPlace.getEndDateTimeInMillis(),
+                        timerForReservationOrTakingOfParkingPlace.isReservation());
+            }
+        }
     }
 
     @Override
@@ -191,24 +342,69 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
     @Override
     public void onStop() {
         super.onStop();
+        stopTimerForUpdatingParkingPlaces();
+        stopTimerForReservationOrTakingOfParkingPlace();
         Toast.makeText(mainActivity, "onStop()",Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stopTimerForUpdatingParkingPlaces();
+        //stopTimerForUpdatingParkingPlaces();
+
+        cancelDialogForExpiredReservationOrTakingParkingPlace();
+        cancelDialogForSelectingTicketType();
+
         Toast.makeText(mainActivity, "onDestroy()",Toast.LENGTH_SHORT).show();
+    }
+
+    private void cancelDialogForExpiredReservationOrTakingParkingPlace() {
+        if (dialogForExpiredReservationOrTakingParkingPlace != null
+                && dialogForExpiredReservationOrTakingParkingPlace.isShowing()) {
+            dialogForExpiredReservationOrTakingParkingPlace.cancel();
+            dialogForExpiredReservationOrTakingParkingPlace = null;
+        }
+    }
+
+    private void cancelDialogForSelectingTicketType() {
+        if (dialogForSelectingTicketType != null
+                && dialogForSelectingTicketType.isShowing()) {
+            dialogForSelectingTicketType.cancel();
+            dialogForSelectingTicketType = null;
+        }
     }
 
 
     private void downloadZones() {
-        // InputStream is = getResources().openRawResource(R.raw.zones_with_parking_places);
-        // List<Zone> zones = JsonLoader.getZones(is);
-        //-------------------------------------------------
-        // new RequestAsyncTask(this).execute("GET", "https://192.168.1.12:45455/api/zones");
-        new GetRequestAsyncTask(this).execute(App.getParkingPlaceServerUrl() + "/api/zones",
-                HttpRequestAndResponseType.GET_ZONES.name(), TokenUtils.getToken());
+        /*InputStream is = getResources().openRawResource(R.raw.zones_with_parking_places);
+        List<Zone> zones = JsonLoader.getZones(is);
+        -------------------------------------------------
+        new RequestAsyncTask(this).execute("GET", "https://192.168.1.12:45455/api/zones");*/
+
+        ParkingPlaceServerUtils.zoneService.getZones()
+                .enqueue(new Callback<List<Zone>>() {
+                    @Override
+                    public void onResponse(Call<List<Zone>> call, retrofit2.Response<List<Zone>> response) {
+                        if (response == null || (response != null && !response.isSuccessful())) {
+                            Toast.makeText(mainActivity, "Problem with loading zones. We will try again.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            zones = response.body();
+                            if (zones == null) {
+                                zones = new ArrayList<Zone>();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Zone>> call, Throwable t) {
+                        Toast.makeText(mainActivity, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        /*new GetRequestAsyncTask(this).execute(App.getParkingPlaceServerUrl() + "/api/zones",
+                HttpRequestAndResponseType.GET_ZONES.name(), TokenUtils.getToken());*/
     }
 
     private void updateZoneWithParkingPlaceChanges() {
@@ -217,14 +413,88 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         //-------------------------------------------------
         // new RequestAsyncTask(this).execute("GET", "https://192.168.1.12:45455/api/zones");
 
-        String url;
-
+        ParametersForUpdatingZones parametersForUpdatingZones;
         synchronized (this.zonesForUpdating) {
-            url = prepareUrlForUpdatingZones(this.zonesForUpdating);
+            parametersForUpdatingZones = prepareParametersForUpdatingZones(this.zonesForUpdating);
         }
 
-        new GetRequestAsyncTask(this)
-                .execute(url, HttpRequestAndResponseType.UPDATE_ZONES_WITH_PARKING_PLACES.name(), TokenUtils.getToken());
+        ParkingPlaceServerUtils.zoneService.updateZonesWithParkingPlaces(parametersForUpdatingZones.getZoneids(),
+                                                                        parametersForUpdatingZones.getVersions())
+                .enqueue(new Callback<ParkingPlacesUpdatingDTO>() {
+                    @Override
+                    public void onResponse(Call<ParkingPlacesUpdatingDTO> call, retrofit2.Response<ParkingPlacesUpdatingDTO> response) {
+                        if (response == null || (response != null && !response.isSuccessful())) {
+                            Toast.makeText(mainActivity, "Problem with updating zones with parking places.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            ParkingPlacesUpdatingDTO parkingPlacesUpdatingDTO = response.body();
+                            if (parametersForUpdatingZones == null) {
+                                Toast.makeText(mainActivity, "Problem with updating zones with parking places.",
+                                                                                        Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                completeUpdatingOfZonesWithParkingPlaceChanges(parkingPlacesUpdatingDTO);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ParkingPlacesUpdatingDTO> call, Throwable t) {
+                        Toast.makeText(mainActivity, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        /*new GetRequestAsyncTask(this)
+                .execute(url, HttpRequestAndResponseType.UPDATE_ZONES_WITH_PARKING_PLACES.name(), TokenUtils.getToken());*/
+    }
+
+    private void completeUpdatingOfZonesWithParkingPlaceChanges(ParkingPlacesUpdatingDTO parkingPlacesUpdatingDTO) {
+        ArrayList<ParkingPlace> parkingPlacesForAdding = new ArrayList<ParkingPlace>();
+        List<ParkingPlace> parkingPlacesForUpdating = new ArrayList<ParkingPlace>();
+
+        for (ParkingPlacesInitialDTO parkingPlacesInitialDTO : parkingPlacesUpdatingDTO.getInitials()) {
+            for (Zone zone : zones) {
+                if (parkingPlacesInitialDTO.getZoneId().equals(zone.getId())) {
+                    if (parkingPlacesInitialDTO.getVersion() > zone.getVersion()) {
+                        zone.setVersion(parkingPlacesInitialDTO.getVersion());
+                        zone.setParkingPlaces(parkingPlacesInitialDTO.getParkingPlaces());
+                        for (ParkingPlace parkingPlace : zone.getParkingPlaces()) {
+                            parkingPlace.setZone(zone);
+                        }
+                        parkingPlacesForAdding.addAll(zone.getParkingPlaces());
+                    }
+                }
+            }
+        }
+        if (!parkingPlacesForAdding.isEmpty()) {
+            mapFragment.addParkingPlacesAndMarkers(parkingPlacesForAdding);
+        }
+
+        for (ParkingPlaceChangesDTO parkingPlaceChangesDTO : parkingPlacesUpdatingDTO.getChanges()) {
+            for (Zone zone : zones) {
+                if (parkingPlaceChangesDTO.getZoneId().equals(zone.getId())) {
+                    if (parkingPlaceChangesDTO.getVersion() > zone.getVersion()) {
+                        zone.setVersion(parkingPlaceChangesDTO.getVersion());
+                        for (ParkingPlaceDTO parkingPlaceDTO : parkingPlaceChangesDTO.getParkingPlaceChanges()) {
+                            for (ParkingPlace parkingPlace : zone.getParkingPlaces()) {
+                                if (parkingPlaceDTO.getId().equals(parkingPlace.getId())) {
+                                    parkingPlace.setStatus(parkingPlaceDTO.getStatus());
+                                    parkingPlacesForUpdating.add(parkingPlace);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!parkingPlacesForUpdating.isEmpty()) {
+            mapFragment.updateParkingPlaceMarkers(parkingPlacesForUpdating);
+        }
+
+        if (!parkingPlacesForAdding.isEmpty() || !parkingPlacesForUpdating.isEmpty()) {
+            mapFragment.tryToFindEmptyParkingPlaceNearbyAndSetMode();
+        }
     }
 
     public void selectZonesForUpdating(LatLngBounds currentCameraBounds) {
@@ -262,9 +532,7 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
                 .build();
     }
 
-    private String prepareUrlForUpdatingZones(List<Zone> zones) {
-        String url = App.getParkingPlaceServerUrl() + "/api/parkingplaces/changes?";
-
+    private ParametersForUpdatingZones prepareParametersForUpdatingZones(List<Zone> zones) {
         StringBuilder sbZoneIds = new StringBuilder();
         StringBuilder sbVersions = new StringBuilder();
 
@@ -275,8 +543,7 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
             sbVersions.append(zone.getVersion());
         }
 
-        url += "zoneids=" + sbZoneIds.substring(1) + "&versions=" + sbVersions.substring(1);
-        return url;
+        return new ParametersForUpdatingZones(sbZoneIds.substring(1), sbVersions.substring(1));
     }
 
     public void setNoneMode() {
@@ -330,15 +597,19 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         // ((LinearLayout) findViewById(R.id.northPanel)).setVisibility(View.VISIBLE);
     }
 
-    public void setIsReservingMode() {
-        this.currentMode = Mode.IS_RESERVING;
-
-        int color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorReserve);
+    private void showTxtRemainingTime(int colorResource) {
+        int color = ContextCompat.getColor(mainActivity.getApplicationContext(), colorResource);
         TextView txtRemainingTime = (TextView) view.findViewById(R.id.txtRemainingTime);
         txtRemainingTime.setTextColor(color);
         txtRemainingTime.setVisibility(View.VISIBLE);
+    }
 
-        color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorDisabledButton);
+    public void setIsReservingMode() {
+        this.currentMode = Mode.IS_RESERVING;
+
+        showTxtRemainingTime(R.color.colorReserve);
+
+        int color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorDisabledButton);
 
         Button btnReserve = (Button) view.findViewById(R.id.btnReserve);
         btnReserve.setEnabled(false);
@@ -370,12 +641,10 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
 
     public void setIsTakingMode() {
         this.currentMode = Mode.IS_TAKING;
-        int color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorTake);
-        TextView txtRemainingTime = (TextView) view.findViewById(R.id.txtRemainingTime);
-        txtRemainingTime.setTextColor(color);
-        txtRemainingTime.setVisibility(View.VISIBLE);
 
-        color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorDisabledButton);
+        showTxtRemainingTime(R.color.colorTake);
+
+        int color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorDisabledButton);
         Button btnTake = (Button) view.findViewById(R.id.btnTake);
         btnTake.setEnabled(false);
         btnTake.setBackgroundColor(color);
@@ -410,7 +679,7 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
             return;
         }
 
-        DTO dto = null;
+        ReservingDTO dto = null;
         try {
             dto = mapFragment.checkAndPrepareAllForReservingOnServer();
         } catch (NotFoundParkingPlaceException | AlreadyTakenParkingPlaceException | AlreadyReservedParkingPlaceException
@@ -433,14 +702,46 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         }
     }
 
-    private void reserveParkingPlaceOnServer(DTO dto) {
-        new PostRequestAsyncTask(this, dto).execute(App.getParkingPlaceServerUrl() + "/api/parkingplaces/reservation",
-                HttpRequestAndResponseType.RESERVE_PARKING_PLACE.name(), TokenUtils.getToken());
+    private void reserveParkingPlaceOnServer(ReservingDTO dto) {
+        ParkingPlaceServerUtils.parkingPlaceService.reserveParkingPlace(dto)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                        if (response == null || (response != null && !response.isSuccessful())) {
+                            Toast.makeText(mainActivity, "Problem with reservation of parking place.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            reserveParkingPlace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(mainActivity, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void takeParkingPlaceOnServer(TakingDTO dto) {
-        new PostRequestAsyncTask(this, dto).execute(App.getParkingPlaceServerUrl() + "/api/parkingplaces/taking",
-                HttpRequestAndResponseType.TAKE_PARKING_PLACE.name(), TokenUtils.getToken());
+        ParkingPlaceServerUtils.parkingPlaceService.takeParkingPlace(dto)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                        if (response == null || (response != null && !response.isSuccessful())) {
+                            Toast.makeText(mainActivity, "Problem with taking of parking place.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            takeParkingPlace(dto.getTicketType());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(mainActivity, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     public void clickOnBtnTake(View view) {
@@ -451,7 +752,20 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
             return;
         }
 
-        if (isReservingAndCanTakeMode) {
+        boolean parkingPlaceNearByFavoritePlace = false;
+        try {
+            parkingPlaceNearByFavoritePlace = mapFragment.checkParkingPlaceIsNearByFavoritePlace(mainActivity.getFavoritePlaces());
+        } catch (Exception e) {
+            Toast.makeText(mainActivity, e.getMessage(), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        dialogForSelectingTicketType = new DialogForSelectingTicketType(!parkingPlaceNearByFavoritePlace, this);
+        dialogForSelectingTicketType.showDialog();
+    }
+
+    public void continueWithTakingOfParkingPlace(TicketType ticketType) {
+        if (isInIsReservingAndCanTakeMode()) {
             finishReservationOfParkingPlace(false);
         }
 
@@ -463,11 +777,14 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
             return;
         }
 
+        dto.setTicketType(ticketType);
         takeParkingPlaceOnServer(dto);
     }
 
-    private void takeParkingPlace() {
-        mapFragment.takeParkingPlace();
+
+
+    private void takeParkingPlace(TicketType ticketType) {
+        mapFragment.takeParkingPlace(ticketType);
         setIsTakingMode();
     }
 
@@ -538,9 +855,9 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
 
     public boolean isInCanReserveAndCanTakeMode() { return currentMode == Mode.CAN_RESERVE_AND_CAN_TAKE; }
 
-    public void startTimerForReservationOrTakingOfParkingPlace(long endDateTimeInMillisParam, final boolean reservation) {
-        final long endDateTimeInMillis = endDateTimeInMillisParam;
-
+    public void startTimerForReservationOrTakingOfParkingPlace(long endDateTimeInMillis, boolean reservation) {
+        timerForReservationOrTakingOfParkingPlace = new TimerWithEndDateTime(endDateTimeInMillis, reservation);
+        timerForReservationOrTakingOfParkingPlace.setStarted(true);
         timerForReservationOrTakingOfParkingPlace.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -573,9 +890,12 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
     }
 
     private void stopTimerForReservationOrTakingOfParkingPlace() {
-        timerForReservationOrTakingOfParkingPlace.cancel();
-        timerForReservationOrTakingOfParkingPlace.purge();
-        timerForReservationOrTakingOfParkingPlace = new Timer();
+        if (timerForReservationOrTakingOfParkingPlace != null) {
+            timerForReservationOrTakingOfParkingPlace.setStarted(false);
+            timerForReservationOrTakingOfParkingPlace.cancel();
+            timerForReservationOrTakingOfParkingPlace.purge();
+            // timerForReservationOrTakingOfParkingPlace = new Timer();
+        }
     }
 
     private void addViolationToUser(boolean reservation) {
@@ -592,11 +912,13 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         if (timeIsUp) {
             addViolationToUser(true);
             String message = "Your parking place reservation has expired!";
-            showDialogWithSingleButton(message, "Close");
+            dialogForExpiredReservationOrTakingParkingPlace = new NotificationDialog(message, mainActivity);
+            dialogForExpiredReservationOrTakingParkingPlace.showDialog();
         }
 
         if (isInIsReservingMode()) {
             setNoneMode();
+            mapFragment.tryToFindEmptyParkingPlaceNearbyAndSetMode();
             if (!timeIsUp) {
                 throw new InvalidModeException("timeIsUp == false && currentMode == IS_RESERVING"
                         + " (finishReservationOfParkingPlace method)");
@@ -609,6 +931,10 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         }
         else if (isInIsReservingAndCanTakeMode()) {
             setCanTakeMode();
+        }
+        else {
+            Toast.makeText(mainActivity, "Reservation is expired!", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         mapFragment.finishReservationOfParkingPlace();
@@ -627,7 +953,8 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
             mapFragment.finishTakingOfParkingPlace();
             addViolationToUser(false);
             String message = "Your parking time has expired!";
-            showDialogWithSingleButton(message, "Close");
+            dialogForExpiredReservationOrTakingParkingPlace = new NotificationDialog(message, mainActivity);
+            dialogForExpiredReservationOrTakingParkingPlace.showDialog();
         }
         else {
             DTO dto = null;
@@ -644,147 +971,31 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
     }
 
     private void leaveParkingPlaceOnServer(DTO dto) {
-        new PutRequestAsyncTask(this, dto).execute(App.getParkingPlaceServerUrl() + "/api/parkingplaces/leave",
-                HttpRequestAndResponseType.LEAVE_PARKING_PLACE.name(), TokenUtils.getToken());
-    }
-
-    private void showDialogWithSingleButton(String messageParam, String buttonTextParam) {
-        final String message = messageParam;
-        final String buttonText = buttonTextParam;
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
-        builder.setMessage(message)
-                .setCancelable(false)
-                // .setPositiveButton()
-                .setNeutralButton(buttonText, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.setCanceledOnTouchOutside(false);
-        alert.show();
-    }
-
-    @Override
-    public void processFinish(Response response) {
-        if (response.getType() == HttpRequestAndResponseType.GET_ZONES) {
-            if (response.getResult().equals("NOT_CONNECTED") || response.getResult().equals("FAIL")) {
-                Toast.makeText(mainActivity, "[response_result = " + response.getResult() + "] Problem with loading zones. We will try again.",
-                        Toast.LENGTH_SHORT).show();
-                new GetRequestAsyncTask(this).execute(App.getParkingPlaceServerUrl() + "/api/zones",
-                        HttpRequestAndResponseType.GET_ZONES.name(), TokenUtils.getToken());
-            }
-            else {
-                this.zones = JsonLoader.convertJsonToZones(response.getResult());
-               /* HashMap<Location, ParkingPlace> parkingPlaces = new HashMap<Location, ParkingPlace>();
-
-                for (Zone zone : zones) {
-                    for (ParkingPlace parkingPlace : zone.getParkingPlaces()) {
-                        parkingPlace.setZone(zone);
-                        parkingPlaces.put(parkingPlace.getLocation(), parkingPlace);
-                    }
-                }
-                mapFragment.setParkingPlaces(parkingPlaces);
-                mapFragment.drawParkingPlaceMarkersIfCan();*/
-            }
-        }
-        else if (response.getType() == HttpRequestAndResponseType.UPDATE_ZONES_WITH_PARKING_PLACES) {
-            if (response.getResult().equals("NOT_CONNECTED") || response.getResult().equals("FAIL")) {
-                Toast.makeText(mainActivity, "Problem with updating zones with parking places.",
-                        Toast.LENGTH_SHORT).show();
-            }
-            else {
-                ParkingPlacesUpdatingDTO parkingPlacesUpdatingDTO =
-                        JsonLoader.convertJsonToParkingPlacesUpdatingDTO(response.getResult());
-                ArrayList<ParkingPlace> parkingPlacesForAdding = new ArrayList<ParkingPlace>();
-                List<ParkingPlace> parkingPlacesForUpdating = new ArrayList<ParkingPlace>();
-
-                for (ParkingPlacesInitialDTO parkingPlacesInitialDTO : parkingPlacesUpdatingDTO.getInitials()) {
-                    for (Zone zone : zones) {
-                        if (parkingPlacesInitialDTO.getZoneId().equals(zone.getId())) {
-                            if (parkingPlacesInitialDTO.getVersion() > zone.getVersion()) {
-                                zone.setVersion(parkingPlacesInitialDTO.getVersion());
-                                zone.setParkingPlaces(parkingPlacesInitialDTO.getParkingPlaces());
-                                for (ParkingPlace parkingPlace : zone.getParkingPlaces()) {
-                                    parkingPlace.setZone(zone);
-                                }
-                                parkingPlacesForAdding.addAll(zone.getParkingPlaces());
+        ParkingPlaceServerUtils.parkingPlaceService.leaveParkingPlace(dto)
+                    .enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                            if (response == null || (response != null && !response.isSuccessful())) {
+                                Toast.makeText(mainActivity, "Problem with reservation of parking place.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                setNoneMode();
+                                mapFragment.finishTakingOfParkingPlace();
+                                Toast.makeText(mainActivity, "Parking place is empty now (on server).",
+                                        Toast.LENGTH_SHORT).show();
                             }
                         }
 
-                    }
-                }
-                if (!parkingPlacesForAdding.isEmpty()) {
-                    mapFragment.addParkingPlacesAndMarkers(parkingPlacesForAdding);
-                }
-
-                for (ParkingPlaceChangesDTO parkingPlaceChangesDTO : parkingPlacesUpdatingDTO.getChanges()) {
-                    for (Zone zone : zones) {
-                        if (parkingPlaceChangesDTO.getZoneId().equals(zone.getId())) {
-                            if (parkingPlaceChangesDTO.getVersion() > zone.getVersion()) {
-                                zone.setVersion(parkingPlaceChangesDTO.getVersion());
-                                for (ParkingPlaceDTO parkingPlaceDTO : parkingPlaceChangesDTO.getParkingPlaceChanges()) {
-                                    for (ParkingPlace parkingPlace : zone.getParkingPlaces()) {
-                                        if (parkingPlaceDTO.getId().equals(parkingPlace.getId())) {
-                                            parkingPlace.setStatus(parkingPlaceDTO.getStatus());
-                                            parkingPlacesForUpdating.add(parkingPlace);
-                                        }
-                                    }
-                                }
-                            }
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Toast.makeText(mainActivity, t.getMessage(), Toast.LENGTH_SHORT).show();
                         }
-
-                    }
-                }
-                if (!parkingPlacesForUpdating.isEmpty()) {
-                    mapFragment.updateParkingPlaceMarkers(parkingPlacesForUpdating);
-                }
-
-                if (!parkingPlacesForAdding.isEmpty() || !parkingPlacesForUpdating.isEmpty()) {
-                    mapFragment.tryToFindEmptyParkingPlaceNearbyAndSetMode();
-                }
-            }
-        }
-        else if (response.getType() == HttpRequestAndResponseType.RESERVE_PARKING_PLACE) {
-            if (response.getResult().equals("FAIL")) {
-                Toast.makeText(mainActivity, "Problem with reservation of parking place.",
-                        Toast.LENGTH_SHORT).show();
-            }
-            else {
-                reserveParkingPlace();
-            }
-        }
-        else if (response.getType() == HttpRequestAndResponseType.TAKE_PARKING_PLACE) {
-            if (response.getResult().equals("FAIL")) {
-                Toast.makeText(mainActivity, "Problem with taking of parking place.",
-                        Toast.LENGTH_SHORT).show();
-            }
-            else {
-                takeParkingPlace();
-            }
-        }
-
-        else if (response.getType() == HttpRequestAndResponseType.LEAVE_PARKING_PLACE) {
-            if (response.getResult().equals("NOT_CONNECTED") || response.getResult().equals("FAIL")) {
-                Toast.makeText(mainActivity, "[response_result = " + response.getResult() + "] Problem with leaving parking place.",
-                        Toast.LENGTH_SHORT).show();
-            }
-            else {
-                setNoneMode();
-                mapFragment.finishTakingOfParkingPlace();
-                Toast.makeText(mainActivity, "Parking place is empty now (on server).",
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    @Override
-    public void loginAgain() {
-       mainActivity.loginAgain();
+                    });
     }
 
     public void startTimerForUpdatingParkingPlaces() {
+        timerForUpdatingParkingPlaces = new Timer();
         timerForUpdatingParkingPlaces.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -796,8 +1007,10 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
     }
 
     private void stopTimerForUpdatingParkingPlaces() {
-        timerForUpdatingParkingPlaces.cancel();
-        timerForUpdatingParkingPlaces.purge();
+        if (timerForUpdatingParkingPlaces != null) {
+            timerForUpdatingParkingPlaces.cancel();
+            timerForUpdatingParkingPlaces.purge();
+        }
     }
 
     /*public void showPlaceInfoFragment(ParkingPlace selectedParkingPlace, float distance) {
@@ -821,23 +1034,16 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
 
     public void hidePlaceIndoFragmet() {
         // view.findViewById(R.id.place_info_frame).setVisibility(View.GONE);
+
+        parkingPlaceInfoFragment.setRealDistance("Real Distance: Computing...");
+
         showOrHideParkingPlaceInfoFragmentWithTransition(false);
-        clickedLocation = null;
     }
 
     public void showPlaceInfoFragment(ParkingPlace selectedParkingPlace, float distance) {
-        TextView textStatus = (TextView) view.findViewById(R.id.status);
-        textStatus.setText("Status: " + selectedParkingPlace.getStatus().toString());
+        mapFragment.setRealDistanceInParkingPlaceInfo();
 
-        TextView textAddress = (TextView) view.findViewById(R.id.address);
-        textAddress.setText("Address: " + selectedParkingPlace.getLocation().getAddress());
-
-        TextView textZone = (TextView) view.findViewById(R.id.zone);
-        textZone.setText("Zone: " + selectedParkingPlace.getZone().getName());
-
-        float distanceKm = distance / 1000;
-        TextView textDistance = (TextView) view.findViewById(R.id.distance);
-        textDistance.setText("Distance: " + distanceKm + "km");
+        parkingPlaceInfoFragment.setData(selectedParkingPlace, distance);
 
         //((LinearLayout) findViewById(R.id.place_info_linear_layout)).setVisibility(View.VISIBLE);
         //LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.place_info_frame);
@@ -850,7 +1056,7 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         clickedLocation = null;
     }*/
 
-    public void clickOnBtnFindParkingPlace(View v) {
+    public void clickOnBtnFindParkingPlace() {
         /*DisplayMetrics displaymetrics = new DisplayMetrics();
         mainActivity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int height = displaymetrics.heightPixels;
@@ -859,9 +1065,7 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         paramsMap.height = height/2;
         mapFragment.getView().setLayoutParams(paramsMap);*/
 
-        findParkingFragmentShowed = true;
-
-        findParkingFragment.setTextToSelected(clickedLocation == null);
+        // findParkingFragment.setTextToSelected(false);
 
         //LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         //layoutParams.setMargins(0, height/2, 0, 0);
@@ -907,6 +1111,14 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
         ViewGroup parent = view.findViewById(R.id.northPanel);
         TransitionManager.beginDelayedTransition(parent, transition);
         view.findViewById(R.id.place_info_frame).setVisibility(show ? View.VISIBLE : View.GONE );
+    }
+
+    public boolean isParkingPlaceInfoFragmentVisible() {
+        return view.findViewById(R.id.place_info_frame).getVisibility() == View.VISIBLE;
+    }
+
+    public boolean isFindParkingPlaceFragmentVisible() {
+        return view.findViewById(R.id.find_parking_frame).getVisibility() == View.VISIBLE;
     }
 
     public void returnGoogleLogoOnStartPosition() {
@@ -1017,15 +1229,14 @@ public class MapPageFragment extends Fragment implements AsyncResponse {
                 .start();
          */
         showOrHideFindParkingFragmentWithTransition(false);
-        findParkingFragmentShowed = false;
-    }
-
-    public boolean isFindParkingFragmentShowed() {
-        return findParkingFragmentShowed;
     }
 
     public int getFindParkingButtonHeight() {
         return view.findViewById(R.id.findParkingButton).getHeight();
     }
 
+    public void setRealDistanceInParkingPlaceInfo(double distance) {
+        distance = Math.round(distance * 100.0) / 100.0; // zaokruzivanje na dve decimale
+        parkingPlaceInfoFragment.setRealDistance("Real Distance: " + distance + "km");
+    }
 }

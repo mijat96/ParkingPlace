@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import com.rmj.parking_place.App;
@@ -18,17 +19,80 @@ import com.rmj.parking_place.utils.TokenUtils;
 
 public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*/ {
 
-    private static int SPLASH_TIME_OUT = 3000; // splash ce biti vidljiv minimum SPLASH_TIME_OUT milisekundi
+    private static int MAX_SPLASH_TIME_OUT = 3000; // splash ce biti vidljiv SPLASH_TIME_OUT milisekundi
 
+    private AlertDialog dialogForCurrentPrivateIpAddress;
+    private long splashTimeOut;
+    private InitTask initTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-
+        
+        if (savedInstanceState == null) {
+            splashTimeOut = MAX_SPLASH_TIME_OUT;
+        }
+        else {
+            boolean dialogIsShowing = savedInstanceState.getBoolean("dialogIsShowing");
+            if (dialogIsShowing) {
+                splashTimeOut = 0;
+            }
+            else {
+                splashTimeOut = savedInstanceState.getInt("splashTimeOut");
+            }
+        }
+        
         // uradi inicijalizaciju u pozadinksom threadu
-        new InitTask().execute();
+        initTask = new InitTask();
+        initTask.execute();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        if (dialogForCurrentPrivateIpAddress != null) {
+            outState.putBoolean("dialogIsShowing", dialogForCurrentPrivateIpAddress.isShowing());
+        }
+
+        int timeLeft = (int) (splashTimeOut - (System.currentTimeMillis() - initTask.startTime));
+        if(timeLeft < 0) {
+            timeLeft = 0;
+        }
+        outState.putInt("splashTimeOut", timeLeft);
+        
+        super.onSaveInstanceState(outState);
+    }
+
+    private AlertDialog getDialogForCurrentPrivateIpAddress() {
+        if (dialogForCurrentPrivateIpAddress == null) {
+
+            Context context = SplashScreenActivity.this;
+
+            final EditText parkingPlaceServerUrlEditText = new EditText(context);
+            String parkingPlaceServerUrl = App.getParkingPlaceServerUrl();
+            parkingPlaceServerUrlEditText.setText(parkingPlaceServerUrl);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage("Enter web address of  ParkingPlaceServer")
+                    .setView(parkingPlaceServerUrlEditText)
+                    .setCancelable(false)
+                    // .setPositiveButton()
+                    .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            App.saveParkingPlaceServerUrl(parkingPlaceServerUrlEditText.getText().toString());
+
+                            // uloguj se
+                            loginIfNotLoggedOrGoToMainActivity();
+
+                            dialog.cancel();
+                        }
+                    });
+            dialogForCurrentPrivateIpAddress = builder.create();
+            dialogForCurrentPrivateIpAddress.setCanceledOnTouchOutside(false);
+        }
+
+        return dialogForCurrentPrivateIpAddress;
     }
 
     @Override
@@ -56,8 +120,10 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
         private void continueLogin()
         {
             // sacekaj tako da splash bude vidljiv minimum SPLASH_TIME_OUT milisekundi
-            long timeLeft = SPLASH_TIME_OUT - (System.currentTimeMillis() - startTime);
-            if(timeLeft < 0) timeLeft = 0;
+            long timeLeft = splashTimeOut - (System.currentTimeMillis() - startTime);
+            if(timeLeft < 0) {
+                timeLeft = 0;
+            }
             SystemClock.sleep(timeLeft);
 
             runOnUiThread(new Runnable() {
@@ -72,30 +138,11 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
         }
 
         private void showDialogForCurrentPrivateIpAddress() {
-            Context context = SplashScreenActivity.this;
-
-            final EditText parkingPlaceServerUrlEditText = new EditText(context);
-            String parkingPlaceServerUrl = App.getParkingPlaceServerUrl();
-            parkingPlaceServerUrlEditText.setText(parkingPlaceServerUrl);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setMessage("Enter web address of  ParkingPlaceServer")
-                    .setView(parkingPlaceServerUrlEditText)
-                    .setCancelable(false)
-                    // .setPositiveButton()
-                    .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            App.saveParkingPlaceServerUrl(parkingPlaceServerUrlEditText.getText().toString());
-
-                            // uloguj se
-                            loginIfNotLoggedOrGoToMainActivity();
-
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.setCanceledOnTouchOutside(false);
-            alert.show();
+            AlertDialog dialog = getDialogForCurrentPrivateIpAddress();
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            dialog.show();
         }
     }
 
@@ -124,5 +171,14 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (dialogForCurrentPrivateIpAddress != null) {
+            dialogForCurrentPrivateIpAddress.cancel();
+        }
     }
 }

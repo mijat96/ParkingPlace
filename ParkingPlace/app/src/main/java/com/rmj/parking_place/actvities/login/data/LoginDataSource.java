@@ -4,22 +4,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.rmj.parking_place.App;
-import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.login.data.model.LoggedInUser;
 import com.rmj.parking_place.dto.LoginDTO;
 import com.rmj.parking_place.dto.TokenDTO;
 import com.rmj.parking_place.exceptions.InvalidUsernameOrPasswordException;
-import com.rmj.parking_place.service.ParkingPlaceServiceUtils;
-import com.rmj.parking_place.utils.HttpRequestAndResponseType;
-import com.rmj.parking_place.utils.PostRequestTask;
+import com.rmj.parking_place.service.ParkingPlaceServerUtils;
 import com.rmj.parking_place.utils.TokenUtils;
-import com.squareup.okhttp.MediaType;
 
 import java.io.IOException;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -51,7 +45,7 @@ public class LoginDataSource {
 
     private TokenDTO loginOnServer(String username, String password) {
         LoginDTO loginDTO = new LoginDTO(username, password);
-        Call<TokenDTO> call = ParkingPlaceServiceUtils.authenticationService.login(loginDTO);
+        Call<TokenDTO> call = ParkingPlaceServerUtils.authenticationService.login(loginDTO);
         Response<TokenDTO> response = null;
         try {
             response = call.execute();

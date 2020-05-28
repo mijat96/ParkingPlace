@@ -2,6 +2,7 @@
 using ParkingPlaceServer.Models;
 using ParkingPlaceServer.Models.Security;
 using ParkingPlaceServer.Services;
+using ParkingPlaceServer.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,10 +20,11 @@ namespace ParkingPlaceServer.Controllers
 		private IReservationsService reservationsService = ReservationsService.Instance;
 		private IPaidParkingPlacesService paidParkingPlacesService = PaidParkingPlacesService.Instance;
 		private IUsersService usersService = UsersService.Instance;
-
+		private static readonly double MAX_DISTANCE_FOR_RESERVATION = 5000.0; // meteres
+		private static readonly double MAX_DISTANCE_FOR_TAKING = 1.0; // meters
 
 		[Route("api/parkingplaces/reservation")]
-		public async Task<HttpResponseMessage> PostReservation([FromBody] Dto value)
+		public async Task<HttpResponseMessage> PostReservation([FromBody] ReservingDto value)
 		{
 			string token = GetHeader("token");
 			if (token == null || (token != null && !TokenManager.ValidateToken(token)))
@@ -59,6 +61,15 @@ namespace ParkingPlaceServer.Controllers
 					return Request.CreateResponse(HttpStatusCode.BadRequest, "parkingPlace.Status != ParkingPlaceStatus.EMPTY");
 				}
 
+				double distance = Distance.computeDistance(value.CurrentLocationLatitude, 
+															value.CurrentLocationLongitude,
+															parkingPlace.Location.Latitude,
+															parkingPlace.Location.Longitude);
+				if (distance > MAX_DISTANCE_FOR_RESERVATION)
+				{
+					return Request.CreateResponse(HttpStatusCode.BadRequest);
+				}
+
 				parkingPlace.Status = ParkingPlaceStatus.RESERVED;
 				reservationsService.AddReservation(new Reservation(parkingPlace, usersService.GetLoggedUser(token)));
 
@@ -82,6 +93,18 @@ namespace ParkingPlaceServer.Controllers
 			}
 
 			User loggedUser = usersService.GetLoggedUser(token);
+
+			if (value.TicketType != TicketType.REGULAR)
+			{
+				bool nearByFavoritePlace = paidParkingPlacesService.CheckWheterIsParkingPlaceNearByFavoritePlace(
+																					loggedUser.FavoritePlaces,
+																					value.CurrentLocationLatitude,
+																					value.CurrentLocationLongitude);
+				if (!nearByFavoritePlace)
+				{
+					return Request.CreateResponse(HttpStatusCode.BadRequest);
+				}
+			}
 
 			bool reservationFoundedAndRemoved = reservationsService.RemoveReservation(loggedUser);
 
@@ -118,8 +141,19 @@ namespace ParkingPlaceServer.Controllers
 					return Request.CreateResponse(HttpStatusCode.BadRequest, "parkingPlace.Status == ParkingPlaceStatus.RESERVED && !reservationRemoved");
 				}
 
+				double distance = Distance.computeDistance(value.CurrentLocationLatitude,
+															value.CurrentLocationLongitude,
+															parkingPlace.Location.Latitude,
+															parkingPlace.Location.Longitude);
+				if (distance > MAX_DISTANCE_FOR_TAKING)
+				{
+					return Request.CreateResponse(HttpStatusCode.BadRequest);
+				}
+
+
 				parkingPlace.Status = ParkingPlaceStatus.TAKEN;
-				paidParkingPlacesService.AddPaidParkingPlace(new PaidParkingPlace(parkingPlace, loggedUser));
+				paidParkingPlacesService.AddPaidParkingPlace(
+											new PaidParkingPlace(parkingPlace, loggedUser, value.TicketType));
 
 				lock (parkingPlace.Zone)
 				{

@@ -1,5 +1,6 @@
 ﻿using ParkingPlaceServer.DAO;
 using ParkingPlaceServer.Models;
+using ParkingPlaceServer.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,7 @@ namespace ParkingPlaceServer.Services
 		}
 
 		private PaidParkingPlaceDAO paidParkingPlaceDAO;
+		private static readonly double MAX_DISTANCE_CURRENT_LOCATION_TO_FAVORITE_PLACE = 100.0; // meters
 
 		private PaidParkingPlacesService()
 		{
@@ -80,5 +82,27 @@ namespace ParkingPlaceServer.Services
 			}
 			
 		}
+
+		public bool CheckWheterIsParkingPlaceNearByFavoritePlace(List<FavoritePlace> favoritePlaces, 
+																double currentLocationLatitude, 
+																double currentLocationLongitude)
+		{
+			double distance;
+			Location location;
+
+			foreach (FavoritePlace favoritePlace in favoritePlaces)
+			{
+				location = favoritePlace.Location;
+				distance = Distance.computeDistance(currentLocationLatitude, currentLocationLongitude,
+													location.Latitude, location.Longitude);
+				if (distance <= MAX_DISTANCE_CURRENT_LOCATION_TO_FAVORITE_PLACE)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 	}
 }

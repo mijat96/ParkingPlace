@@ -29,7 +29,7 @@
     <!-- <string name="PARKING_PLACE_SERVER_BASE_URL">https://parkingplaceserver-tm8.conveyor.cloud</string> -->
     <string name="PARKING_PLACE_SERVER_BASE_URL">https://192.168.1.2:45455</string>
 
-    <string name="NAVIGATION_SERVICE_BASE_URL">http://www.yournavigation.org/api/1.0/gosmore.php</string>
+    <string name="NAVIGATION_SERVICE_BASE_URL">http://www.yournavigation.org</string>
     <string name="title_activity_base">BaseActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

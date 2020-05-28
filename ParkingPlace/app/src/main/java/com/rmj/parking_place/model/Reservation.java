@@ -1,9 +1,12 @@
 package com.rmj.parking_place.model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
-public class Reservation {
+public class Reservation implements Parcelable {
     private Date startDateTime;
     private Date endDateTime;
     private ParkingPlace parkingPlace;
@@ -22,6 +25,24 @@ public class Reservation {
         this.endDateTime = new Date(startDateTimeInMillis + (DURATION_OF_RESERVATION * ONE_MINUTE_IN_MILLISECONDS));
         this.parkingPlace = new ParkingPlace(parkingPlace);
     }
+
+    protected Reservation(Parcel in) {
+        startDateTime = new Date(in.readLong());
+        endDateTime = new Date(in.readLong());
+        parkingPlace = in.readParcelable(ParkingPlace.class.getClassLoader());
+    }
+
+    public static final Creator<Reservation> CREATOR = new Creator<Reservation>() {
+        @Override
+        public Reservation createFromParcel(Parcel in) {
+            return new Reservation(in);
+        }
+
+        @Override
+        public Reservation[] newArray(int size) {
+            return new Reservation[size];
+        }
+    };
 
     public Date getStartDateTime() {
         return startDateTime;
@@ -45,5 +66,17 @@ public class Reservation {
 
     public void setParkingPlace(ParkingPlace parkingPlace) {
         this.parkingPlace = parkingPlace;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(startDateTime.getTime());
+        dest.writeLong(endDateTime.getTime());
+        dest.writeParcelable(parkingPlace, flags);
     }
 }

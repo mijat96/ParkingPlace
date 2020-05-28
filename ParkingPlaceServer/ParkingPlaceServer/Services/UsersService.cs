@@ -121,5 +121,33 @@ namespace ParkingPlaceServer.Services
 			return userDAO.Users
 				.Exists(u => u.Username.Equals(username) || u.RegistrationNumber.Equals(registrationNumber));
 		}
+
+		public long AddOrUpdateFavoritePlace(User loggedUser, FavoritePlace favoritePlace)
+		{
+			long returnedId;
+			try
+			{
+				FavoritePlace existingFavoritePlace = loggedUser.FavoritePlaces.Where(fp => fp.Id == favoritePlace.Id)
+																			.Single();
+				existingFavoritePlace.Name = favoritePlace.Name;
+				existingFavoritePlace.Type = favoritePlace.Type;
+				existingFavoritePlace.Location = favoritePlace.Location;
+				returnedId = -1;
+			}
+			catch
+			{
+				returnedId = loggedUser.AddFavoritePlace(favoritePlace);
+			}
+
+			return returnedId;
+		}
+
+		public void RemoveFavoritePlace(User loggedUser, long favoritePlaceId)
+		{
+			
+			FavoritePlace existingFavoritePlace = loggedUser.FavoritePlaces.Where(fp => fp.Id == favoritePlaceId)
+																		.Single();
+			loggedUser.FavoritePlaces.Remove(existingFavoritePlace);
+		}
 	}
 }

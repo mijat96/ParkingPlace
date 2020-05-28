@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -19,11 +20,11 @@ import android.widget.Toast;
 
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.AddOrEditFavoritePlaceActivity;
+import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.model.FavoritePlace;
+import com.rmj.parking_place.model.FavoritePlaceType;
 import com.rmj.parking_place.model.Location;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -43,7 +44,8 @@ public class FavoritePlacesFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     protected static final int ADD_OR_EDIT_FAVORITE_PLACE_REQUEST = 998;
-    private List<FavoritePlace> favoritePlaces = new ArrayList<FavoritePlace>();
+    // private ArrayList<FavoritePlace> favoritePlaces;
+    private MainActivity mainActivity;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -66,10 +68,53 @@ public class FavoritePlacesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mainActivity = (MainActivity) getActivity();
+
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+
+        /*if (savedInstanceState != null) {
+            // recovering the instance state
+            favoritePlaces = savedInstanceState.getParcelableArrayList("favoritePlaces");
+        }
+        else {
+            favoritePlaces = new ArrayList<FavoritePlace>();
+            Call<ArrayList<FavoritePlace>> call = ParkingPlaceServiceUtils.userService.getFavoritePlaces();
+            call.enqueue(new Callback<ArrayList<FavoritePlace>>() {
+                @Override
+                public void onResponse(Call<ArrayList<FavoritePlace>> call, Response<ArrayList<FavoritePlace>> response) {
+                    if (response.isSuccessful()) {
+                        favoritePlaces = response.body();
+                        adapter.setItems(favoritePlaces);
+                    }
+                    else if(response.code() == 401) { // Unauthorized
+                        loginAgain();
+                    }
+                    else {
+                        favoritePlaces = new ArrayList<FavoritePlace>();
+                        adapter.setItems(favoritePlaces);
+                        Toast.makeText(getActivity(), "Problem with loading favorite places", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ArrayList<FavoritePlace>> call, Throwable t) {
+                    favoritePlaces = new ArrayList<FavoritePlace>();
+                    adapter.setItems(favoritePlaces);
+                    Toast.makeText(getActivity(), "Problem with loading favorite places", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }*/
     }
+
+    /*@Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList("favoritePlaces", favoritePlaces);
+
+        super.onSaveInstanceState(outState);
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,7 +129,7 @@ public class FavoritePlacesFragment extends Fragment {
         } else {
             recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
-        adapter = new FavoritePlacesListAdapter(favoritePlaces, mListener, this);
+        adapter = new FavoritePlacesListAdapter(mainActivity.getFavoritePlaces(), mListener, this);
         recyclerView.setAdapter(adapter);
 
         ImageButton addButton = view.findViewById(R.id.addBtn);
@@ -97,6 +142,10 @@ public class FavoritePlacesFragment extends Fragment {
 
         return view;
     }
+
+    /*public void loginAgain() {
+        mainActivity.loginAgain();
+    }*/
 
     private void clickOnAddButton(View v) {
         if (adapter.canAdd()) {
@@ -120,12 +169,12 @@ public class FavoritePlacesFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 Location selectedLocation = (Location) data.getParcelableExtra("selected_location");
                 String favoritePlaceName = data.getStringExtra("favorite_place_name");
-                adapter.addOrUpdateItem(favoritePlaceName, selectedLocation);
-                Toast.makeText(getActivity(), "Adding", Toast.LENGTH_SHORT).show();
+                String favoritePlaceTypeStr = data.getStringExtra("favoritePlaceType");
+                FavoritePlaceType favoritePlaceType = FavoritePlaceType.valueOf(favoritePlaceTypeStr);
+                adapter.addOrUpdateItem(favoritePlaceName, favoritePlaceType, selectedLocation);
             }
         }
     }
-
 
     @Override
     public void onAttach(Context context) {

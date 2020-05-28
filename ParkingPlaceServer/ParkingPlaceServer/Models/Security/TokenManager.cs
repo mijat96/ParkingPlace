@@ -21,7 +21,7 @@ namespace ParkingPlaceServer.Models.Security
             {
                 Subject = new ClaimsIdentity(new[] {
                       new Claim(ClaimTypes.Name, username)}),
-                Expires = DateTime.UtcNow.AddHours(TOKEN_DURATION),
+                Expires = DateTime.Now.AddHours(TOKEN_DURATION),
                 SigningCredentials = new SigningCredentials(securityKey,
                 SecurityAlgorithms.HmacSha256Signature)
             };
@@ -51,7 +51,7 @@ namespace ParkingPlaceServer.Models.Security
                       parameters, out securityToken);
                 return principal;
             }
-            catch
+            catch (Exception e)
             {
                 return null;
             }

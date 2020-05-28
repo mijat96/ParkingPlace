@@ -1,20 +1,21 @@
 package com.rmj.parking_place.listener;
 
-import com.google.android.gms.maps.GoogleMap;
+import com.androidmapsextensions.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.rmj.parking_place.fragments.MapPageFragment;
 
 public class OnCameraChangeListenerImplementation implements GoogleMap.OnCameraChangeListener {
     private MapPageFragment mapPageFragment;
-    private GoogleMap map;
+    // private GoogleMap map;
+    private com.androidmapsextensions.GoogleMap map;
 
     private LatLngBounds currentCameraBounds;
     private long lastCallMs = Long.MIN_VALUE;
 
     private static int CAMERA_MOVE_REACT_THRESHOLD_MS = 500;
 
-    public OnCameraChangeListenerImplementation(GoogleMap map, MapPageFragment mapPageFragment) {
+    public OnCameraChangeListenerImplementation(com.androidmapsextensions.GoogleMap map, MapPageFragment mapPageFragment) {
         this.map = map;
         this.mapPageFragment = mapPageFragment;
     }

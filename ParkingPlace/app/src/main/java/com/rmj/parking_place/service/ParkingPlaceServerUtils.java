@@ -27,7 +27,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class ParkingPlaceServiceUtils {
+public class ParkingPlaceServerUtils {
 
     private static long CONNECTION_TIMEOUT = 120; // sec
     private static long READ_TIMEOUT = 120; // sec
@@ -81,16 +81,19 @@ public class ParkingPlaceServiceUtils {
                 }
             };
 
-            final String jwtToken = TokenUtils.getToken();
             Interceptor tokenInterceptor = new Interceptor() {
                 @NotNull
                 @Override
                 public Response intercept(@NotNull Chain chain) throws IOException {
                     Request request = chain.request();
+                    String jwtToken = TokenUtils.getToken();
                     Request newRequest = request.newBuilder()
                             .addHeader("token", jwtToken)
                             .build();
                     Response response = chain.proceed(newRequest);
+                    if (response.code() == 401) {
+                        App.loginAgain();
+                    }
                     return response;
                 }
             };
@@ -118,4 +121,7 @@ public class ParkingPlaceServiceUtils {
 
 
     public static AuthenticationService authenticationService = retrofit.create(AuthenticationService.class);
+    public static UserService userService = retrofit.create(UserService.class);
+    public static ParkingPlaceService parkingPlaceService = retrofit.create(ParkingPlaceService.class);
+    public static ZoneService zoneService = retrofit.create(ZoneService.class);
 }

@@ -14,9 +14,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -24,6 +27,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.androidmapsextensions.MarkerOptions;
+import com.androidmapsextensions.Polyline;
+import com.androidmapsextensions.PolylineOptions;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,14 +40,13 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.rmj.parking_place.App;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.dialogs.LocationDialog;
 import com.rmj.parking_place.dto.DTO;
+import com.rmj.parking_place.dto.ReservingDTO;
 import com.rmj.parking_place.dto.TakingDTO;
 import com.rmj.parking_place.dto.navigation.NavigationDTO;
 import com.rmj.parking_place.exceptions.AlreadyReservedParkingPlaceException;
@@ -49,19 +54,20 @@ import com.rmj.parking_place.exceptions.AlreadyTakenParkingPlaceException;
 import com.rmj.parking_place.exceptions.CurrentLocationUnknownException;
 import com.rmj.parking_place.exceptions.MaxAllowedDistanceForReservationException;
 import com.rmj.parking_place.exceptions.NotFoundParkingPlaceException;
+import com.rmj.parking_place.listener.LocationListenerImplementation;
 import com.rmj.parking_place.listener.OnCameraChangeListenerImplementation;
+import com.rmj.parking_place.listener.OnMapClickListenerImplementation;
+import com.rmj.parking_place.listener.OnMapReadyCallbackImplementation;
+import com.rmj.parking_place.listener.OnMarkerClickListenerImplementation;
+import com.rmj.parking_place.model.FavoritePlace;
 import com.rmj.parking_place.model.FromTo;
 import com.rmj.parking_place.model.PaidParkingPlace;
 import com.rmj.parking_place.model.ParkingPlace;
 import com.rmj.parking_place.model.ParkingPlaceStatus;
 import com.rmj.parking_place.model.Reservation;
-import com.rmj.parking_place.utils.AsyncResponse;
-import com.rmj.parking_place.utils.GetRequestAsyncTask;
-import com.rmj.parking_place.utils.HttpRequestAndResponseType;
-import com.rmj.parking_place.utils.JsonLoader;
-import com.rmj.parking_place.utils.NavigationResponse;
-import com.rmj.parking_place.utils.NavigationTask;
-import com.rmj.parking_place.utils.Response;
+import com.rmj.parking_place.model.TicketType;
+import com.rmj.parking_place.service.NavigationServerUtils;
+import com.rmj.parking_place.utils.AfterGetNavigation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,24 +75,35 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback, AsyncResponse {
+
+public class MapFragment extends Fragment {
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     private static HashMap<FromTo, NavigationDTO> navigationCash = new HashMap<FromTo, NavigationDTO>();
 
     private LocationManager locationManager;
+    private LocationListenerImplementation locationListenerImpl;
     private String provider;
-    private SupportMapFragment mMapFragment;
+
+    private com.androidmapsextensions.SupportMapFragment mMapFragment;
+    //private SupportMapFragment mMapFragment;
+
     private AlertDialog dialog;
     private Location currentLocation;
     // private Marker currentLocationMarker;
-    private GoogleMap map;
 
-    private HashMap<com.rmj.parking_place.model.Location, Marker> parkingPlaceMarkers;
+    // private GoogleMap map;
+    private com.androidmapsextensions.GoogleMap map;
+
+    private HashMap<com.rmj.parking_place.model.Location, com.androidmapsextensions.Marker> parkingPlaceMarkers;
     private HashMap<com.rmj.parking_place.model.Location, ParkingPlace> parkingPlaces;
-
+    // ----------------------------------------------------
+    private ArrayList<com.androidmapsextensions.Marker> favoritePlaceMarkers;
     // ----------------------------------------------------
     private ParkingPlace selectedParkingPlace;
     private ParkingPlace foundedParkingPlaceNearby;
@@ -97,14 +114,14 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     private ParkingPlace potentiallyTakenParkingPlace;
     private ParkingPlace takenParkingPlace;
     // ----------------------------------------------------
-    private Marker selectedParkingPlaceMarker;
-    private Marker foundedParkingPlaceNearbyMarker;
+    private com.androidmapsextensions.Marker selectedParkingPlaceMarker;
+    private com.androidmapsextensions.Marker foundedParkingPlaceNearbyMarker;
 
-    private Marker potentiallyReservedParkingPlaceMarker;
-    private Marker reservedParkingPlaceMarker;
+    private com.androidmapsextensions.Marker potentiallyReservedParkingPlaceMarker;
+    private com.androidmapsextensions.Marker reservedParkingPlaceMarker;
 
-    private Marker potentiallyTakenParkingPlaceMarker;
-    private Marker takenParkingPlaceMarker;
+    private com.androidmapsextensions.Marker potentiallyTakenParkingPlaceMarker;
+    private com.androidmapsextensions.Marker takenParkingPlaceMarker;
     // ----------------------------------------------------
     private Polyline navigationPathPolyline;
     // ----------------------------------------------------
@@ -115,6 +132,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     private MapPageFragment mapPageFragment;
 
     private static final int MAX_ALLOWED_DISTANCE_FOR_RESERVATION = 5000; // meters
+    private static final float MAX_DISTANCE_PARKING_PLACE_LOCATION_TO_FAVORITE_PLACE = 100.0f; // meters
+    private static final float MAX_ALLOWED_DISTANCE_FOR_TAKING = 1.0f; // meters
 
     private static HashMap<String, Integer> markerIcons;
     static {
@@ -123,10 +142,19 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         markerIcons.put("EMPTY", R.drawable.round_directions_car_green_36);
         markerIcons.put("RESERVED", R.drawable.round_directions_car_orange_36);
         markerIcons.put("TAKEN", R.drawable.round_directions_car_red_36);
-        markerIcons.put("SELECTED", R.drawable.round_directions_car_purple_36);
+        // markerIcons.put("SELECTED", R.drawable.round_directions_car_purple_36);
+        markerIcons.put("EMPTY_SELECTED", R.drawable.round_directions_car_green_selected_36);
+        markerIcons.put("RESERVED_SELECTED", R.drawable.round_directions_car_orange_selected_36);
+        markerIcons.put("TAKEN_SELECTED", R.drawable.round_directions_car_red_selected_36);
+
+        markerIcons.put("HOME", R.drawable.baseline_home_blue_36);
+        markerIcons.put("WORK", R.drawable.baseline_work_blue_36);
+        markerIcons.put("OTHER", R.drawable.baseline_favorite_blue_36);
     }
 
     private boolean dialogAllowUserLocationWasDisplayed;
+    private boolean recoveredFragment;
+
 
     /*public static MapFragment newInstance() {
         MapFragment mpf = new MapFragment();
@@ -146,9 +174,87 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         super.onCreate(savedInstanceState);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        mapPageFragment =  (MapPageFragment) getParentFragment();
+        mapPageFragment = (MapPageFragment) getParentFragment();
+
+        locationListenerImpl = new LocationListenerImplementation(this);
+
+        if (savedInstanceState != null) {
+            recoveredFragment = true;
+            recoverSavedInstance(savedInstanceState);
+        }
+        else {
+            recoveredFragment = false;
+        }
     }
 
+    private void recoverSavedInstance(Bundle savedInstanceState) {
+        ArrayList<ParkingPlace> parkingPlacesArrayList = savedInstanceState.getParcelableArrayList("parkingPlaces");
+        for(ParkingPlace parkingPlace : parkingPlacesArrayList) {
+            parkingPlaces.put(parkingPlace.getLocation(), parkingPlace);
+        }
+
+        selectedParkingPlace = savedInstanceState.getParcelable("selectedParkingPlace");
+        potentiallyReservedParkingPlace = savedInstanceState.getParcelable("potentiallyReservedParkingPlace");
+        reservedParkingPlace = savedInstanceState.getParcelable("reservedParkingPlace");
+        potentiallyTakenParkingPlace = savedInstanceState.getParcelable("potentiallyTakenParkingPlace");
+        takenParkingPlace = savedInstanceState.getParcelable("takenParkingPlace");
+
+        reservation = savedInstanceState.getParcelable("reservation");
+        paidParkingPlace = savedInstanceState.getParcelable("paidParkingPlace");
+
+        currentLocation = savedInstanceState.getParcelable("currentLocation");
+        provider = savedInstanceState.getString("provider");
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList("parkingPlaces", new ArrayList<ParkingPlace>(parkingPlaces.values()));
+
+        if (selectedParkingPlace != null) {
+            outState.putParcelable("selectedParkingPlace", selectedParkingPlace);
+        }
+
+        if (potentiallyReservedParkingPlace != null) {
+            outState.putParcelable("potentiallyReservedParkingPlace", potentiallyReservedParkingPlace);
+        }
+
+        if (reservedParkingPlace != null) {
+            outState.putParcelable("reservedParkingPlace", reservedParkingPlace);
+        }
+
+        if (potentiallyTakenParkingPlace != null) {
+            outState.putParcelable("potentiallyTakenParkingPlace", potentiallyTakenParkingPlace);
+        }
+
+        if (takenParkingPlace != null) {
+            outState.putParcelable("takenParkingPlace", takenParkingPlace);
+        }
+
+        if (reservation != null) {
+            outState.putParcelable("reservation", reservation);
+        }
+
+        if (paidParkingPlace != null) {
+            outState.putParcelable("paidParkingPlace", paidParkingPlace);
+        }
+
+        if (currentLocation != null) {
+            outState.putParcelable("currentLocation", currentLocation);
+        }
+
+        if (provider != null) {
+            outState.putString("provider", provider);
+        }
+
+       /* if (map != null) {
+            outState.putParcelable("cameraPosition", map.getCameraPosition());
+        }*/
+
+        FragmentManager fm = getChildFragmentManager();
+        fm.putFragment(outState, "mMapFragment", mMapFragment);
+
+        super.onSaveInstanceState(outState);
+    }
 
     /**
      * Kada zelmo da dobijamo informacije o lokaciji potrebno je da specificiramo
@@ -158,18 +264,25 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         setProvider();
 
         //kreiramo novu instancu fragmenta
-        mMapFragment = SupportMapFragment.newInstance();
+        // mMapFragment = SupportMapFragment.newInstance();
+        mMapFragment = (com.androidmapsextensions.SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_container);
+        mMapFragment.setRetainInstance(true);
 
         //i vrsimo zamenu trenutnog prikaza sa prikazom mape
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.map_container, mMapFragment).commit();
+        // FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        // transaction.replace(R.id.map_container, mMapFragment).commit();
 
         //pozivamo ucitavnje mape.
         //VODITI RACUNA OVO JE ASINHRONA OPERACIJA
         //LOKACIJE MOGU DA SE DOBIJU PRE MAPE I OBRATNO
-        mMapFragment.getMapAsync(this);
+        // mMapFragment.getMapAsync(this);
+        mMapFragment.getExtendedMapAsync(new OnMapReadyCallbackImplementation(this, mapPageFragment));
     }
 
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+    }
 
     private void showLocatonDialog() {
         if (dialog == null) {
@@ -187,7 +300,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     public void onResume() {
         super.onResume();
 
-        createMapFragmentAndInflate();
+        // createMapFragmentAndInflate();
 
         if (checkLocationPermission()) {
             boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -199,28 +312,32 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                     Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
                 //Request location updates:
-                locationManager.requestLocationUpdates(provider, 0, 0, this);
+                locationManager.requestLocationUpdates(provider, 0, 0, locationListenerImpl);
                 Toast.makeText(getContext(), "ACCESS_FINE_LOCATION", Toast.LENGTH_SHORT).show();
             }else if(ContextCompat.checkSelfPermission(getContext(),
                     Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
 
                 //Request location updates:
-                locationManager.requestLocationUpdates(provider, 0, 0, this);
+                locationManager.requestLocationUpdates(provider, 0, 0, locationListenerImpl);
                 Toast.makeText(getContext(), "ACCESS_COARSE_LOCATION", Toast.LENGTH_SHORT).show();
             }
 
             if (currentLocation != null) {
-                updateCameraPosition(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), false);
+                // updateCameraPosition(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), false);
                 tryToFindEmptyParkingPlaceNearbyAndSetMode();
             }
-            if (!parkingPlaces.isEmpty()) {
+           /* if (!parkingPlaces.isEmpty()) {
                 drawParkingPlaceMarkersIfCan();
-            }
+            }*/
         }
 
     }
 
-    private void setProvider() {
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider() {
         //specificiramo krijterijum da dobijamo informacije sa svih izvora
         //ako korisnik to dopusti
         Criteria criteria = new Criteria();
@@ -231,9 +348,42 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle data) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+
         View view = inflater.inflate(R.layout.map_layout, vg, false);
+
+        if (savedInstanceState == null) {
+            createMapFragmentAndInflate();
+        }
+        else {
+            FragmentManager fm = getChildFragmentManager();
+            mMapFragment = (com.androidmapsextensions.SupportMapFragment) fm.getFragment(savedInstanceState, "mMapFragment");
+            map = mMapFragment.getExtendedMap();
+            map.setOnMapClickListener(new OnMapClickListenerImplementation(this, mapPageFragment));
+            map.setOnMarkerClickListener(new OnMarkerClickListenerImplementation(this, mapPageFragment));
+            map.setOnCameraChangeListener(new OnCameraChangeListenerImplementation(map, mapPageFragment));
+            restoreMarkers();
+            restoreNavigationPathPolyline();
+            if (selectedParkingPlace != null) {
+                selectedParkingPlaceMarker = getParkingPlaceMarker(selectedParkingPlace.getLocation());
+            }
+            if (potentiallyReservedParkingPlace != null) {
+                potentiallyReservedParkingPlaceMarker = getParkingPlaceMarker(potentiallyReservedParkingPlace.getLocation());
+            }
+            if (reservedParkingPlace != null) {
+                reservedParkingPlaceMarker = getParkingPlaceMarker(reservedParkingPlace.getLocation());
+            }
+            if (potentiallyTakenParkingPlace != null) {
+                potentiallyTakenParkingPlaceMarker = getParkingPlaceMarker(potentiallyTakenParkingPlace.getLocation());
+            }
+            if (takenParkingPlace != null) {
+                takenParkingPlaceMarker = getParkingPlaceMarker(takenParkingPlace.getLocation());
+            }
+            /*CameraPosition oldCameraPosition = map.getCameraPosition();
+            CameraPosition cameraPosition = savedInstanceState.getParcelable("cameraPosition");
+            updateCameraPosition(cameraPosition, false);*/
+        }
 
         return view;
     }
@@ -242,15 +392,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
      * Svaki put kada uredjaj dobijee novu informaciju o lokaciji ova metoda se poziva
      * i prosledjuje joj se nova informacija o kordinatamad
      * */
-    @Override
+    /*@Override
     public void onLocationChanged(Location location) {
-        //----------------------------
-        //double homeLatitude =  45.292943; // 45.293034;
-        //double homeLongitude = 19.819809; // 19.819853;
-        //location.setLatitude(homeLatitude);
-        //location.setLongitude(homeLongitude);
-        //-----------------------------
-
         Location oldLocation = currentLocation;
         if (currentLocation != null) {
             if (currentLocation.getLatitude() == location.getLatitude()
@@ -273,23 +416,23 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             }
         }
 
-        /*if (currentLocation.hasSpeed()) {
-            ((MainActivity) this.getActivity()).setNoneMode();
-        }*/
-
-        // Toast.makeText(getActivity(), "NEW LOCATION", Toast.LENGTH_SHORT).show();
-        /*if (map != null) {
-            if (currentLocationMarker != null) {
-                currentLocationMarker.setPosition(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
-            }
-            else {
-                currentLocationMarker = addMarker(currentLocation, "CURRENT_LOCATION");
-                updateCameraPosition(currentLocationMarker.getPosition());
-            }
-        }*/
+//        if (currentLocation.hasSpeed()) {
+//            ((MainActivity) this.getActivity()).setNoneMode();
+//        }
+//
+//        // Toast.makeText(getActivity(), "NEW LOCATION", Toast.LENGTH_SHORT).show();
+//        if (map != null) {
+//            if (currentLocationMarker != null) {
+//                currentLocationMarker.setPosition(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+//            }
+//            else {
+//                currentLocationMarker = addMarker(currentLocation, "CURRENT_LOCATION");
+//                updateCameraPosition(currentLocationMarker.getPosition());
+//            }
+//        }
 
         tryToFindEmptyParkingPlaceNearbyAndSetMode();
-    }
+    }*/
 
     public void tryToFindEmptyParkingPlaceNearbyAndSetMode() {
         // MainActivity mainActivity = (MainActivity) this.getActivity();
@@ -331,7 +474,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                         mapPageFragment.setIsReservingMode();
                     }
                 }
-                else {
+                else if (!mapPageFragment.isInCanReserveAndCanTakeMode()) {
                     mapPageFragment.setCanTakeMode();
                 }
             }
@@ -349,7 +492,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         }
     }
 
-    @Override
+    /*@Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
 
     }
@@ -362,7 +505,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     @Override
     public void onProviderDisabled(String provider) {
 
-    }
+    }*/
 
     public boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -430,7 +573,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                             setProvider();
                         }
                         //Request location updates:
-                        locationManager.requestLocationUpdates(provider, 0, 0, this);
+                        locationManager.requestLocationUpdates(provider, 0, 0, locationListenerImpl);
                     }
 
                 } else if (grantResults.length > 0
@@ -446,7 +589,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                             setProvider();
                         }
                         //Request location updates:
-                        locationManager.requestLocationUpdates(provider, 0, 0, this);
+                        locationManager.requestLocationUpdates(provider, 0, 0, locationListenerImpl);
                     }
 
                 }
@@ -464,7 +607,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
      * KAda je mapa spremna mozemo da radimo sa njom.
      * Mozemo reagovati na razne dogadjaje dodavanje markera, pomeranje markera,klik na mapu,...
      * */
-    @Override
+    /*@Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         currentLocation = null;
@@ -485,16 +628,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 map.setBuildingsEnabled(true);
                 //map.getUiSettings().
             }
-
-            /*if (currentLocation != null) {
-                double homeLatitude = 45.293034;
-                double homeLongitude = 19.819853;
-                currentLocation.setLatitude(homeLatitude);
-                currentLocation.setLongitude(homeLongitude);
-            }*/
         }
-
-        // final MainActivity mainActivity = (MainActivity) getActivity();
 
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -522,7 +656,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
                 // mapPageFragment.setClickedLocation(latLng);
 
-                if (mapPageFragment.isFindParkingFragmentShowed()) {
+                if (mapPageFragment.isFindParkingPlaceFragmentVisible()) {
                     mapPageFragment.returnGoogleLogoOnStartPosition();
                     changePositionOfMyLocationButton(true);
                     mapPageFragment.setVisibilityOfFindParkingButton();
@@ -535,10 +669,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                /*if (currentLocationMarker != null && marker.equals(currentLocationMarker)) {
-                    return  true;
-                }*/
-
                 ParkingPlace oldSelectedParkingPlace = selectedParkingPlace;
                 Marker oldSelectedParkingPlaceMarker = selectedParkingPlaceMarker;
 
@@ -555,17 +685,14 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 }
 
                 // String markerIcon = "SELECTED_" + selectedParkingPlace.getStatus().name();
-                String markerIcon = "SELECTED";
+                String markerIcon = selectedParkingPlace.getStatus().name() + "_SELECTED";
                 updateParkingPlaceMarker(marker, markerIcon);
                 selectedParkingPlaceMarker = marker;
 
                 // izracunati razdaljinu od trenutne lokacije do izabranog markera
                 // MainActivity mainActivity = (MainActivity) getActivity();
 
-                float distanceMarkerCurrentLocation = computeDistanceBetweenTwoPoints(selectedParkingPlace.getLocation().getLatitude(),
-                        selectedParkingPlace.getLocation().getLongitude(), currentLocation.getLatitude(), currentLocation.getLongitude());
-
-                mapPageFragment.showPlaceInfoFragment(selectedParkingPlace, distanceMarkerCurrentLocation);
+                showPlaceInfoFragment();
 
                 if (mapPageFragment.isInNoneMode()) {
                     mapPageFragment.setCanReserveMode();
@@ -590,19 +717,28 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         if (currentLocation != null) {
             // currentLocationMarker = addMarker(currentLocation, "CURRENT_LOCATION");
             // updateCameraPosition(currentLocationMarker.getPosition());
-            updateCameraPosition(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), true);
+            // updateCameraPosition(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), true);
         }
 
-        drawParkingPlaceMarkersIfCan();
+
+        if (!recoveredFragment) {
+            drawParkingPlaceMarkersIfCan();
+        }
         if (mapPageFragment.isInIsReservingMode() || mapPageFragment.isInCanReserveAndCanTakeMode()) {
             redrawNavigationPath();
         }
 
         changePositionOfMyLocationButton(true);
+    }*/
+
+    public void showPlaceInfoFragment() {
+        float distanceMarkerCurrentLocation = computeDistanceBetweenTwoPoints(selectedParkingPlace.getLocation().getLatitude(),
+                selectedParkingPlace.getLocation().getLongitude(), currentLocation.getLatitude(), currentLocation.getLongitude());
+
+        mapPageFragment.showPlaceInfoFragment(selectedParkingPlace, distanceMarkerCurrentLocation);
     }
 
     public void changePositionOfMyLocationButton(boolean showOnStartPosition) {
-        
         View mapView = mMapFragment.getView();
         if (mapView != null &&
                 mapView.findViewById(Integer.parseInt("1")) != null) {
@@ -615,11 +751,14 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             // layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
             // layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             int topMargin;
+            // mapView.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            int mapViewHeight = mapView.getHeight();
+            // int mapViewHeight = mapView.getMeasuredHeight();
             if (showOnStartPosition) {
-                topMargin = mapView.getHeight() - mapPageFragment.getFindParkingButtonHeight();
+                topMargin = mapViewHeight - mapPageFragment.getFindParkingButtonHeight();
             }
             else {
-                topMargin = mapView.getHeight() - mapPageFragment.getFindParkingFragmentHeight();
+                topMargin = mapViewHeight - mapPageFragment.getFindParkingFragmentHeight();
             }
             topMargin -= 130;
             layoutParams.setMargins(0, topMargin, 0, 0);
@@ -630,6 +769,12 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         if(map != null) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(position).zoom(15).build();
+            updateCameraPosition(cameraPosition, withAnimation);
+        }
+    }
+
+    public void updateCameraPosition(CameraPosition cameraPosition, boolean withAnimation) {
+        if(map != null) {
             CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
             if (withAnimation) {
                 map.animateCamera(cameraUpdate);
@@ -639,21 +784,28 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 map.moveCamera(cameraUpdate);
             }
         }
-
     }
 
-    private ParkingPlace getParkingPlace(double latitude, double longitude) {
+    public ParkingPlace getParkingPlace(double latitude, double longitude) {
         com.rmj.parking_place.model.Location location = new com.rmj.parking_place.model.Location(latitude, longitude);
         return parkingPlaces.get(location);
     }
 
-    public HashMap<com.rmj.parking_place.model.Location, Marker> createParkingPlaceMarkers(Collection<ParkingPlace> parkingPlaces) {
-        HashMap<com.rmj.parking_place.model.Location, Marker> markers =
-                new HashMap<com.rmj.parking_place.model.Location, Marker>();
+    public HashMap<com.rmj.parking_place.model.Location, com.androidmapsextensions.Marker> createParkingPlaceMarkers(
+            Collection<ParkingPlace> parkingPlaces) {
+        HashMap<com.rmj.parking_place.model.Location, com.androidmapsextensions.Marker> markers =
+                new HashMap<com.rmj.parking_place.model.Location, com.androidmapsextensions.Marker>();
 
-        Marker marker;
+        com.androidmapsextensions.Marker marker;
+        String markerIcon;
         for (ParkingPlace parkingPlace : parkingPlaces) {
-            marker = addMarker(parkingPlace.getLocation(), parkingPlace.getStatus().name());
+            markerIcon = parkingPlace.getStatus().name();
+            if (selectedParkingPlace != null) {
+                if (parkingPlace.equals(selectedParkingPlace)) {
+                    markerIcon += "_SELECTED";
+                }
+            }
+            marker = addMarker(parkingPlace.getLocation(), markerIcon);
             markers.put(parkingPlace.getLocation(), marker);
         }
         return markers;
@@ -663,28 +815,32 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         for(ParkingPlace newParkingPlace : newParkingPlaces) {
             parkingPlaces.put(newParkingPlace.getLocation(), newParkingPlace);
         }
-        HashMap<com.rmj.parking_place.model.Location, Marker> newMarkers = createParkingPlaceMarkers(newParkingPlaces);
-        parkingPlaceMarkers.putAll(newMarkers);
+
+        if (map != null) {
+            HashMap<com.rmj.parking_place.model.Location, com.androidmapsextensions.Marker> newMarkers =
+                                                                            createParkingPlaceMarkers(newParkingPlaces);
+            parkingPlaceMarkers.putAll(newMarkers);
+        }
     }
 
-    private Marker addMarker(Location location, String markerIcon) {
+    private com.androidmapsextensions.Marker addMarker(Location location, String markerIcon) {
         LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
 
-        Marker marker = addMarker(loc, markerIcon);
+        com.androidmapsextensions.Marker marker = addMarker(loc, markerIcon);
         return marker;
     }
 
-    private Marker addMarker(com.rmj.parking_place.model.Location location, String markerIcon) {
+    private com.androidmapsextensions.Marker addMarker(com.rmj.parking_place.model.Location location, String markerIcon) {
         LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
 
-        Marker marker = addMarker(loc, markerIcon);
+        com.androidmapsextensions.Marker marker = addMarker(loc, markerIcon);
         return marker;
     }
 
-    private Marker addMarker(LatLng loc, String markerIcon) {
+    private com.androidmapsextensions.Marker addMarker(LatLng loc, String markerIcon) {
         int resourceId = markerIcons.get(markerIcon);
 
-        Marker marker = map.addMarker(
+        com.androidmapsextensions.Marker marker = map.addMarker(
                 new MarkerOptions()
                         .title("YOUR_POSITON")
                         .anchor(0.5f,0.5f) // centriramo marker na odgovarajuce koordinate
@@ -710,7 +866,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     public void onPause() {
         super.onPause();
 
-        locationManager.removeUpdates(this);
+        locationManager.removeUpdates(locationListenerImpl);
     }
 
     private float computeDistanceBetweenTwoPoints(com.rmj.parking_place.model.Location pointA,
@@ -738,11 +894,14 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             }
         }
 
+        boolean nearBy;
         for (ParkingPlace parkingPlace : parkingPlaces.values()) {
-            if ((parkingPlace.getStatus() == ParkingPlaceStatus.EMPTY
-                    || (reservingMode && parkingPlace.equals(reservedParkingPlace))
-                    && parkingPlaceIsNearby(parkingPlace, location))) {
-                return  parkingPlace;
+            if (parkingPlace.getStatus() == ParkingPlaceStatus.EMPTY
+                    || (reservingMode && parkingPlace.equals(reservedParkingPlace))) {
+                nearBy = parkingPlaceIsNearby(parkingPlace, location);
+                if (nearBy) {
+                    return  parkingPlace;
+                }
             }
         }
 
@@ -754,10 +913,10 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 parkingPlace.getLocation().getLongitude(), location.getLatitude(), location.getLongitude());
         // distance (meteres)
         // return distance < 0.5;
-        return distance < 1.0;
+        return distance <= MAX_ALLOWED_DISTANCE_FOR_TAKING;
     }
 
-    private void updateParkingPlaceMarker(Marker marker, String newMarkerIcon)
+    public void updateParkingPlaceMarker(com.androidmapsextensions.Marker marker, String newMarkerIcon)
             throws NotFoundParkingPlaceException {
         // Marker marker = getParkingPlaceMarker(latitude, longitude);
 
@@ -776,19 +935,26 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         return newMarker;*/
     }
 
-    private Marker getParkingPlaceMarker(double latitude, double longitude) throws NotFoundParkingPlaceException {
+    private com.androidmapsextensions.Marker getParkingPlaceMarker(double latitude, double longitude) throws NotFoundParkingPlaceException {
         com.rmj.parking_place.model.Location location = new com.rmj.parking_place.model.Location(latitude, longitude);
-        Marker marker = parkingPlaceMarkers.get(location);
+        com.androidmapsextensions.Marker marker = getParkingPlaceMarker(location);
+        return marker;
+    }
+
+    private com.androidmapsextensions.Marker getParkingPlaceMarker(com.rmj.parking_place.model.Location location) throws NotFoundParkingPlaceException {
+        com.androidmapsextensions.Marker marker = parkingPlaceMarkers.get(location);
 
         if (marker == null) {
-            throw new NotFoundParkingPlaceException("Not found parking place marker (latitude=" + latitude
-                    + ", longitude=" + longitude + ")");
+            throw new NotFoundParkingPlaceException("Not found parking place marker (latitude=" + location.getLatitude()
+                    + ", longitude=" + location.getLongitude() + ")");
         }
 
         return marker;
     }
 
-    public DTO checkAndPrepareAllForReservingOnServer() throws AlreadyTakenParkingPlaceException, AlreadyReservedParkingPlaceException, NotFoundParkingPlaceException, CurrentLocationUnknownException, MaxAllowedDistanceForReservationException {
+    public ReservingDTO checkAndPrepareAllForReservingOnServer() throws AlreadyTakenParkingPlaceException,
+            AlreadyReservedParkingPlaceException, NotFoundParkingPlaceException, CurrentLocationUnknownException,
+            MaxAllowedDistanceForReservationException {
         float distance;
         if (selectedParkingPlace == null) {
             throw new NotFoundParkingPlaceException("selectedParkingPlace == null");
@@ -817,14 +983,14 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         potentiallyReservedParkingPlace = selectedParkingPlace;
         if (selectedParkingPlaceMarker == null) {
-            selectedParkingPlaceMarker = getParkingPlaceMarker(selectedParkingPlace.getLocation().getLatitude(),
-                    selectedParkingPlace.getLocation().getLongitude());
+            selectedParkingPlaceMarker = getParkingPlaceMarker(selectedParkingPlace.getLocation());
         }
         else {
             potentiallyReservedParkingPlaceMarker = selectedParkingPlaceMarker;
         }
 
-        return new DTO(potentiallyReservedParkingPlace.getZone().getId(), potentiallyReservedParkingPlace.getId());
+        return new ReservingDTO(potentiallyReservedParkingPlace.getZone().getId(), potentiallyReservedParkingPlace.getId(),
+                                currentLocation.getLatitude(), currentLocation.getLongitude());
     }
 
     public void reserveParkingPlace() {
@@ -839,29 +1005,79 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         reservation = new Reservation(reservedParkingPlace);
 
         updateParkingPlaceMarker(reservedParkingPlaceMarker, newParkingPlaceStatus.name());
-        getNavigation();
+
+        AfterGetNavigation afterGetNavigation = navigationDTO -> drawNavigationPath(navigationDTO.getCoordinates());
+        getNavigation(reservedParkingPlace, afterGetNavigation);
 
         // final MainActivity mainActivity = (MainActivity) getActivity();
         mapPageFragment.startTimerForReservationOrTakingOfParkingPlace(reservation.getEndDateTime().getTime(), true);
     }
 
-    private void getNavigation() {
+    public void setRealDistanceInParkingPlaceInfo() {
+        AfterGetNavigation afterGetNavigation = navigationDTO -> mapPageFragment.setRealDistanceInParkingPlaceInfo(
+                                                                        navigationDTO.getProperties().getDistance());
+        getNavigation(selectedParkingPlace, afterGetNavigation);
+    }
+
+    private void getNavigation(ParkingPlace parkingPlace, AfterGetNavigation afterGetNavigation) {
         FromTo fromTo = new FromTo(new com.rmj.parking_place.model.Location(currentLocation.getLatitude(),
                 currentLocation.getLongitude()),
-                reservedParkingPlace.getLocation());
-        String url = getNavigationUrl(fromTo);
-        new NavigationTask(this, fromTo).execute(url, HttpRequestAndResponseType.NAVIGATION.name());
+                parkingPlace.getLocation());
+
+        NavigationDTO navigationDTO = navigationCash.get(fromTo);
+        if (navigationDTO != null) {
+            afterGetNavigation.doSomething(navigationDTO);
+            // drawNavigationPath(navigationDTO.getCoordinates());
+        }
+        else {
+
+            NavigationServerUtils.navigationService.getNavigation(fromTo.getFrom().getLatitude(), fromTo.getFrom().getLongitude(),
+                    fromTo.getTo().getLatitude(), fromTo.getTo().getLongitude(),"geojson")
+                    .enqueue(new Callback<NavigationDTO>() {
+                        @Override
+                        public void onResponse(Call<NavigationDTO> call, Response<NavigationDTO> response) {
+                            if (response == null || (response != null && !response.isSuccessful())) {
+                                Toast.makeText(getActivity(), "Problem with loading navigation path. We will try again.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                NavigationDTO navigationDTO = response.body();
+                                if (navigationDTO.getProperties().getDistance() > 0) {
+                                    navigationCash.put(fromTo, navigationDTO);
+                                }
+
+                                afterGetNavigation.doSomething(navigationDTO);
+                                // drawNavigationPath(navigationDTO.getCoordinates());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<NavigationDTO> call, Throwable t) {
+                            // Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                            // Toast.makeText(mapPageFragment.getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                            // dobija se sledeci error
+                            // java.lang.NullPointerException: Attempt to invoke virtual method 'android.content.res.Resources android.content.Context.getResources()' on a null object reference
+
+                            Toast.makeText(App.getAppContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                            // call.enqueue(this); // pokusaj ponovo
+                        }
+                    });
+        }
+
+
+        // String url = getNavigationUrl(fromTo);
+        // new NavigationTask(this, fromTo).execute(url, HttpRequestAndResponseType.NAVIGATION.name());
     }
 
-    private String getNavigationUrl(FromTo fromTo) {
+    /*private String getNavigationUrl(FromTo fromTo) {
         String url = getString(R.string.NAVIGATION_SERVICE_BASE_URL)
                 + "?flat=" + fromTo.getFrom().getLatitude() + "&flon=" + fromTo.getFrom().getLongitude()
-                + "&tlat=" + + fromTo.getTo().getLatitude() + "&tlon=" + fromTo.getTo().getLongitude()
+                + "&tlat=" + fromTo.getTo().getLatitude() + "&tlon=" + fromTo.getTo().getLongitude()
                 + "&format=geojson";
         return url;
-    }
+    }*/
 
-    public void takeParkingPlace() {
+    public void takeParkingPlace(TicketType ticketType) {
         takenParkingPlace = potentiallyTakenParkingPlace;
         potentiallyTakenParkingPlace = null;
 
@@ -870,15 +1086,19 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         ParkingPlaceStatus newParkingPlaceStatus = ParkingPlaceStatus.TAKEN;
         takenParkingPlace.setStatus(newParkingPlaceStatus);
-        paidParkingPlace = new PaidParkingPlace(takenParkingPlace);
+        paidParkingPlace = new PaidParkingPlace(takenParkingPlace, ticketType);
 
         updateParkingPlaceMarker(takenParkingPlaceMarker, newParkingPlaceStatus.name());
 
         Date endDateTime = paidParkingPlace.getEndDateTime();
         long endDateTimeInMillis = endDateTime.getTime();
 
-        // final MainActivity mainActivity = (MainActivity) getActivity();
-        mapPageFragment.startTimerForReservationOrTakingOfParkingPlace(endDateTimeInMillis, false);
+        if (ticketType == TicketType.REGULAR) {
+            mapPageFragment.startTimerForReservationOrTakingOfParkingPlace(endDateTimeInMillis, false);
+        }
+        else {
+            mapPageFragment.setNoneMode();
+        }
     }
 
     public TakingDTO checkAndPrepareAllForTakingOnServer() throws NotFoundParkingPlaceException, AlreadyReservedParkingPlaceException, AlreadyTakenParkingPlaceException {
@@ -907,7 +1127,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             potentiallyTakenParkingPlaceMarker = foundedParkingPlaceNearbyMarker;
         }
 
-        return new TakingDTO(potentiallyTakenParkingPlace.getZone().getId(), potentiallyTakenParkingPlace.getId());
+        return new TakingDTO(potentiallyTakenParkingPlace.getZone().getId(), potentiallyTakenParkingPlace.getId(),
+                            currentLocation.getLatitude(), currentLocation.getLongitude());
     }
 
     public void finishReservationOfParkingPlace() {
@@ -916,6 +1137,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         if (reservedParkingPlace == null) {
             throw new NotFoundParkingPlaceException("reservedParkingPlace == null");
         }
+
+        reservation = null;
 
         ParkingPlaceStatus newParkingPlaceStatus = ParkingPlaceStatus.EMPTY;
         reservedParkingPlace.setStatus(newParkingPlaceStatus);
@@ -932,6 +1155,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         if (takenParkingPlace == null) {
             throw new NotFoundParkingPlaceException("takenParkingPlace == null");
         }
+
+        paidParkingPlace = null;
 
         ParkingPlaceStatus newParkingPlaceStatus = ParkingPlaceStatus.EMPTY;
         takenParkingPlace.setStatus(newParkingPlaceStatus);
@@ -956,53 +1181,17 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
      * */
     public void drawParkingPlaceMarkersIfCan() {
         if (map != null && parkingPlaces != null) {
+            map.clear();
             parkingPlaceMarkers = createParkingPlaceMarkers(parkingPlaces.values());
         }
-
-        /*double homeLatitude = 45.293034;
-        double homeLongitude = 19.819853;
-        double centerLatitude = 45.254879;
-        double centerLongitude = 19.842181;
-        float distance = computeDistanceBetweenTwoPoints(homeLatitude, homeLongitude, centerLatitude, centerLongitude);
-        Toast.makeText(this.getActivity(), "distance = " + distance,Toast.LENGTH_SHORT).show();
-        System.out.println("distance = " + distance);*/
-
-        //Getting both the coordinates
-//        LatLng from = new LatLng(homeLatitude,homeLongitude);
-//        LatLng to = new LatLng(centerLatitude,centerLongitude);
-
-        //Calculating the distance in meters
-//        double realDistance = SphericalUtil.computeDistanceBetween(from, to);
-//        System.out.println("realDistance = " + realDistance);
     }
 
     public void setParkingPlaces(HashMap<com.rmj.parking_place.model.Location, ParkingPlace> parkingPlaces) {
         this.parkingPlaces = parkingPlaces;
     }
 
-    @Override
-    public void processFinish(Response response) {
-        if (response.getType() == HttpRequestAndResponseType.NAVIGATION) {
-            if (response.getResult().equals("NOT_CONNECTED") || response.getResult().equals("FAIL")) {
-                Toast.makeText(getActivity(), "[response_result = " + response.getResult()
-                        + "] Problem with loading navigation path. We will try again.", Toast.LENGTH_SHORT).show();
-                getNavigation();
-            }
-            NavigationResponse navigationResponse = (NavigationResponse) response;
-            FromTo fromTo = navigationResponse.getFromTo();
-            NavigationDTO navigationDTO = JsonLoader.convertJsonToNavigationDTO(navigationResponse.getResult());
-            navigationCash.put(fromTo, navigationDTO);
 
-            drawNavigationPath(navigationDTO.getCoordinates());
-        }
-    }
-
-    @Override
-    public void loginAgain() {
-        ((MainActivity) getActivity()).loginAgain();
-    }
-
-    private void redrawNavigationPath() {
+    public void redrawNavigationPath() {
         if (navigationPathPolyline != null) {
             List<LatLng> points = navigationPathPolyline.getPoints();
             drawNavigationPathUsingPoints(points);
@@ -1027,7 +1216,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     }
 
     private void drawNavigationPathUsingPoints(List<LatLng> points) {
-        PolylineOptions lineOptions = new PolylineOptions();
+        com.androidmapsextensions.PolylineOptions lineOptions = new PolylineOptions();
         lineOptions.addAll(points);
         lineOptions.width(12);
         lineOptions.color(Color.rgb(0, 102, 204)); // blue
@@ -1046,12 +1235,17 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     }
 
     public void updateParkingPlaceMarkers(List<ParkingPlace> parkingPlacesForUpdating) {
-        Marker marker;
+        com.androidmapsextensions.Marker marker;
         String markerIcon;
 
         for (ParkingPlace parkingPlace : parkingPlacesForUpdating) {
             marker = parkingPlaceMarkers.get(parkingPlace.getLocation());
             markerIcon = parkingPlace.getStatus().name();
+            if (selectedParkingPlace != null) {
+                if (parkingPlace.equals(selectedParkingPlace)) {
+                    markerIcon += "_SELECTED";
+                }
+            }
             updateParkingPlaceMarker(marker, markerIcon);
         }
     }
@@ -1079,5 +1273,140 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             }
             map.setPadding(0, 0, 0, bottomPadding);
         }
+    }
+
+    public boolean checkParkingPlaceIsNearByFavoritePlace(ArrayList<FavoritePlace> favoritePlaces) {
+        if (foundedParkingPlaceNearby == null) {
+            throw new NotFoundParkingPlaceException("foundedParkingPlaceNearby == null");
+        }
+
+        if (favoritePlaces == null || (favoritePlaces != null && favoritePlaces.isEmpty())) {
+            return false;
+        }
+
+        com.rmj.parking_place.model.Location foundedParkingPlaceNearbyLocation = foundedParkingPlaceNearby.getLocation();
+        com.rmj.parking_place.model.Location favoritePlacelocation;
+        double distance;
+
+        for (FavoritePlace favoritePlace : favoritePlaces) {
+            favoritePlacelocation = favoritePlace.getLocation();
+            distance = computeDistanceBetweenTwoPoints(foundedParkingPlaceNearbyLocation.getLatitude(),
+                    foundedParkingPlaceNearbyLocation.getLongitude(),
+                                                        favoritePlacelocation.getLatitude(), favoritePlacelocation.getLongitude());
+            if (distance <= MAX_DISTANCE_PARKING_PLACE_LOCATION_TO_FAVORITE_PLACE) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void setMap(com.androidmapsextensions.GoogleMap googleMap) {
+        map = googleMap;
+    }
+
+    public ParkingPlace getSelectedParkingPlace() {
+        return selectedParkingPlace;
+    }
+
+    public com.androidmapsextensions.Marker getSelectedParkingPlaceMarker() {
+        return selectedParkingPlaceMarker;
+    }
+
+    public void setSelectedParkingPlace(ParkingPlace selectedParkingPlace) {
+        this.selectedParkingPlace = selectedParkingPlace;
+    }
+
+    public void setSelectedParkingPlaceMarker(com.androidmapsextensions.Marker marker) {
+        selectedParkingPlaceMarker = marker;
+    }
+
+    public ParkingPlace getFoundedParkingPlaceNearby() {
+        return foundedParkingPlaceNearby;
+    }
+
+    public Location getCurrentLocation() {
+        return  currentLocation;
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public LocationManager getLocationManager() {
+        return locationManager;
+    }
+
+    public boolean isRecoveredFragment() {
+        return recoveredFragment;
+    }
+
+    public void restoreMarkers() {
+        List<com.androidmapsextensions.Marker> markers = map.getMarkers();
+        if (markers.isEmpty()) {
+            return;
+        }
+
+        parkingPlaceMarkers = new HashMap<com.rmj.parking_place.model.Location, com.androidmapsextensions.Marker>();
+        favoritePlaceMarkers = new ArrayList<com.androidmapsextensions.Marker>(3);
+        LatLng position;
+
+        for (com.androidmapsextensions.Marker marker : markers) {
+
+            if (marker.getSnippet() == null) {
+                position = marker.getPosition();
+                parkingPlaceMarkers.put(new com.rmj.parking_place.model.Location(position.latitude,position.longitude), marker);
+            }
+            else {
+                favoritePlaceMarkers.add(marker);
+            }
+        }
+    }
+
+    public void restoreNavigationPathPolyline() {
+        List<Polyline> polylines = map.getPolylines();
+        if (polylines.isEmpty()) {
+            return;
+        }
+        navigationPathPolyline = polylines.get(0);
+    }
+
+    public void drawFavoritePlaceMarkers() {
+        ArrayList<FavoritePlace> favoritePlaces = ((MainActivity) getActivity()).getFavoritePlaces();
+        if (favoritePlaces == null || (favoritePlaces != null && favoritePlaces.isEmpty())) {
+            return;
+        }
+
+        favoritePlaceMarkers = new ArrayList<com.androidmapsextensions.Marker>(3);
+        com.androidmapsextensions.Marker marker;
+
+        for (FavoritePlace favoritePlace : favoritePlaces) {
+            marker = addFavoritePlaceMarker(favoritePlace);
+            favoritePlaceMarkers.add(marker);
+        }
+    }
+
+    private com.androidmapsextensions.Marker addFavoritePlaceMarker(FavoritePlace favoritePlace) {
+        LatLng postion = new LatLng(favoritePlace.getLocation().getLatitude(), favoritePlace.getLocation().getLongitude());
+        int resourceId = markerIcons.get(favoritePlace.getType().name());
+
+        com.androidmapsextensions.Marker marker = map.addMarker(
+                new MarkerOptions()
+                        .title(favoritePlace.getName())
+                        .anchor(0.5f,0.5f) // centriramo marker na odgovarajuce koordinate
+                        .icon(BitmapDescriptorFactory.fromResource(resourceId))
+                        .position(postion)
+                        .snippet(favoritePlace.getName() + " (" + favoritePlace.getType().name() + ")")
+        );
+        marker.setFlat(true);
+        return marker;
+    }
+
+    public boolean isFavoritePlaceMarker(com.androidmapsextensions.Marker marker) {
+        if (favoritePlaceMarkers == null || (favoritePlaceMarkers != null && favoritePlaceMarkers.isEmpty())) {
+            return false;
+        }
+
+        return favoritePlaceMarkers.contains(marker);
     }
 }

@@ -5,7 +5,7 @@ using System.Web;
 
 namespace ParkingPlaceServer.DTO
 {
-	public class TakingDTO : Dto
+	public class TakingDTO : ReservingDto
 	{
 		public TicketType TicketType { get; set; }
 

@@ -4,12 +4,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/map_container"
+        android:name="com.androidmapsextensions.SupportMapFragment"
+        map:mapType="normal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!--<fragment xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/map_container"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        map:mapType="normal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>-->
+
+    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:id="@+id/map_container"
-        android:layout_weight=".1"/>
+        android:layout_weight=".1"/>-->
 
     <!--<LinearLayout
         android:id="@+id/find_parking_frame"

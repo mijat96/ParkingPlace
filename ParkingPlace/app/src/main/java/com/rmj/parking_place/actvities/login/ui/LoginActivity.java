@@ -37,6 +37,13 @@ public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Intent intent = getIntent();
+        String toastMessage = intent.getStringExtra("");
+        if (toastMessage != null) {
+            Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
+        }
+
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory(this))
                 .get(LoginViewModel.class);
 

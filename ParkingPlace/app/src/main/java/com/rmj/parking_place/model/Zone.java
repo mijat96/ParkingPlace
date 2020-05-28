@@ -1,12 +1,15 @@
 package com.rmj.parking_place.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class Zone {
+public class Zone implements Parcelable {
     private Long id;
     private String name;
     private Long version;
@@ -42,6 +45,66 @@ public class Zone {
             this.ticketPrices.add(ticketPrice);
         }
     }
+
+    protected Zone(Parcel in) {
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readLong();
+        }
+        name = in.readString();
+        if (in.readByte() == 0) {
+            version = null;
+        } else {
+            version = in.readLong();
+        }
+        northEast = in.readParcelable(Location.class.getClassLoader());
+        southWest = in.readParcelable(Location.class.getClassLoader());
+        parkingPlaces = readParkingPlaces(in);
+        ticketPrices = in.createTypedArrayList(TicketPrice.CREATOR);
+    }
+
+    public void writeParkingPlaces(Parcel dest, int flags, List<ParkingPlace> parkingPlaces) {
+        if (parkingPlaces == null) {
+            dest.writeInt(-1);
+            return;
+        }
+        int N = parkingPlaces.size();
+        int i=0;
+        dest.writeInt(N);
+        while (i < N) {
+            ParkingPlace.writeToParcelWithoutZone(dest, flags, parkingPlaces.get(i));
+            i++;
+        }
+    }
+
+    public ArrayList<ParkingPlace> readParkingPlaces(Parcel in) {
+        int N = in.readInt();
+        if (N < 0) {
+            return null;
+        }
+        ArrayList<ParkingPlace> l = new ArrayList<ParkingPlace>(N);
+        ParkingPlace parkingPlace;
+        while (N > 0) {
+            parkingPlace = ParkingPlace.readToParcelWithoutZone(in);
+            parkingPlace.setZone(this);
+            l.add(parkingPlace);
+            N--;
+        }
+        return l;
+    }
+
+    public static final Creator<Zone> CREATOR = new Creator<Zone>() {
+        @Override
+        public Zone createFromParcel(Parcel in) {
+            return new Zone(in);
+        }
+
+        @Override
+        public Zone[] newArray(int size) {
+            return new Zone[size];
+        }
+    };
 
     public TicketPrice getTicketPrice(TicketType ticketType) {
         for (TicketPrice ticketPrice : ticketPrices) {
@@ -120,5 +183,31 @@ public class Zone {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        dest.writeString(name);
+        if (version == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(version);
+        }
+        dest.writeParcelable(northEast, flags);
+        dest.writeParcelable(southWest, flags);
+        writeParkingPlaces(dest, flags, parkingPlaces);
+        dest.writeTypedList(ticketPrices);
     }
 }

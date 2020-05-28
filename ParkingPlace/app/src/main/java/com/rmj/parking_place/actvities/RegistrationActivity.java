@@ -1,6 +1,5 @@
 package com.rmj.parking_place.actvities;
 
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,8 +12,7 @@ import android.widget.Toast;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
 import com.rmj.parking_place.dto.RegistrationDTO;
-import com.rmj.parking_place.service.ParkingPlaceServiceUtils;
-import com.rmj.parking_place.utils.JsonLoader;
+import com.rmj.parking_place.service.ParkingPlaceServerUtils;
 
 import java.io.IOException;
 
@@ -47,7 +45,7 @@ public class RegistrationActivity extends CheckWifiActivity /*AppCompatActivity*
                                                                     passwordEditText.getText().toString(),
                                                                     repeatPasswordEditText.getText().toString(),
                                                                     carRegistrationNumberEditText.getText().toString());
-                Call<ResponseBody> call = ParkingPlaceServiceUtils.authenticationService.register(registrationDTO);
+                Call<ResponseBody> call = ParkingPlaceServerUtils.authenticationService.register(registrationDTO);
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

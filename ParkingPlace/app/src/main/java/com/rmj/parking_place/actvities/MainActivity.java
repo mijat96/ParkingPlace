@@ -10,14 +10,17 @@ import android.view.Menu;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.rmj.parking_place.App;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
 import com.rmj.parking_place.fragments.FindParkingFragment;
 import com.rmj.parking_place.fragments.MapPageFragment;
 import com.rmj.parking_place.fragments.favorite_places.FavoritePlacesFragment;
 import com.rmj.parking_place.model.FavoritePlace;
+import com.rmj.parking_place.service.ParkingPlaceServerUtils;
 import com.rmj.parking_place.utils.TokenUtils;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -26,16 +29,36 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
                             implements FavoritePlacesFragment.OnListFragmentInteractionListener {
 
     private AppBarConfiguration mAppBarConfiguration;
+
+    private ArrayList<FavoritePlace> favoritePlaces;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (savedInstanceState == null) {
+            loadFavoritePlaces();
+        }
+        else {
+            favoritePlaces = savedInstanceState.getParcelableArrayList("favoritePlaces");
+            if (favoritePlaces == null) {
+                favoritePlaces = new ArrayList<FavoritePlace>();
+            }
+        }
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         /*FloatingActionButton fab = findViewById(R.id.fab);
@@ -61,6 +84,14 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
     }
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        if (favoritePlaces != null) {
+            outState.putParcelableArrayList("favoritePlaces", favoritePlaces);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -74,8 +105,36 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
                 || super.onSupportNavigateUp();
     }
 
-    public void loginAgain() {
-        String currentActivity = getCurrentActivity();
+    private void loadFavoritePlaces() {
+       ParkingPlaceServerUtils.userService.getFavoritePlaces()
+               .enqueue(new Callback<ArrayList<FavoritePlace>>() {
+                   @Override
+                   public void onResponse(Call<ArrayList<FavoritePlace>> call, Response<ArrayList<FavoritePlace>> response) {
+                       if (response.isSuccessful()) {
+                           favoritePlaces = response.body();
+                           if (favoritePlaces == null) {
+                               favoritePlaces = new ArrayList<FavoritePlace>();
+                           }
+                       }
+                       else if(response.code() == 401) { // Unauthorized
+
+                       }
+                       else {
+                           favoritePlaces = new ArrayList<FavoritePlace>();
+                       }
+                   }
+
+                   @Override
+                   public void onFailure(Call<ArrayList<FavoritePlace>> call, Throwable t) {
+                       Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                       favoritePlaces = new ArrayList<FavoritePlace>();
+                   }
+               });
+    }
+
+
+    /*public void loginAgain() {
+        String currentActivity = App.getCurrentActivityName();
         if (currentActivity.endsWith("LoginActivity")) { // vec se nalazi na login activity-ju
             return;
         }
@@ -83,20 +142,8 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
         TokenUtils.removeToken();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
         Toast.makeText(this, "Please login again.", Toast.LENGTH_SHORT).show();
-    }
-
-    private String getCurrentActivity() {
-        ComponentName cn;
-        ActivityManager am = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            cn = am.getAppTasks().get(0).getTaskInfo().topActivity;
-        } else {
-            //noinspection deprecation
-            cn = am.getRunningTasks(1).get(0).topActivity;
-        }
-
-        return cn.getClassName();
-    }
+        finish();
+    }*/
 
     public void clickOnItemLogout(MenuItem item) {
         TokenUtils.removeToken();
@@ -108,4 +155,7 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
         Toast.makeText(this, item.getName(), Toast.LENGTH_SHORT).show();
     }
 
+    public ArrayList<FavoritePlace> getFavoritePlaces() {
+        return favoritePlaces;
+    }
 }

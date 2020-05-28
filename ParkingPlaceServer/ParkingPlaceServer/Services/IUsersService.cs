@@ -17,5 +17,8 @@ namespace ParkingPlaceServer.Services
 		string Login(string username, string password);
 		
 		void Register(string username, string password, string repeatPassword, string carRegistrationNumber);
+
+		long AddOrUpdateFavoritePlace(User loggedUser, FavoritePlace favoritePlace);
+		void RemoveFavoritePlace(User loggedUser, long favoritePlaceId);
 	}
 }

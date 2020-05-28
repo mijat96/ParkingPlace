@@ -1,11 +1,14 @@
 package com.rmj.parking_place.model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
-public class ParkingPlace {
+public class ParkingPlace implements Parcelable {
     private Long id;
     private Location location;
     private ParkingPlaceStatus status;
@@ -28,6 +31,28 @@ public class ParkingPlace {
         this.status = parkingPlace.status;
         this.zone = new Zone(parkingPlace.zone);
     }
+
+    protected ParkingPlace(Parcel in) {
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readLong();
+        }
+        location = in.readParcelable(Location.class.getClassLoader());
+        zone = in.readParcelable(Zone.class.getClassLoader());
+    }
+
+    public static final Creator<ParkingPlace> CREATOR = new Creator<ParkingPlace>() {
+        @Override
+        public ParkingPlace createFromParcel(Parcel in) {
+            return new ParkingPlace(in);
+        }
+
+        @Override
+        public ParkingPlace[] newArray(int size) {
+            return new ParkingPlace[size];
+        }
+    };
 
     public Long getId() {
         return id;
@@ -80,4 +105,41 @@ public class ParkingPlace {
         return Objects.hash(location, status, zone);
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        dest.writeParcelable(location, flags);
+        dest.writeParcelable(zone, flags);
+    }
+
+    public static void writeToParcelWithoutZone(Parcel dest, int flags, ParkingPlace parkingPlace) {
+        if (parkingPlace.id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(parkingPlace.id);
+        }
+        dest.writeParcelable(parkingPlace.location, flags);
+    }
+
+    public static ParkingPlace readToParcelWithoutZone(Parcel in) {
+        ParkingPlace parkingPlace = new ParkingPlace();
+        if (in.readByte() == 0) {
+            parkingPlace.id = null;
+        } else {
+            parkingPlace.id = in.readLong();
+        }
+        parkingPlace.location = in.readParcelable(Location.class.getClassLoader());
+        return parkingPlace;
+    }
 }

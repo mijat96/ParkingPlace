@@ -13,5 +13,7 @@ namespace ParkingPlaceServer.Services
 		void AddPaidParkingPlace(PaidParkingPlace paidParkingPlace);
 		
 		bool RemovePaidParkingPlace(User loggedUser, long parkingPlaceId);
+		bool CheckWheterIsParkingPlaceNearByFavoritePlace(List<FavoritePlace> favoritePlaces, 
+								double currentLocationLatitude, double currentLocationLongitude);
 	}
 }

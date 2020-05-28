@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.actvities.SelectLocationActivity;
+import com.rmj.parking_place.listener.OnCreateViewFinishedListener;
 import com.rmj.parking_place.model.Location;
 import com.rmj.parking_place.model.ParkingPlace;
 import com.rmj.parking_place.model.Zone;
@@ -49,6 +50,8 @@ public class FindParkingFragment extends Fragment {
     private MapPageFragment mapPageFragment;
     private MainActivity mainActivity;
 
+    private OnCreateViewFinishedListener onCreateViewFinishedListener;
+
 
     public FindParkingFragment() {
 
@@ -66,6 +69,32 @@ public class FindParkingFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view  = inflater.inflate(R.layout.find_parking_layout, container, false);
+
+        if (savedInstanceState != null) {
+            CheckBox addressCheckBox = (CheckBox) view.findViewById(R.id.addressCheckBox);
+            EditText addressTextInput = (EditText) view.findViewById(R.id.address_text_input);
+            CheckBox zoneCheckBox = (CheckBox) view.findViewById(R.id.zoneCheckBox);
+            EditText zoneTextInput = (EditText) view.findViewById(R.id.zone_text_input);
+            CheckBox markerCheckBox = (CheckBox) view.findViewById(R.id.markerCheckBox);
+            TextView locationText = (TextView) view.findViewById(R.id.location_text);
+            EditText locationDistanceTextInput = (EditText) view.findViewById(R.id.location_distance_text_input);
+
+            addressCheckBox.setChecked(savedInstanceState.getBoolean("addressChecked"));
+            addressTextInput.setText(savedInstanceState.getString("addressText"));
+            addressTextInput.setFocusable(savedInstanceState.getBoolean("addressTextFocusable"));
+
+            zoneCheckBox.setChecked(savedInstanceState.getBoolean("zoneChecked"));
+            zoneTextInput.setText(savedInstanceState.getString("zoneText"));
+            zoneTextInput.setFocusable(savedInstanceState.getBoolean("zoneTextFocusable"));
+
+            markerCheckBox.setChecked(savedInstanceState.getBoolean("markerChecked"));
+            locationText.setText(savedInstanceState.getString("locationText"));
+            locationDistanceTextInput.setText(savedInstanceState.getString("locationDistanceText"));
+            locationDistanceTextInput.setFocusable(savedInstanceState.getBoolean("locationDistanceTextFocusable"));
+
+            chosedSearchMethod = savedInstanceState.getString("chosedSearchMethod");
+            clickedLocation = savedInstanceState.getParcelable("clickedLocation");
+        }
 
         /*Button closeSearchBtn = (Button) view.findViewById(R.id.closeSearch);
         closeSearchBtn.setOnClickListener(new View.OnClickListener() {
@@ -115,12 +144,47 @@ public class FindParkingFragment extends Fragment {
             }
         });
 
+        if (savedInstanceState != null && onCreateViewFinishedListener != null) {
+            onCreateViewFinishedListener.OnCreateViewFinished();
+        }
+
         return view;
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        CheckBox addressCheckBox = (CheckBox) view.findViewById(R.id.addressCheckBox);
+        EditText addressTextInput = (EditText) view.findViewById(R.id.address_text_input);
+        CheckBox zoneCheckBox = (CheckBox) view.findViewById(R.id.zoneCheckBox);
+        EditText zoneTextInput = (EditText) view.findViewById(R.id.zone_text_input);
+        CheckBox markerCheckBox = (CheckBox) view.findViewById(R.id.markerCheckBox);
+        TextView locationText = (TextView) view.findViewById(R.id.location_text);
+        EditText locationDistanceTextInput = (EditText) view.findViewById(R.id.location_distance_text_input);
+
+        outState.putBoolean("addressChecked", addressCheckBox.isChecked());
+        outState.putString("addressText", addressTextInput.getText().toString());
+        outState.putBoolean("addressTextFocusable", addressTextInput.isFocusable());
+
+        outState.putBoolean("zoneChecked", zoneCheckBox.isChecked());
+        outState.putString("zoneText", zoneTextInput.getText().toString());
+        outState.putBoolean("zoneTextFocusable", zoneTextInput.isFocusable());
+
+        outState.putBoolean("markerChecked", markerCheckBox.isChecked());
+        outState.putString("locationText", locationText.getText().toString());
+        outState.putString("locationDistanceText", locationDistanceTextInput.getText().toString());
+        outState.putBoolean("locationDistanceTextFocusable", locationDistanceTextInput.isFocusable());
+
+        outState.putString("chosedSearchMethod", chosedSearchMethod);
+        outState.putParcelable("clickedLocation", clickedLocation);
+
+        super.onSaveInstanceState(outState);
+    }
 
     private void pickPointOnMap() {
         Intent pickPointIntent = new Intent(mainActivity, SelectLocationActivity.class);
+        if (clickedLocation != null) {
+            pickPointIntent.putExtra("picked_point", clickedLocation);
+        }
         startActivityForResult(pickPointIntent, PICK_MAP_POINT_REQUEST);
     }
 
@@ -138,7 +202,7 @@ public class FindParkingFragment extends Fragment {
         }
     }
 
-    public void setTextToSelected(boolean selectedLocation){
+    /*public void setTextToSelected(boolean selectedLocation){
         TextView textLocation = (TextView) view.findViewById(R.id.location_text);
 
         if(selectedLocation){
@@ -146,7 +210,7 @@ public class FindParkingFragment extends Fragment {
         }else{
             textLocation.setText("selected");
         }
-    }
+    }*/
 
     /*public void onClickHideFindFragmentButton(View v) {
 //        mapPageFragment.setInvisibilityOfMapPageFragmenView();
@@ -308,5 +372,9 @@ public class FindParkingFragment extends Fragment {
         // moze se desiti da ocitamo vrednost fragmenta (view) pre nego sto se on resize
         // i onda dobijamo height = 0
         return height;
+    }
+
+    public void setOnCreateViewFinishedListener(OnCreateViewFinishedListener onCreateViewFinishedListener) {
+        this.onCreateViewFinishedListener = onCreateViewFinishedListener;
     }
 }

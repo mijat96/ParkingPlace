@@ -16,11 +16,11 @@ namespace ParkingPlaceServer.Models
 
 		}
 
-		public PaidParkingPlace(ParkingPlace parkingPlace, User user)
+		public PaidParkingPlace(ParkingPlace parkingPlace, User user, TicketType ticketType)
 		{
 			ParkingPlace = new ParkingPlace(parkingPlace);
 			StartDateTime = DateTime.Now;
-			TicketType = TicketType.REGULAR;
+			TicketType = ticketType;
 			ArrogantUser = false;
 			User = user;
 			User.RegularPaidParkingPlace = this;

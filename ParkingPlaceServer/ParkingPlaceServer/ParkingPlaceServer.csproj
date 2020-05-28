@@ -60,6 +60,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Device" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Tokens.Jwt, Version=6.5.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -172,6 +173,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Comparers\ComparerByVersion.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ParkingPlacesController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
@@ -180,6 +182,7 @@
     <Compile Include="DAO\PaidParkingPlaceDAO.cs" />
     <Compile Include="DAO\ReservationDAO.cs" />
     <Compile Include="DAO\ZoneDAO.cs" />
+    <Compile Include="DTO\ReservingDto.cs" />
     <Compile Include="DTO\RegistrationDTO.cs" />
     <Compile Include="DTO\LoginDTO.cs" />
     <Compile Include="DTO\ParkingPlaceChangesDTO.cs" />
@@ -195,6 +198,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\FavoritePlace.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\PaidParkingPlace.cs" />
     <Compile Include="Models\ParkingPlace.cs" />
@@ -205,6 +209,7 @@
     <Compile Include="Models\Reservation.cs" />
     <Compile Include="Models\Security\TokenManager.cs" />
     <Compile Include="Models\TicketPrice.cs" />
+    <Compile Include="Models\FavoritePlaceType.cs" />
     <Compile Include="Models\TicketType.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Zone.cs" />
@@ -219,6 +224,7 @@
     <Compile Include="Services\ReservationsService .cs" />
     <Compile Include="Services\UsersService.cs" />
     <Compile Include="Services\ZonesService.cs" />
+    <Compile Include="Utils\Distance.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
