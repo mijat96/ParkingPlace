@@ -55,16 +55,6 @@
         },
         "status": "TAKEN",
         "zone": null
-      },
-      {
-        "id": 6,
-        "location": {
-          "latitude": 45.253335,
-          "longitude": 19.844794,
-          "address": null
-        },
-        "status": "EMPTY",
-        "zone": null
       }
     ],
     "parkingPlaceChanges": {},
@@ -84,7 +74,7 @@
     "southWest": null,
     "parkingPlaces": [
       {
-        "id": 7,
+        "id": 1,
         "location": {
           "latitude": 45.260536,
           "longitude": 19.809327,
@@ -94,23 +84,110 @@
         "zone": null
       },
       {
-        "id": 8,
+        "id": 2,
         "location": {
           "latitude": 45.260590,
           "longitude": 19.809297,
           "address": null
         },
-        "status": "EMPTY",
+        "status": "RESERVED",
         "zone": null
       },
       {
-        "id": 9,
+        "id": 3,
         "location": {
           "latitude": 45.260640,
           "longitude": 19.809256,
           "address": null
         },
         "status": "EMPTY",
+        "zone": null
+      }
+    ],
+    "parkingPlaceChanges": {},
+    "ticketPrices": [
+      {
+        "duration": 2,
+        "ticketType": "REGULAR",
+        "price": 100.0
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "white_zone",
+    "version": 0,
+    "northEast": null,
+    "southWest": null,
+    "parkingPlaces": [
+      {
+        "id": 1,
+        "location": {
+          "latitude": 45.247881,
+          "longitude": 19.839430,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 2,
+        "location": {
+          "latitude": 45.247838,
+          "longitude": 19.839458,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      },
+      {
+        "id": 3,
+        "location": {
+          "latitude": 45.247785,
+          "longitude": 19.839486,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 4,
+        "location": {
+          "latitude": 45.247811,
+          "longitude": 19.839088,
+          "address": null
+        },
+        "status": "TAKEN",
+        "zone": null
+      },
+      {
+        "id": 5,
+        "location": {
+          "latitude": 45.247748,
+          "longitude": 19.839127,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 6,
+        "location": {
+          "latitude": 45.247688,
+          "longitude": 19.839160,
+          "address": null
+        },
+        "status": "TAKEN",
+        "zone": null
+      },
+      {
+        "id": 7,
+        "location": {
+          "latitude": 45.235807,
+          "longitude": 19.846622,
+          "address": null
+        },
+        "status": "RESERVED",
         "zone": null
       }
     ],

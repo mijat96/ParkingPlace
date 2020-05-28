@@ -12,13 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!--<fragment xmlns:map="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/map_fragment_id"
-        android:name="com.rmj.parking_place.fragments.MapFragment"
-        map:mapType="normal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>-->
-
     <LinearLayout
         android:id="@+id/northPanel"
         android:layout_width="match_parent"
@@ -85,7 +78,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_gravity="bottom"
+        android:layout_gravity="left"
         android:visibility="gone">
     </LinearLayout>
 

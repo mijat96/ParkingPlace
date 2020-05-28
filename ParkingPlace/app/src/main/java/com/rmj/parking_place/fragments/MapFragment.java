@@ -135,7 +135,7 @@ public class MapFragment extends Fragment {
     private static final float MAX_DISTANCE_PARKING_PLACE_LOCATION_TO_FAVORITE_PLACE = 100.0f; // meters
     private static final float MAX_ALLOWED_DISTANCE_FOR_TAKING = 1.0f; // meters
 
-    private static HashMap<String, Integer> markerIcons;
+    public static HashMap<String, Integer> markerIcons;
     static {
         markerIcons = new HashMap<String, Integer>();
         markerIcons.put("CURRENT_LOCATION", R.drawable.round_my_location_blue_24);
@@ -150,6 +150,8 @@ public class MapFragment extends Fragment {
         markerIcons.put("HOME", R.drawable.baseline_home_blue_36);
         markerIcons.put("WORK", R.drawable.baseline_work_blue_36);
         markerIcons.put("OTHER", R.drawable.baseline_favorite_blue_36);
+
+        markerIcons.put("CLUSTER", R.drawable.cluster_48);
     }
 
     private boolean dialogAllowUserLocationWasDisplayed;
@@ -805,7 +807,7 @@ public class MapFragment extends Fragment {
                     markerIcon += "_SELECTED";
                 }
             }
-            marker = addMarker(parkingPlace.getLocation(), markerIcon);
+            marker = addMarker(parkingPlace.getLocation(), markerIcon, parkingPlace.getStatus());
             markers.put(parkingPlace.getLocation(), marker);
         }
         return markers;
@@ -830,10 +832,11 @@ public class MapFragment extends Fragment {
         return marker;
     }
 
-    private com.androidmapsextensions.Marker addMarker(com.rmj.parking_place.model.Location location, String markerIcon) {
+    private com.androidmapsextensions.Marker addMarker(com.rmj.parking_place.model.Location location, String markerIcon, ParkingPlaceStatus status) {
         LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
 
         com.androidmapsextensions.Marker marker = addMarker(loc, markerIcon);
+        marker.setData(status);
         return marker;
     }
 
@@ -921,11 +924,13 @@ public class MapFragment extends Fragment {
         // Marker marker = getParkingPlaceMarker(latitude, longitude);
 
         if (marker == null) {
-            throw new NotFoundParkingPlaceException("marker == null (updateParkingPlaceMarker method)");
+            //throw new NotFoundParkingPlaceException("marker == null (updateParkingPlaceMarker method)");
+            return;
         }
 
         int resourceId = markerIcons.get(newMarkerIcon);
         marker.setIcon(BitmapDescriptorFactory.fromResource(resourceId));
+
 
 
         /*marker.remove();
