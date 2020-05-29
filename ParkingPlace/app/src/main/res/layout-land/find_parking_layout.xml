@@ -1,41 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
+        android:id="@+id/searchLinear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fillViewport="true">
+        android:orientation="vertical"
+        android:background="@color/colorNorthPanelBackground">
+
+        <TextView
+            android:id="@+id/find_parking_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="FIND PARKING"
+            android:textColor="#fff"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textAlignment="center"/>
 
         <LinearLayout
-            android:id="@+id/searchLinear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/colorNorthPanelBackground">
-
-            <TextView
-                android:id="@+id/find_parking_title"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="FIND PARKING"
-                android:textColor="#fff"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textAlignment="center"/>
-
-            <!--
-            <Button
-                android:id="@+id/closeSearch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="X"
-                android:layout_gravity="right"/>
-            -->
+            android:layout_gravity="center"
+            android:orientation="horizontal">
 
             <CheckBox
                 android:id="@+id/addressCheckBox"
@@ -45,14 +36,6 @@
                 android:textColor="#fff"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
-            <EditText
-                android:id="@+id/address_text_input"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:focusable="false"
-                android:hint="Input address"
-                android:inputType="text"/>
-
             <CheckBox
                 android:id="@+id/zoneCheckBox"
                 android:layout_width="wrap_content"
@@ -61,14 +44,6 @@
                 android:textColor="#fff"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
-            <EditText
-                android:id="@+id/zone_text_input"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:focusable="false"
-                android:hint="Input zone"
-                android:inputType="text"/>
-
             <CheckBox
                 android:id="@+id/markerCheckBox"
                 android:layout_width="wrap_content"
@@ -77,51 +52,85 @@
                 android:textColor="#fff"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
+        </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginLeft="3dp">
-                <TextView
-                    android:id="@+id/location_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:layout_marginRight="10dp"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/text_size_for_selected_location"
-                    android:textColor="@color/colorBorder"
-                    android:background="@drawable/background_with_border"
-                    android:hint="Choose location"/>
+        <!--
+        <Button
+            android:id="@+id/closeSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="X"
+            android:layout_gravity="right"/>
+        -->
 
-                <Button
-                    android:id="@+id/selectLocationBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:enabled="false"
-                    android:text="Select location..."/>
 
-            </LinearLayout>
+        <EditText
+            android:id="@+id/address_text_input"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:hint="Input address"
+            android:inputType="text"
+            android:visibility="gone"
+            android:layout_gravity="center"/>
 
-            <EditText
-                android:id="@+id/location_distance_text_input"
+        <EditText
+            android:id="@+id/zone_text_input"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:hint="Input zone"
+            android:inputType="text"
+            android:visibility="gone"
+            android:layout_gravity="center"/>
+
+        <LinearLayout
+            android:id="@+id/input_location_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="3dp"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/location_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:focusable="false"
-                android:inputType="number"
-                android:hint="Choose distance"/>
+                android:layout_marginRight="10dp"
+                android:textAlignment="center"
+                android:textSize="@dimen/text_size_for_selected_location"
+                android:textColor="@color/colorBorder"
+                android:background="@drawable/background_with_border"
+                android:text="NOT SELECTED"/>
 
             <Button
-                android:id="@+id/search_parking_button"
+                android:id="@+id/selectLocationBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SEARCH"
-                android:layout_gravity="end"
-                android:paddingTop="5dp"
-                android:paddingBottom="15dp"
-                android:layout_alignParentRight="true"/>
+                android:layout_marginLeft="3dp"
+                android:enabled="false"
+                android:text="Select location..."/>
+
         </LinearLayout>
-    </ScrollView>
+
+        <EditText
+            android:id="@+id/location_distance_text_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:inputType="number"
+            android:imeOptions=""
+            android:hint="Choose distance"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/search_parking_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SEARCH"
+            android:layout_gravity="end"
+            android:paddingTop="5dp"
+            android:paddingBottom="15dp"
+            android:layout_alignParentRight="true"/>
+    </LinearLayout>
 </LinearLayout>

@@ -22,6 +22,38 @@
             android:textStyle="bold"
             android:textAlignment="center"/>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/addressCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Address"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+            <CheckBox
+                android:id="@+id/zoneCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Zone"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+            <CheckBox
+                android:id="@+id/markerCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Marker location"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
         <!--
         <Button
             android:id="@+id/closeSearch"
@@ -31,52 +63,35 @@
             android:layout_gravity="right"/>
         -->
 
-        <CheckBox
-            android:id="@+id/addressCheckBox"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Address"
-            android:textColor="#fff"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
+
         <EditText
             android:id="@+id/address_text_input"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:focusable="false"
             android:hint="Input address"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:visibility="gone"
+            android:layout_gravity="center"/>
 
-        <CheckBox
-            android:id="@+id/zoneCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Zone"
-            android:textColor="#fff"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
         <EditText
             android:id="@+id/zone_text_input"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:focusable="false"
             android:hint="Input zone"
-            android:inputType="text"/>
-
-        <CheckBox
-            android:id="@+id/markerCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Marker location"
-            android:textColor="#fff"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:inputType="text"
+            android:visibility="gone"
+            android:layout_gravity="center"/>
 
         <LinearLayout
+            android:id="@+id/input_location_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginLeft="3dp">
+            android:layout_marginLeft="3dp"
+            android:visibility="gone"
+            android:layout_gravity="center">
             <TextView
                 android:id="@+id/location_text"
                 android:layout_width="wrap_content"
@@ -106,7 +121,8 @@
             android:focusable="false"
             android:inputType="number"
             android:imeOptions=""
-            android:hint="Choose distance"/>
+            android:hint="Choose distance"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/search_parking_button"

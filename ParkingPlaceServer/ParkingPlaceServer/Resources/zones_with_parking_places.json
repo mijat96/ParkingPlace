@@ -74,7 +74,7 @@
     "southWest": null,
     "parkingPlaces": [
       {
-        "id": 1,
+        "id": 6,
         "location": {
           "latitude": 45.260536,
           "longitude": 19.809327,
@@ -84,7 +84,7 @@
         "zone": null
       },
       {
-        "id": 2,
+        "id": 7,
         "location": {
           "latitude": 45.260590,
           "longitude": 19.809297,
@@ -94,7 +94,7 @@
         "zone": null
       },
       {
-        "id": 3,
+        "id": 8,
         "location": {
           "latitude": 45.260640,
           "longitude": 19.809256,
@@ -121,7 +121,7 @@
     "southWest": null,
     "parkingPlaces": [
       {
-        "id": 1,
+        "id": 9,
         "location": {
           "latitude": 45.247881,
           "longitude": 19.839430,
@@ -131,7 +131,7 @@
         "zone": null
       },
       {
-        "id": 2,
+        "id": 10,
         "location": {
           "latitude": 45.247838,
           "longitude": 19.839458,
@@ -141,7 +141,7 @@
         "zone": null
       },
       {
-        "id": 3,
+        "id": 11,
         "location": {
           "latitude": 45.247785,
           "longitude": 19.839486,
@@ -151,7 +151,7 @@
         "zone": null
       },
       {
-        "id": 4,
+        "id": 12,
         "location": {
           "latitude": 45.247811,
           "longitude": 19.839088,
@@ -161,7 +161,7 @@
         "zone": null
       },
       {
-        "id": 5,
+        "id": 13,
         "location": {
           "latitude": 45.247748,
           "longitude": 19.839127,
@@ -171,7 +171,7 @@
         "zone": null
       },
       {
-        "id": 6,
+        "id": 14,
         "location": {
           "latitude": 45.247688,
           "longitude": 19.839160,
@@ -181,7 +181,7 @@
         "zone": null
       },
       {
-        "id": 7,
+        "id": 15,
         "location": {
           "latitude": 45.235807,
           "longitude": 19.846622,

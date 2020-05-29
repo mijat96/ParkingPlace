@@ -63,24 +63,24 @@
             android:visibility="gone"
             android:textSize="@dimen/text_size"
             android:gravity="center"/>
-
-        <LinearLayout
-            android:id="@+id/place_info_frame"
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:visibility="gone"/>
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/place_info_frame"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="65dp"
+        android:visibility="gone"
+        android:layout_gravity="bottom|right"/>
 
     <LinearLayout
+        android:layout_marginTop="65dp"
         android:id="@+id/find_parking_frame"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_gravity="left"
-        android:visibility="gone">
-    </LinearLayout>
+        android:layout_gravity="bottom|left"
+        android:visibility="gone"/>
 
     <ImageButton
         android:id="@+id/findParkingButton"

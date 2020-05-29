@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".actvities.AddOrEditFavoritePlaceActivity">
+    tools:context=".actvities.AddOrEditFavoritePlaceActivity"
+    android:background="@color/colorNorthPanelBackground">
 
     <EditText
         android:id="@+id/favoritePlaceName"
@@ -17,7 +18,7 @@
 
     <Spinner
         android:id="@+id/favoritePlaceType"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
