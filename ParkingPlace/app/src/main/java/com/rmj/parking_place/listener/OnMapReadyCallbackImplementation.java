@@ -33,12 +33,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.fragments.MapFragment;
 import com.rmj.parking_place.fragments.MapPageFragment;
+import com.rmj.parking_place.model.ParkingPlaceStatus;
+import com.rmj.parking_place.utils.ClusterIconUtils;
 
 import java.util.List;
 
 public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
     private MapFragment mapFragment;
     private MapPageFragment mapPageFragment;
+
+    private OnMapClickListenerImplementation onMapClickListenerImplementation;
+    private OnMarkerClickListenerImplementation onMarkerClickListenerImplementation;
+    private OnCameraChangeListenerImplementation onCameraChangeListenerImplementation;
+    private InfoWindowAdapterImplementation infoWindowAdapterImplementation;
 
     public OnMapReadyCallbackImplementation(MapFragment mapFragment, MapPageFragment mapPageFragment) {
         this.mapFragment = mapFragment;
@@ -61,35 +68,15 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
         googleMap.setClustering(new ClusteringSettings().clusterOptionsProvider(new ClusterOptionsProvider() {
             @Override
             public ClusterOptions getClusterOptions(List<Marker> markers) {
-                float hue;
-                int numberOfEmpty = 0;
+                int numberOfEmpties = 0;
 
                 for (Marker m: markers) {
-                    if(m.getData().toString().equals("EMPTY")){
-                        numberOfEmpty++;
+                    if(m.getData() == ParkingPlaceStatus.EMPTY){
+                        numberOfEmpties++;
                     }
                 }
 
-                Bitmap bitmap = BitmapFactory.decodeResource(mapFragment.getContext().getResources(),
-                        R.drawable.cluster_48);
-                Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-                Rect bounds = new Rect();
-                Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-                paint.setColor(Color.RED);
-                paint.setTextAlign(Paint.Align.CENTER);
-                paint.setTextSize(mapFragment.getResources().getDimension(R.dimen.text_size_cluster));
-
-                String textEmptyParking = String.valueOf(numberOfEmpty);
-                String textAllParking = String.valueOf(markers.size());
-                String text = textAllParking + "|" + textEmptyParking;
-                paint.getTextBounds(text, 0, text.length(), bounds);
-                float x = mutableBitmap.getWidth() / 2.0f;
-                float y = (mutableBitmap.getHeight() - bounds.height()) / 2.0f - bounds.top;
-
-                Canvas canvas = new Canvas(mutableBitmap);
-                canvas.drawText(text, x, y, paint);
-                BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(mutableBitmap);
+                BitmapDescriptor icon = ClusterIconUtils.makeIcon(markers.size(), numberOfEmpties);
 
                 return new ClusterOptions().icon(icon);
             }
@@ -114,38 +101,15 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
             }
         }
 
-        googleMap.setOnMapClickListener(new OnMapClickListenerImplementation(mapFragment, mapPageFragment));
-        googleMap.setOnMarkerClickListener(new OnMarkerClickListenerImplementation(mapFragment, mapPageFragment));
-        googleMap.setOnCameraChangeListener(new OnCameraChangeListenerImplementation(googleMap, mapPageFragment));
-        googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-            @Override
-            public View getInfoContents(Marker marker) {
-                Context context = mapFragment.getActivity(); // getApplicationContext(); //or getActivity(), YourActivity.this, etc.
+        onMapClickListenerImplementation = new OnMapClickListenerImplementation(mapFragment, mapPageFragment);
+        onMarkerClickListenerImplementation = new OnMarkerClickListenerImplementation(mapFragment, mapPageFragment);
+        onCameraChangeListenerImplementation = new OnCameraChangeListenerImplementation(googleMap, mapPageFragment);
+        infoWindowAdapterImplementation = new InfoWindowAdapterImplementation(mapFragment);
 
-                LinearLayout info = new LinearLayout(context);
-                info.setOrientation(LinearLayout.VERTICAL);
-
-                TextView title = new TextView(context);
-                title.setTextColor(Color.BLACK);
-                title.setGravity(Gravity.CENTER);
-                title.setTypeface(null, Typeface.BOLD);
-                title.setText(marker.getTitle());
-
-                TextView snippet = new TextView(context);
-                snippet.setTextColor(Color.GRAY);
-                snippet.setText(marker.getSnippet());
-
-                info.addView(title);
-                info.addView(snippet);
-
-                return info;
-            }
-
-            @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
-        });
+        googleMap.setOnMapClickListener(onMapClickListenerImplementation);
+        googleMap.setOnMarkerClickListener(onMarkerClickListenerImplementation);
+        googleMap.setOnCameraChangeListener(onCameraChangeListenerImplementation);
+        googleMap.setInfoWindowAdapter(infoWindowAdapterImplementation);
 
         Location currentLocation = mapFragment.getCurrentLocation();
         if (currentLocation != null) {
@@ -164,4 +128,20 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
         mapFragment.changePositionOfMyLocationButton(true);
     }
 
+
+    public void setMapFragment(MapFragment mapFragment) {
+        this.mapFragment = mapFragment;
+
+        onMapClickListenerImplementation.setMapFragment(mapFragment);
+        onMarkerClickListenerImplementation.setMapFragment(mapFragment);
+        infoWindowAdapterImplementation.setMapFragment(mapFragment);
+    }
+
+    public void setMapPageFragment(MapPageFragment mapPageFragment) {
+        this.mapPageFragment = mapPageFragment;
+
+        onMapClickListenerImplementation.setMapPageFragment(mapPageFragment);
+        onMarkerClickListenerImplementation.setMapPageFragment(mapPageFragment);
+        onCameraChangeListenerImplementation.setMapPageFragment(mapPageFragment);
+    }
 }

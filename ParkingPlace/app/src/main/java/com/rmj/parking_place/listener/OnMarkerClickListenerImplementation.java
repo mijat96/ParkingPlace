@@ -96,4 +96,12 @@ public class OnMarkerClickListenerImplementation implements GoogleMap.OnMarkerCl
         Toast.makeText(mapFragment.getActivity(), marker.getTitle(), Toast.LENGTH_SHORT).show();
         return true;
     }
+
+    public void setMapFragment(MapFragment mapFragment) {
+        this.mapFragment = mapFragment;
+    }
+
+    public void setMapPageFragment(MapPageFragment mapPageFragment) {
+        this.mapPageFragment = mapPageFragment;
+    }
 }

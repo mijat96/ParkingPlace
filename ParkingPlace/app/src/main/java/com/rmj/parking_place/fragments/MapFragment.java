@@ -27,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.androidmapsextensions.ClusterGroup;
 import com.androidmapsextensions.MarkerOptions;
 import com.androidmapsextensions.Polyline;
 import com.androidmapsextensions.PolylineOptions;
@@ -35,6 +36,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -68,6 +70,7 @@ import com.rmj.parking_place.model.Reservation;
 import com.rmj.parking_place.model.TicketType;
 import com.rmj.parking_place.service.NavigationServerUtils;
 import com.rmj.parking_place.utils.AfterGetNavigation;
+import com.rmj.parking_place.utils.ClusterIconUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -87,7 +90,7 @@ public class MapFragment extends Fragment {
     private static HashMap<FromTo, NavigationDTO> navigationCash = new HashMap<FromTo, NavigationDTO>();
 
     private LocationManager locationManager;
-    private LocationListenerImplementation locationListenerImpl;
+    private static LocationListenerImplementation locationListenerImpl;
     private String provider;
 
     private com.androidmapsextensions.SupportMapFragment mMapFragment;
@@ -131,6 +134,8 @@ public class MapFragment extends Fragment {
 
     private MapPageFragment mapPageFragment;
 
+    private static OnMapReadyCallbackImplementation onMapReadyCallbackImplementation;
+
     private static final int MAX_ALLOWED_DISTANCE_FOR_RESERVATION = 5000; // meters
     private static final float MAX_DISTANCE_PARKING_PLACE_LOCATION_TO_FAVORITE_PLACE = 100.0f; // meters
     private static final float MAX_ALLOWED_DISTANCE_FOR_TAKING = 1.0f; // meters
@@ -166,6 +171,7 @@ public class MapFragment extends Fragment {
     public MapFragment() {
         this.dialogAllowUserLocationWasDisplayed = false;
         parkingPlaces = new HashMap<com.rmj.parking_place.model.Location, ParkingPlace>();
+        parkingPlaceMarkers = new HashMap<com.rmj.parking_place.model.Location, com.androidmapsextensions.Marker>();
     }
 
     /**
@@ -178,14 +184,13 @@ public class MapFragment extends Fragment {
 
         mapPageFragment = (MapPageFragment) getParentFragment();
 
-        locationListenerImpl = new LocationListenerImplementation(this);
-
-        if (savedInstanceState != null) {
-            recoveredFragment = true;
-            recoverSavedInstance(savedInstanceState);
+        if (savedInstanceState == null) {
+            recoveredFragment = false;
+            locationListenerImpl = new LocationListenerImplementation(this);
         }
         else {
-            recoveredFragment = false;
+            recoveredFragment = true;
+            recoverSavedInstance(savedInstanceState);
         }
     }
 
@@ -278,7 +283,8 @@ public class MapFragment extends Fragment {
         //VODITI RACUNA OVO JE ASINHRONA OPERACIJA
         //LOKACIJE MOGU DA SE DOBIJU PRE MAPE I OBRATNO
         // mMapFragment.getMapAsync(this);
-        mMapFragment.getExtendedMapAsync(new OnMapReadyCallbackImplementation(this, mapPageFragment));
+        onMapReadyCallbackImplementation = new OnMapReadyCallbackImplementation(this, mapPageFragment);
+        mMapFragment.getExtendedMapAsync(onMapReadyCallbackImplementation);
     }
 
     @Override
@@ -362,9 +368,12 @@ public class MapFragment extends Fragment {
             FragmentManager fm = getChildFragmentManager();
             mMapFragment = (com.androidmapsextensions.SupportMapFragment) fm.getFragment(savedInstanceState, "mMapFragment");
             map = mMapFragment.getExtendedMap();
-            map.setOnMapClickListener(new OnMapClickListenerImplementation(this, mapPageFragment));
+
+            updateReferencesCascadingInListeners();
+
+            /*map.setOnMapClickListener(new OnMapClickListenerImplementation(this, mapPageFragment));
             map.setOnMarkerClickListener(new OnMarkerClickListenerImplementation(this, mapPageFragment));
-            map.setOnCameraChangeListener(new OnCameraChangeListenerImplementation(map, mapPageFragment));
+            map.setOnCameraChangeListener(new OnCameraChangeListenerImplementation(map, mapPageFragment));*/
             restoreMarkers();
             restoreNavigationPathPolyline();
             if (selectedParkingPlace != null) {
@@ -388,6 +397,12 @@ public class MapFragment extends Fragment {
         }
 
         return view;
+    }
+
+    private void updateReferencesCascadingInListeners() {
+        onMapReadyCallbackImplementation.setMapFragment(this);
+        onMapReadyCallbackImplementation.setMapPageFragment(mapPageFragment);
+        locationListenerImpl.setMapFragment(this);
     }
 
     /**
@@ -825,22 +840,22 @@ public class MapFragment extends Fragment {
         }
     }
 
-    private com.androidmapsextensions.Marker addMarker(Location location, String markerIcon) {
+    private com.androidmapsextensions.Marker addMarker(Location location, String markerIcon, ParkingPlaceStatus status) {
         LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
 
-        com.androidmapsextensions.Marker marker = addMarker(loc, markerIcon);
+        com.androidmapsextensions.Marker marker = addMarker(loc, markerIcon, status);
         return marker;
     }
 
-    private com.androidmapsextensions.Marker addMarker(com.rmj.parking_place.model.Location location, String markerIcon, ParkingPlaceStatus status) {
+    private com.androidmapsextensions.Marker addMarker(com.rmj.parking_place.model.Location location, String markerIcon,
+                                                       ParkingPlaceStatus status) {
         LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
 
-        com.androidmapsextensions.Marker marker = addMarker(loc, markerIcon);
-        marker.setData(status);
+        com.androidmapsextensions.Marker marker = addMarker(loc, markerIcon, status);
         return marker;
     }
 
-    private com.androidmapsextensions.Marker addMarker(LatLng loc, String markerIcon) {
+    private com.androidmapsextensions.Marker addMarker(LatLng loc, String markerIcon, ParkingPlaceStatus status) {
         int resourceId = markerIcons.get(markerIcon);
 
         com.androidmapsextensions.Marker marker = map.addMarker(
@@ -849,6 +864,7 @@ public class MapFragment extends Fragment {
                         .anchor(0.5f,0.5f) // centriramo marker na odgovarajuce koordinate
                         .icon(BitmapDescriptorFactory.fromResource(resourceId))
                         .position(loc)
+                        .data(status) // ovo setujemo zbog cluster-a
         );
         marker.setFlat(true);
 
@@ -863,7 +879,7 @@ public class MapFragment extends Fragment {
 
     /**
      *
-     * Rad sa lokacja izuzetno trosi bateriju.Obavezno osloboditi kada vise ne koristmo
+     * Rad sa lokacjom izuzetno trosi bateriju.Obavezno osloboditi kada vise ne koristmo
      * */
     @Override
     public void onPause() {
@@ -1185,7 +1201,7 @@ public class MapFragment extends Fragment {
      * Za ovu metodu se koristi 'synchronized' jer moze biti pozvana ili kad se downloaduju podaci ili kad je mapa spremna
      * */
     public void drawParkingPlaceMarkersIfCan() {
-        if (map != null && parkingPlaces != null) {
+        if (map != null && parkingPlaces != null && !parkingPlaces.isEmpty()) {
             map.clear();
             parkingPlaceMarkers = createParkingPlaceMarkers(parkingPlaces.values());
         }
@@ -1243,8 +1259,15 @@ public class MapFragment extends Fragment {
         com.androidmapsextensions.Marker marker;
         String markerIcon;
 
+        /*ArrayList<com.androidmapsextensions.Marker> markersForUpdating =
+                new ArrayList<com.androidmapsextensions.Marker>(parkingPlacesForUpdating.size());*/
+
         for (ParkingPlace parkingPlace : parkingPlacesForUpdating) {
             marker = parkingPlaceMarkers.get(parkingPlace.getLocation());
+            marker.setData(parkingPlace.getStatus()); // ovo setujemo zbog cluster-a
+            //marker.setClusterGroup(ClusterGroup.FIRST_USER);
+            //marker.setClusterGroup(ClusterGroup.DEFAULT);
+
             markerIcon = parkingPlace.getStatus().name();
             if (selectedParkingPlace != null) {
                 if (parkingPlace.equals(selectedParkingPlace)) {
@@ -1252,7 +1275,12 @@ public class MapFragment extends Fragment {
                 }
             }
             updateParkingPlaceMarker(marker, markerIcon);
+            //markersForUpdating.add(marker);
         }
+
+        /*for (com.androidmapsextensions.Marker m : markersForUpdating) {
+            m.setClusterGroup(ClusterGroup.DEFAULT);
+        }*/
     }
 
     public DTO checkAndPrepareDtoForLeavingParkingPlaceOnServer() {
@@ -1347,7 +1375,23 @@ public class MapFragment extends Fragment {
     }
 
     public void restoreMarkers() {
+        /*List<com.androidmapsextensions.Marker> markers1 = map.getDisplayedMarkers();
+        for (com.androidmapsextensions.Marker marker : markers) {
+            if (marker.isCluster()) {
+                System.out.println();
+            }
+            else {
+                marker.setClusterGroup(1);
+                marker.setIcon(null);
+                marker.setPosition(new LatLng(40,50));
+
+                System.out.println();
+            }
+        }*/
+
         List<com.androidmapsextensions.Marker> markers = map.getMarkers();
+        // ovo vraca obicne markere (medju njima nece bit cluster markera)
+
         if (markers.isEmpty()) {
             return;
         }
@@ -1357,7 +1401,6 @@ public class MapFragment extends Fragment {
         LatLng position;
 
         for (com.androidmapsextensions.Marker marker : markers) {
-
             if (marker.getSnippet() == null) {
                 position = marker.getPosition();
                 parkingPlaceMarkers.put(new com.rmj.parking_place.model.Location(position.latitude,position.longitude), marker);
@@ -1402,6 +1445,7 @@ public class MapFragment extends Fragment {
                         .icon(BitmapDescriptorFactory.fromResource(resourceId))
                         .position(postion)
                         .snippet(favoritePlace.getName() + " (" + favoritePlace.getType().name() + ")")
+                        .clusterGroup(ClusterGroup.NOT_CLUSTERED)
         );
         marker.setFlat(true);
         return marker;
@@ -1414,4 +1458,47 @@ public class MapFragment extends Fragment {
 
         return favoritePlaceMarkers.contains(marker);
     }
+
+    public void updateDisplayedClusters(List<LatLngBounds> zonesBoundsForClustersUpdating) {
+        List<com.androidmapsextensions.Marker> displayedMarkers = map.getDisplayedMarkers();
+        int emptyMarkersCount;
+        BitmapDescriptor icon;
+
+        for (com.androidmapsextensions.Marker marker : displayedMarkers) {
+            if (marker.isCluster()) {
+                if (pointInsideZonesBounds(zonesBoundsForClustersUpdating, marker.getPosition())) {
+                    emptyMarkersCount = countEmptyMarkersInClusterMarker(marker);
+                    icon = ClusterIconUtils.makeIcon(marker.getMarkers().size(), emptyMarkersCount);
+                    marker.setIcon(icon);
+                }
+            }
+        }
+    }
+
+    private boolean pointInsideZonesBounds(List<LatLngBounds> zonesBoundsForClustersUpdating, LatLng point) {
+        for (LatLngBounds latLngBounds : zonesBoundsForClustersUpdating) {
+            if (latLngBounds.contains(point)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private int countEmptyMarkersInClusterMarker(com.androidmapsextensions.Marker clusterMarker) {
+        List<com.androidmapsextensions.Marker> markers = clusterMarker.getMarkers();
+        if (markers == null) {
+            return 0;
+        }
+
+        int numberOfEmpties = 0;
+        for (com.androidmapsextensions.Marker m: markers) {
+            if(m.getData() == ParkingPlaceStatus.EMPTY){
+                numberOfEmpties++;
+            }
+        }
+
+        return numberOfEmpties;
+    }
+
 }

@@ -33,7 +33,7 @@ public class LocationListenerImplementation implements LocationListener {
         Location currentLocation = location;
         mapFragment.setCurrentLocation(currentLocation);
         if (currentLocation == null) {
-            Toast.makeText(mapFragment.getContext(), "Izgubili smo vasu lokaciju!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mapFragment.getActivity(), "Izgubili smo vasu lokaciju!", Toast.LENGTH_SHORT).show();
             return;
         }
         else {
@@ -41,7 +41,7 @@ public class LocationListenerImplementation implements LocationListener {
                 // ako pre nismo imali prikazanu lokaciju, sada kad smo dobili
                 mapFragment.updateCameraPosition(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), true);
 
-                Toast.makeText(mapFragment.getContext(), "Ponovo imamo vasu lokaciju!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mapFragment.getActivity(), "Ponovo imamo vasu lokaciju!", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -61,5 +61,9 @@ public class LocationListenerImplementation implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    public void setMapFragment(MapFragment mapFragment) {
+        this.mapFragment = mapFragment;
     }
 }

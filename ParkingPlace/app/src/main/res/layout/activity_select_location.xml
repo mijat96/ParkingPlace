@@ -36,8 +36,7 @@
         android:id="@+id/mapFragment"
         android:name="com.androidmapsextensions.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        map:mapType="normal"/>
+        android:layout_height="match_parent"/>
 
     <ImageView
         android:layout_height="wrap_content"

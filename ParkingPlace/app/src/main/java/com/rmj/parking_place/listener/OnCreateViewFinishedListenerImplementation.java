@@ -16,4 +16,8 @@ public class OnCreateViewFinishedListenerImplementation implements OnCreateViewF
         mapFragment.changePositionOfGoogleLogo(false);
         mapFragment.changePositionOfMyLocationButton(false);
     }
+
+    public void setMapFragment(MapFragment mapFragment) {
+        this.mapFragment = mapFragment;
+    }
 }

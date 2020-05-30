@@ -55,4 +55,12 @@ public class OnMapClickListenerImplementation implements GoogleMap.OnMapClickLis
             mapPageFragment.setInvisibilityOfFindParkingFragment();
         }
     }
+
+    public void setMapFragment(MapFragment mapFragment) {
+        this.mapFragment = mapFragment;
+    }
+
+    public void setMapPageFragment(MapPageFragment mapPageFragment) {
+        this.mapPageFragment = mapPageFragment;
+    }
 }

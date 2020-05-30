@@ -79,6 +79,8 @@ public class MapPageFragment extends Fragment {
     private MainActivity mainActivity;
     private View view;
 
+    private static OnCreateViewFinishedListenerImplementation onCreateViewFinishedListenerImplementation;
+
     public MapPageFragment() {
         // Required empty public constructor
     }
@@ -224,7 +226,14 @@ public class MapPageFragment extends Fragment {
                                                                             "parkingPlaceInfoFragment");
             // findParkingFragment = () fm.findFragmentById(R.id.find_parking_frame);
             findParkingFragment =  (FindParkingFragment) fm.getFragment(savedInstanceState, "findParkingFragment");
-            findParkingFragment.setOnCreateViewFinishedListener(new OnCreateViewFinishedListenerImplementation(mapFragment));
+            if (onCreateViewFinishedListenerImplementation == null) {
+                onCreateViewFinishedListenerImplementation = new OnCreateViewFinishedListenerImplementation(mapFragment);
+            }
+            else {
+                onCreateViewFinishedListenerImplementation.setMapFragment(mapFragment);
+            }
+            findParkingFragment.setOnCreateViewFinishedListener(onCreateViewFinishedListenerImplementation);
+
             recoverVisibleFragments(savedInstanceState);
         }
 
@@ -449,9 +458,19 @@ public class MapPageFragment extends Fragment {
                 .execute(url, HttpRequestAndResponseType.UPDATE_ZONES_WITH_PARKING_PLACES.name(), TokenUtils.getToken());*/
     }
 
+    private LatLngBounds convertZoneToLatLngBounds(Zone zone) {
+        Location northEast = zone.getNorthEast();
+        Location southWest = zone.getSouthWest();
+        return LatLngBounds.builder()
+                    .include(new com.google.android.gms.maps.model.LatLng(northEast.getLatitude(), northEast.getLongitude()))
+                    .include(new com.google.android.gms.maps.model.LatLng(southWest.getLatitude(), southWest.getLongitude()))
+                    .build();
+    }
+
     private void completeUpdatingOfZonesWithParkingPlaceChanges(ParkingPlacesUpdatingDTO parkingPlacesUpdatingDTO) {
         ArrayList<ParkingPlace> parkingPlacesForAdding = new ArrayList<ParkingPlace>();
         List<ParkingPlace> parkingPlacesForUpdating = new ArrayList<ParkingPlace>();
+        List<LatLngBounds> zonesBoundsForClustersUpdating = new ArrayList<LatLngBounds>();
 
         for (ParkingPlacesInitialDTO parkingPlacesInitialDTO : parkingPlacesUpdatingDTO.getInitials()) {
             for (Zone zone : zones) {
@@ -471,11 +490,14 @@ public class MapPageFragment extends Fragment {
             mapFragment.addParkingPlacesAndMarkers(parkingPlacesForAdding);
         }
 
+        LatLngBounds zoneBounds;
         for (ParkingPlaceChangesDTO parkingPlaceChangesDTO : parkingPlacesUpdatingDTO.getChanges()) {
             for (Zone zone : zones) {
                 if (parkingPlaceChangesDTO.getZoneId().equals(zone.getId())) {
                     if (parkingPlaceChangesDTO.getVersion() > zone.getVersion()) {
                         zone.setVersion(parkingPlaceChangesDTO.getVersion());
+                        zoneBounds = convertZoneToLatLngBounds(zone);
+                        zonesBoundsForClustersUpdating.add(zoneBounds);
                         for (ParkingPlaceDTO parkingPlaceDTO : parkingPlaceChangesDTO.getParkingPlaceChanges()) {
                             for (ParkingPlace parkingPlace : zone.getParkingPlaces()) {
                                 if (parkingPlaceDTO.getId().equals(parkingPlace.getId())) {
@@ -490,6 +512,7 @@ public class MapPageFragment extends Fragment {
         }
         if (!parkingPlacesForUpdating.isEmpty()) {
             mapFragment.updateParkingPlaceMarkers(parkingPlacesForUpdating);
+            mapFragment.updateDisplayedClusters(zonesBoundsForClustersUpdating);
         }
 
         if (!parkingPlacesForAdding.isEmpty() || !parkingPlacesForUpdating.isEmpty()) {
