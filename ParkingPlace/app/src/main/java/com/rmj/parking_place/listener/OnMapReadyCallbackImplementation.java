@@ -68,7 +68,7 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
         ClusteringSettings clusteringSettings = new ClusteringSettings();
         clusteringSettings.addMarkersDynamically(true);
         clusteringSettings.clusterSize(96);
-        googleMap.setClustering(clusteringSettings.clusterOptionsProvider(new ClusterOptionsProvider() {
+        clusteringSettings.clusterOptionsProvider(new ClusterOptionsProvider() {
             @Override
             public ClusterOptions getClusterOptions(List<Marker> markers) {
                 int numberOfEmpties = 0;
@@ -83,7 +83,8 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
 
                 return new ClusterOptions().icon(icon);
             }
-        }));
+        });
+        googleMap.setClustering(clusteringSettings);
 
         if (mapFragment.checkLocationPermission()) {
             if (ContextCompat.checkSelfPermission(mapFragment.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)

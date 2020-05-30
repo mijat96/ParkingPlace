@@ -29,6 +29,7 @@ public class ClusterIconUtils {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.WHITE);
         paint.setTextAlign(Paint.Align.CENTER);
+        paint.setFakeBoldText(true);
         paint.setTextSize(resources.getDimension(R.dimen.text_size_cluster));
     }
 

@@ -76,18 +76,25 @@ public class FindParkingFragment extends Fragment {
             CheckBox zoneCheckBox = (CheckBox) view.findViewById(R.id.zoneCheckBox);
             EditText zoneTextInput = (EditText) view.findViewById(R.id.zone_text_input);
             CheckBox markerCheckBox = (CheckBox) view.findViewById(R.id.markerCheckBox);
+            LinearLayout inputLocationLayout = (LinearLayout) view.findViewById(R.id.input_location_layout);
             TextView locationText = (TextView) view.findViewById(R.id.location_text);
             EditText locationDistanceTextInput = (EditText) view.findViewById(R.id.location_distance_text_input);
 
-            addressCheckBox.setChecked(savedInstanceState.getBoolean("addressChecked"));
+            boolean addressChecked = savedInstanceState.getBoolean("addressChecked");
+            addressCheckBox.setChecked(addressChecked);
             addressTextInput.setText(savedInstanceState.getString("addressText"));
+            addressTextInput.setVisibility(addressChecked ? View.VISIBLE : View.GONE);
             addressTextInput.setFocusable(savedInstanceState.getBoolean("addressTextFocusable"));
 
-            zoneCheckBox.setChecked(savedInstanceState.getBoolean("zoneChecked"));
+            boolean zoneChecked = savedInstanceState.getBoolean("zoneChecked");
+            zoneCheckBox.setChecked(zoneChecked);
             zoneTextInput.setText(savedInstanceState.getString("zoneText"));
+            zoneTextInput.setVisibility(zoneChecked ? View.VISIBLE : View.GONE);
             zoneTextInput.setFocusable(savedInstanceState.getBoolean("zoneTextFocusable"));
 
-            markerCheckBox.setChecked(savedInstanceState.getBoolean("markerChecked"));
+            boolean markerChecked = savedInstanceState.getBoolean("markerChecked");
+            markerCheckBox.setChecked(markerChecked);
+            inputLocationLayout.setVisibility(markerChecked ? View.VISIBLE : View.GONE);
             locationText.setText(savedInstanceState.getString("locationText"));
             locationDistanceTextInput.setText(savedInstanceState.getString("locationDistanceText"));
             locationDistanceTextInput.setFocusable(savedInstanceState.getBoolean("locationDistanceTextFocusable"));
