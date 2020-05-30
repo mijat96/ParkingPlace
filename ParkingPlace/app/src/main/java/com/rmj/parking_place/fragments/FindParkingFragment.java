@@ -298,6 +298,7 @@ public class FindParkingFragment extends Fragment {
             case R.id.addressCheckBox:
                 if (checked){
                     chosedSearchMethod = "address";
+                    setInputVisibility(chosedSearchMethod);
                     markerCheckBox.setChecked(false);
                     zoneCheckBox.setChecked(false);
                     editTextZone.setFocusable(false);
@@ -310,12 +311,14 @@ public class FindParkingFragment extends Fragment {
                 }
                 else{
                     chosedSearchMethod = "";
+                    setInputVisibility(chosedSearchMethod);
                     editTextAddress.setFocusable(false);
                 }
                 break;
             case R.id.zoneCheckBox:
                 if (checked){
                     chosedSearchMethod = "zone";
+                    setInputVisibility(chosedSearchMethod);
                     markerCheckBox.setChecked(false);
                     addressCheckBox.setChecked(false);
                     editTextAddress.setFocusable(false);
@@ -328,12 +331,14 @@ public class FindParkingFragment extends Fragment {
                 }
                 else{
                     chosedSearchMethod = "";
+                    setInputVisibility(chosedSearchMethod);
                     editTextZone.setFocusable(false);
                 }
                 break;
             case R.id.markerCheckBox:
                 if (checked){
                     chosedSearchMethod = "marker";
+                    setInputVisibility(chosedSearchMethod);
                     addressCheckBox.setChecked(false);
                     zoneCheckBox.setChecked(false);
                     editTextZone.setFocusable(false);
@@ -345,6 +350,7 @@ public class FindParkingFragment extends Fragment {
                 }
                 else{
                     chosedSearchMethod = "";
+                    setInputVisibility(chosedSearchMethod);
                     textMarker.setFocusable(false);
                     editTextlocationDistance.setFocusable(false);
                 }
@@ -376,5 +382,30 @@ public class FindParkingFragment extends Fragment {
 
     public void setOnCreateViewFinishedListener(OnCreateViewFinishedListener onCreateViewFinishedListener) {
         this.onCreateViewFinishedListener = onCreateViewFinishedListener;
+    }
+
+    public void setInputVisibility(String chosedSearchMethod) {
+        switch (chosedSearchMethod) {
+            case "address":
+                view.findViewById(R.id.address_text_input).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.zone_text_input).setVisibility(View.GONE);
+                view.findViewById(R.id.input_location_layout).setVisibility(View.GONE);
+                break;
+            case "zone":
+                view.findViewById(R.id.address_text_input).setVisibility(View.GONE);
+                view.findViewById(R.id.zone_text_input).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.input_location_layout).setVisibility(View.GONE);
+                break;
+            case "marker":
+                view.findViewById(R.id.address_text_input).setVisibility(View.GONE);
+                view.findViewById(R.id.zone_text_input).setVisibility(View.GONE);
+                view.findViewById(R.id.input_location_layout).setVisibility(View.VISIBLE);
+                break;
+            case "":
+                view.findViewById(R.id.address_text_input).setVisibility(View.GONE);
+                view.findViewById(R.id.zone_text_input).setVisibility(View.GONE);
+                view.findViewById(R.id.input_location_layout).setVisibility(View.GONE);
+                break;
+        }
     }
 }

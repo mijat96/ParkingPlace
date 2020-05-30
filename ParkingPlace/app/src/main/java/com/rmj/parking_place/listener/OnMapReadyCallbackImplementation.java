@@ -65,13 +65,16 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
         }*/
         mapFragment.setCurrentLocation(null);
 
-        googleMap.setClustering(new ClusteringSettings().clusterOptionsProvider(new ClusterOptionsProvider() {
+        ClusteringSettings clusteringSettings = new ClusteringSettings();
+        clusteringSettings.addMarkersDynamically(true);
+        clusteringSettings.clusterSize(96);
+        googleMap.setClustering(clusteringSettings.clusterOptionsProvider(new ClusterOptionsProvider() {
             @Override
             public ClusterOptions getClusterOptions(List<Marker> markers) {
                 int numberOfEmpties = 0;
 
                 for (Marker m: markers) {
-                    if(m.getData() == ParkingPlaceStatus.EMPTY){
+                    if(m.getData() == ParkingPlaceStatus.EMPTY) {
                         numberOfEmpties++;
                     }
                 }
