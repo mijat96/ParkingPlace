@@ -1,57 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace ParkingPlaceServer.Models
 {
 	public class PaidParkingPlace
 	{
+		public long Id { get; set; }
 		public ParkingPlace ParkingPlace { get; set; }
-		public DateTime StartDateTime { get; set; }
+		public DateTime StartDateTimeAndroid { get; set; }
+
+		public DateTime StartDateTimeServer { get; set; }
 		public TicketType TicketType { get; set; }
 		public bool ArrogantUser { get; set; }
 		public User User { get; set; }
+
+		private static long idGenerator = 0;
+		private static readonly string formatSpecifier = "G";
+		private static readonly CultureInfo culture = CultureInfo.CreateSpecificCulture("de-DE");
 
 		public PaidParkingPlace()
 		{
 
 		}
 
-		public PaidParkingPlace(ParkingPlace parkingPlace, User user, TicketType ticketType)
+		public PaidParkingPlace(ParkingPlace parkingPlace, User user, string startDateTimeAndroid, TicketType ticketType)
 		{
+			Id = idGenerator++;
 			ParkingPlace = new ParkingPlace(parkingPlace);
-			StartDateTime = DateTime.Now;
+			StartDateTimeAndroid = DateTime.ParseExact(startDateTimeAndroid, formatSpecifier, culture);
+			StartDateTimeServer = DateTime.Now;
 			TicketType = ticketType;
 			ArrogantUser = false;
 			User = user;
 			User.RegularPaidParkingPlace = this;
 		}
 
-		public DateTime GetEndDateTime()
+		public DateTime GetEndDateTimeAndroid()
 		{
 			Zone zone = ParkingPlace.Zone;
 			TicketPrice ticketPrice = zone.GetTicketPrice(TicketType);
-			return StartDateTime.AddHours(ticketPrice.Duration);
+			return StartDateTimeAndroid.AddHours(ticketPrice.Duration);
+		}
+
+		public DateTime GetEndDateTimeServer()
+		{
+			Zone zone = ParkingPlace.Zone;
+			TicketPrice ticketPrice = zone.GetTicketPrice(TicketType);
+			return StartDateTimeServer.AddHours(ticketPrice.Duration);
+		}
+
+		public string GetStartDateTimeServerString()
+		{
+			return StartDateTimeServer.ToString(formatSpecifier, culture);
+		}
+
+
+		public string GetStartDateTimeAndroidString()
+		{
+			return StartDateTimeAndroid.ToString(formatSpecifier, culture);
+		}
+
+		public void LeavePaidParkingPlaceInUser()
+		{
+			User.LeavePaidParkingPlace(this);
 		}
 
 		public override bool Equals(object obj)
 		{
 			return obj is PaidParkingPlace place &&
-				   EqualityComparer<ParkingPlace>.Default.Equals(ParkingPlace, place.ParkingPlace) &&
-				   StartDateTime == place.StartDateTime &&
-				   TicketType == place.TicketType &&
-				   ArrogantUser == place.ArrogantUser &&
-				   EqualityComparer<User>.Default.Equals(User, place.User);
+				   Id == place.Id;
 		}
 
 		public override int GetHashCode()
 		{
-			int hashCode = -1744307677;
-			hashCode = hashCode * -1521134295 + EqualityComparer<ParkingPlace>.Default.GetHashCode(ParkingPlace);
-			hashCode = hashCode * -1521134295 + StartDateTime.GetHashCode();
-			hashCode = hashCode * -1521134295 + TicketType.GetHashCode();
-			hashCode = hashCode * -1521134295 + ArrogantUser.GetHashCode();
-			hashCode = hashCode * -1521134295 + EqualityComparer<User>.Default.GetHashCode(User);
-			return hashCode;
+			return 2108858624 + Id.GetHashCode();
 		}
+
 	}
 }

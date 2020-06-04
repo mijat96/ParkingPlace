@@ -2,7 +2,9 @@ package com.rmj.parking_place.service;
 
 import com.rmj.parking_place.dto.DTO;
 import com.rmj.parking_place.dto.LoginDTO;
+import com.rmj.parking_place.dto.PaidParkingPlaceDTO;
 import com.rmj.parking_place.dto.RegistrationDTO;
+import com.rmj.parking_place.dto.ReservationDTO;
 import com.rmj.parking_place.dto.ReservingDTO;
 import com.rmj.parking_place.dto.TakingDTO;
 import com.rmj.parking_place.dto.TokenDTO;
@@ -22,7 +24,7 @@ public interface ParkingPlaceService {
             "Content-Type:application/json"
     })
     @POST("/api/parkingplaces/reservation")
-    Call<ResponseBody> reserveParkingPlace(@Body ReservingDTO reservingDTO);
+    Call<ReservationDTO> reserveParkingPlace(@Body ReservingDTO reservingDTO);
 
 
     @Headers({
@@ -30,7 +32,7 @@ public interface ParkingPlaceService {
             "Content-Type:application/json"
     })
     @POST("/api/parkingplaces/taking")
-    Call<ResponseBody> takeParkingPlace(@Body TakingDTO takingDTO);
+    Call<PaidParkingPlaceDTO> takeParkingPlace(@Body TakingDTO takingDTO);
 
 
     @Headers({

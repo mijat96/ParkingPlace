@@ -54,4 +54,10 @@
         android:name="com.rmj.parking_place.fragments.favorite_places.FavoritePlacesFragment"
         android:label="@string/menu_favorite_places"
         tools:layout="@layout/fragment_map_page" />
+
+    <fragment
+        android:id="@+id/nav_reservation_and_paid_parking_places"
+        android:name="com.rmj.parking_place.fragments.ReservationAndPaidParkingPlacesFragment"
+        android:label="@string/menu_reservation_and_paid_parking_places"
+        tools:layout="@layout/fragment_reservation_and_paid_parking_places" />
 </navigation>

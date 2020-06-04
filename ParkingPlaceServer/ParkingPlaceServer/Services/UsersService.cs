@@ -1,4 +1,5 @@
 ﻿using ParkingPlaceServer.DAO;
+using ParkingPlaceServer.DTO;
 using ParkingPlaceServer.Models;
 using System;
 using System.Collections.Generic;
@@ -148,6 +149,12 @@ namespace ParkingPlaceServer.Services
 			FavoritePlace existingFavoritePlace = loggedUser.FavoritePlaces.Where(fp => fp.Id == favoritePlaceId)
 																		.Single();
 			loggedUser.FavoritePlaces.Remove(existingFavoritePlace);
+		}
+
+		public ReservationAndPaidParkingPlacesDTO GetReservationAndPaidParkingPlaces(User loggedUser)
+		{
+			return new ReservationAndPaidParkingPlacesDTO(loggedUser.Reservation, loggedUser.RegularPaidParkingPlace,
+															loggedUser.PaidParkingPlacesForFavoritePlaces);
 		}
 	}
 }

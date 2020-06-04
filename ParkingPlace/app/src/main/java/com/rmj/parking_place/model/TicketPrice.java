@@ -3,6 +3,8 @@ package com.rmj.parking_place.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.rmj.parking_place.database.TicketPriceDb;
+
 public class TicketPrice implements Parcelable {
     private int duration; // hours
     private TicketType ticketType;
@@ -18,11 +20,6 @@ public class TicketPrice implements Parcelable {
         this.price = price;
     }
 
-    public TicketPrice(TicketPrice ticketPrice) {
-        this.duration = ticketPrice.duration;
-        this.ticketType = ticketPrice.ticketType;
-        this.price = ticketPrice.price;
-    }
 
     protected TicketPrice(Parcel in) {
         duration = in.readInt();
@@ -41,6 +38,12 @@ public class TicketPrice implements Parcelable {
             return new TicketPrice[size];
         }
     };
+
+    public TicketPrice(TicketPriceDb ticketPriceDb) {
+        this.duration = ticketPriceDb.duration;
+        this.ticketType = TicketType.values()[ticketPriceDb.ticketType];
+        this.price = ticketPriceDb.price;
+    }
 
     public int getDuration() {
         return duration;

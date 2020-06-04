@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.model.ParkingPlace;
+import com.rmj.parking_place.model.ParkingPlaceStatus;
 
 public class ParkingPlaceInfoFragment extends Fragment {
 
@@ -81,5 +82,10 @@ public class ParkingPlaceInfoFragment extends Fragment {
         float distanceKm = distance / 1000;
         TextView textDistance = (TextView) view.findViewById(R.id.distance);
         textDistance.setText("Distance: " + distanceKm + "km");
+    }
+
+    public void updateParkingPlaceStatus(ParkingPlaceStatus status) {
+        TextView textStatus = (TextView) view.findViewById(R.id.status);
+        textStatus.setText("Status: " + status.name());
     }
 }

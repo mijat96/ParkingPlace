@@ -1,9 +1,13 @@
 package com.rmj.parking_place.dto;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class DTO {
     private Long zoneId;
     private Long parkingPlaceId;
-
+    private String dateTimeAndroid;
+    private static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     public DTO() {
 
@@ -12,6 +16,7 @@ public class DTO {
     public DTO(Long zoneId, Long parkingPlaceId) {
         this.zoneId = zoneId;
         this.parkingPlaceId = parkingPlaceId;
+        this.dateTimeAndroid = sdf.format(new Date());
     }
 
 

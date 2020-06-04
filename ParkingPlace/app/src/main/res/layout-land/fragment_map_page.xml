@@ -58,9 +58,10 @@
             android:layout_marginTop="3dp"/>
         <TextView
             android:id="@+id/txtRemainingTime"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
+            android:layout_marginRight="6dp"
             android:visibility="gone"
             android:textSize="@dimen/text_size"/>
         <LinearLayout

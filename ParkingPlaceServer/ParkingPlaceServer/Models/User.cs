@@ -99,5 +99,14 @@ namespace ParkingPlaceServer.Models
             return hashCode;
         }
 
-    }
+		public void LeavePaidParkingPlace(PaidParkingPlace paidParkingPlace)
+		{
+			if (RegularPaidParkingPlace.Equals(paidParkingPlace)) {
+                RegularPaidParkingPlace = null;
+            }
+
+            PaidParkingPlacesForFavoritePlaces.Remove(paidParkingPlace);
+		}
+
+	}
 }

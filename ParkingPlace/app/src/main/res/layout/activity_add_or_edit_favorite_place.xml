@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".actvities.AddOrEditFavoritePlaceActivity"
-    android:background="@color/colorNorthPanelBackground">
+    tools:context=".actvities.AddOrEditFavoritePlaceActivity">
 
     <EditText
         android:id="@+id/favoritePlaceName"

@@ -3,6 +3,15 @@ package com.rmj.parking_place.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.Relation;
+
+import com.rmj.parking_place.database.TicketPriceDb;
+import com.rmj.parking_place.database.ZoneWithLocationsAndTicketPrices;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,6 +71,24 @@ public class Zone implements Parcelable {
         southWest = in.readParcelable(Location.class.getClassLoader());
         parkingPlaces = readParkingPlaces(in);
         ticketPrices = in.createTypedArrayList(TicketPrice.CREATOR);
+    }
+
+    public Zone(ZoneWithLocationsAndTicketPrices zoneWithLocationsAndTicketPrices) {
+        this.id = zoneWithLocationsAndTicketPrices.zone.zoneId;
+        this.name = zoneWithLocationsAndTicketPrices.zone.name;
+        this.version = zoneWithLocationsAndTicketPrices.zone.version;
+        this.northEast = new Location(zoneWithLocationsAndTicketPrices.northEast);
+        this.southWest = new Location(zoneWithLocationsAndTicketPrices.southWest);
+        this.parkingPlaces = new ArrayList<ParkingPlace>();
+        this.ticketPrices = restoreTicketPrices(zoneWithLocationsAndTicketPrices.ticketPrices);
+    }
+
+    private List<TicketPrice> restoreTicketPrices(List<TicketPriceDb> ticketPriceDbs) {
+        ArrayList<TicketPrice> ticketPrices = new ArrayList<TicketPrice>();
+        for (TicketPriceDb ticketPriceDb : ticketPriceDbs) {
+            ticketPrices.add(new TicketPrice(ticketPriceDb));
+        }
+        return ticketPrices;
     }
 
     public void writeParkingPlaces(Parcel dest, int flags, List<ParkingPlace> parkingPlaces) {

@@ -26,6 +26,7 @@ import com.rmj.parking_place.actvities.SelectLocationActivity;
 import com.rmj.parking_place.listener.OnCreateViewFinishedListener;
 import com.rmj.parking_place.model.Location;
 import com.rmj.parking_place.model.ParkingPlace;
+import com.rmj.parking_place.model.ParkingPlaceStatus;
 import com.rmj.parking_place.model.Zone;
 import com.rmj.parking_place.utils.GeocoderUtils;
 
@@ -379,7 +380,7 @@ public class FindParkingFragment extends Fragment {
 
     public int getHeight() {
         //int height = view.getHeight();
-        view.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        view.measure(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         int height = view.getMeasuredHeight();
         // na ovaj nacin uzimamo height zato sto kad se prvi put menja visibility sa GONE na VISIBLE,
         // moze se desiti da ocitamo vrednost fragmenta (view) pre nego sto se on resize
@@ -415,4 +416,14 @@ public class FindParkingFragment extends Fragment {
                 break;
         }
     }
+
+    public int getWidth() {
+        view.measure(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        int width = view.getMeasuredWidth();
+        // na ovaj nacin uzimamo width zato sto kad se prvi put menja visibility sa GONE na VISIBLE,
+        // moze se desiti da ocitamo vrednost fragmenta (view) pre nego sto se on resize
+        // i onda dobijamo width = 0
+        return width;
+    }
+
 }

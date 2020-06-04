@@ -22,7 +22,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".actvities.AddOrEditFavoritePlaceActivity"></activity>
+        <activity
+            android:name=".actvities.SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
+        <activity android:name=".actvities.AddOrEditFavoritePlaceActivity" />
         <activity
             android:name=".actvities.SelectLocationActivity"
             android:label="@string/select_location_title" />
