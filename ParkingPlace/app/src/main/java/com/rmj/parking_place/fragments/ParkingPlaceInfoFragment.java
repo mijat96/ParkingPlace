@@ -109,4 +109,5 @@ public class ParkingPlaceInfoFragment extends Fragment {
         TextView textStatus = (TextView) view.findViewById(R.id.status);
         textStatus.setText("Status: " + status.name());
     }
+
 }

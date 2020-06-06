@@ -94,16 +94,18 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
         });
         googleMap.setClustering(clusteringSettings);
 
-        boolean useFusedLocation = App.useFusedLocation();
-        if (useFusedLocation) {
-            if (mapFragment.checkLocationPermission()) {
-                if (ContextCompat.checkSelfPermission(mapFragment.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED ||
-                        ContextCompat.checkSelfPermission(mapFragment.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                                == PackageManager.PERMISSION_GRANTED) {
+        if (mapFragment.checkLocationPermission()) {
+            if (ContextCompat.checkSelfPermission(mapFragment.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(mapFragment.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
 
+                boolean useFusedLocation = App.useFusedLocation();
+                if (useFusedLocation) {
                     googleMap.setMyLocationEnabled(true);
-
+                }
+                else {
+                    googleMap.setMyLocationEnabled(false);
                     if (mapFragment.getProvider() == null) {
                         mapFragment.setProvider();
                     }
@@ -116,9 +118,7 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
                 }
             }
         }
-        else {
-            googleMap.setMyLocationEnabled(false);
-        }
+
         googleMap.setBuildingsEnabled(true);
 
         onMapClickListenerImplementation = new OnMapClickListenerImplementation(mapFragment, mapPageFragment);

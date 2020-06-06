@@ -88,7 +88,7 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_PIC_REQUEST) {
+        if (requestCode == CAMERA_PIC_REQUEST && resultCode == RESULT_OK) {
             image = (Bitmap) data.getExtras().get("data");
             ImageView imageview = (ImageView) findViewById(R.id.show_captured_image); //sets imageview as the bitmap
             imageview.setImageBitmap(image);
@@ -101,6 +101,11 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
     }
 
     private void sendReport() {
+        if (image == null || (image != null && image.getByteCount() == 0)) {
+            Toast.makeText(this, "You did not select an image!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         File f = createFile(selectedParkingPlace.getId().toString());
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -125,9 +130,11 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                                     public void onClick(DialogInterface dialog, int whichButton) {
+                                        dialog.cancel();
                                         finish();
                                     }})
-                                .setNegativeButton(android.R.string.no, null).show();
+                                .setNegativeButton(android.R.string.no, null)
+                                .show();
 
                     }
                 }
