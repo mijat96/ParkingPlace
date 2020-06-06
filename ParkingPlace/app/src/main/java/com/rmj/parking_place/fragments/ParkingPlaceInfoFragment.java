@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.ReportIlegalyParkedActivity;
 import com.rmj.parking_place.model.ParkingPlace;
+import com.rmj.parking_place.model.ParkingPlaceStatus;
 
 public class ParkingPlaceInfoFragment extends Fragment {
 
@@ -103,5 +104,8 @@ public class ParkingPlaceInfoFragment extends Fragment {
         Intent intent = new Intent(getContext(), ReportIlegalyParkedActivity.class);
         intent.putExtra("selected_parking_place", mapFragment.getSelectedParkingPlace());
         startActivity(intent);
+    public void updateParkingPlaceStatus(ParkingPlaceStatus status) {
+        TextView textStatus = (TextView) view.findViewById(R.id.status);
+        textStatus.setText("Status: " + status.name());
     }
 }

@@ -267,6 +267,10 @@ public class FavoritePlacesListAdapter extends RecyclerView.Adapter<FavoritePlac
         notifyDataSetChanged();
     }
 
+    public void setItemForEditing(FavoritePlace itemForEditing) {
+        this.itemForEditing = itemForEditing;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mNameView;

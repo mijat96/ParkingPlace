@@ -1,6 +1,7 @@
 package com.rmj.parking_place.service;
 
 import com.rmj.parking_place.dto.RegistrationDTO;
+import com.rmj.parking_place.dto.ReservationAndPaidParkingPlacesDTO;
 import com.rmj.parking_place.dto.TokenDTO;
 import com.rmj.parking_place.model.FavoritePlace;
 
@@ -37,4 +38,10 @@ public interface UserService {
     })
     @GET("/api/users/favorite-places")
     Call<ArrayList<FavoritePlace>> getFavoritePlaces();
+
+    @Headers({
+            "User-Agent: Mobile-Android"
+    })
+    @GET("/api/users/reservation-and-paid-parking-places")
+    Call<ReservationAndPaidParkingPlacesDTO> getReservationAndPaidParkingPlaces();
 }

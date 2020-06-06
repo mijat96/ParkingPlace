@@ -184,6 +184,9 @@
     <Compile Include="DAO\ReservationDAO.cs" />
     <Compile Include="DAO\ZoneDAO.cs" />
     <Compile Include="DTO\ReportDTO.cs" />
+    <Compile Include="DTO\PaidParkingPlaceDTO.cs" />
+    <Compile Include="DTO\ReservationAndPaidParkingPlacesDTO.cs" />
+    <Compile Include="DTO\ReservationDTO.cs" />
     <Compile Include="DTO\ReservingDto.cs" />
     <Compile Include="DTO\RegistrationDTO.cs" />
     <Compile Include="DTO\LoginDTO.cs" />

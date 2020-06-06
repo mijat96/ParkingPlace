@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceManager;
 
 import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
@@ -22,7 +23,8 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
-        sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        // sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     public static Context getAppContext() {
@@ -79,4 +81,14 @@ public class App extends Application {
 
         return cn.getClassName();
     }
+
+    public static boolean mockLocationAllowed() {
+        return sharedPreferences.getBoolean("mock_location_allowed",false);
+    }
+
+    public static boolean useFusedLocation() {
+        String locationType = sharedPreferences.getString("location_types","fused_location");
+        return locationType.equals("fused_location");
+    }
+
 }

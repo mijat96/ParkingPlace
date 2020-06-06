@@ -58,7 +58,7 @@ namespace ParkingPlaceServer
 
 				foreach (Reservation reservation in reservations)
 				{
-					if (reservation.EndDateTime < DateTime.Now)
+					if (reservation.GetEndDateTimeServer() < DateTime.Now)
 					{
 						zone = zonesService.GetZone(reservation.ParkingPlace.Zone.Id);
 						lock (zone)
@@ -72,6 +72,7 @@ namespace ParkingPlaceServer
 							zone.Version++;
 							zone.AddParkingPlaceChange(parkingPlace.Id, parkingPlace.Status);
 						}
+						reservation.User.Reservation = null;
 						reservation.User.AddViolation(true);
 
 						reservationsForRemoving.Add(reservation);
@@ -103,7 +104,7 @@ namespace ParkingPlaceServer
 
 				foreach (PaidParkingPlace paidParkingPlace in paidParkingPlaces)
 				{
-					if (paidParkingPlace.GetEndDateTime() < DateTime.Now)
+					if (paidParkingPlace.GetEndDateTimeServer() < DateTime.Now)
 					{
 						zone = zonesService.GetZone(paidParkingPlace.ParkingPlace.Zone.Id);
 						lock (zone)
@@ -117,6 +118,7 @@ namespace ParkingPlaceServer
 							zone.Version++;
 							zone.AddParkingPlaceChange(parkingPlace.Id, parkingPlace.Status);
 						}
+						paidParkingPlace.LeavePaidParkingPlaceInUser();
 						paidParkingPlace.User.AddViolation(false);
 
 						paidParkingPlacesForRemoving.Add(paidParkingPlace);

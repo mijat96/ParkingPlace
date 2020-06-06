@@ -3,6 +3,8 @@ package com.rmj.parking_place.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.rmj.parking_place.database.LocationDb;
+
 import java.util.Objects;
 
 public class Location implements Parcelable {
@@ -54,6 +56,12 @@ public class Location implements Parcelable {
             return new Location[size];
         }
     };
+
+    public Location(LocationDb locationDb) {
+        this.latitude = locationDb.latitude;
+        this.longitude = locationDb.longitude;
+        this.address = locationDb.address;
+    }
 
     public double getLatitude() {
         return latitude;

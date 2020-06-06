@@ -1,5 +1,8 @@
 package com.rmj.parking_place.listener;
 
+import android.content.res.Configuration;
+
+import com.androidmapsextensions.ClusterGroup;
 import com.androidmapsextensions.GoogleMap;
 import com.androidmapsextensions.Marker;
 import com.google.android.gms.maps.model.LatLng;
@@ -36,6 +39,7 @@ public class OnMapClickListenerImplementation implements GoogleMap.OnMapClickLis
             String markerIcon = selectedParkingPlace.getStatus().name();
             Marker selectedParkingPlaceMarker = mapFragment.getSelectedParkingPlaceMarker();
             mapFragment.updateParkingPlaceMarker(selectedParkingPlaceMarker, markerIcon);
+            selectedParkingPlaceMarker.setClusterGroup(ClusterGroup.DEFAULT);
 
             selectedParkingPlace = null;
             mapFragment.setSelectedParkingPlace(selectedParkingPlace);
@@ -49,9 +53,17 @@ public class OnMapClickListenerImplementation implements GoogleMap.OnMapClickLis
         // mapPageFragment.setClickedLocation(latLng);
 
         if (mapPageFragment.isFindParkingPlaceFragmentVisible()) {
-            mapPageFragment.returnGoogleLogoOnStartPosition();
-            mapFragment.changePositionOfMyLocationButton(true);
+            int orientation = mapFragment.getResources().getConfiguration().orientation;
+            boolean orientationPortrait;
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                orientationPortrait = true;
+            } else {
+                // landscape mode
+                orientationPortrait = false;
+            }
             mapPageFragment.setVisibilityOfFindParkingButton();
+            mapFragment.changeMarginsOfMyLocationButton(true, orientationPortrait);
+            mapPageFragment.returnGoogleLogoOnStartPosition();
             mapPageFragment.setInvisibilityOfFindParkingFragment();
         }
     }

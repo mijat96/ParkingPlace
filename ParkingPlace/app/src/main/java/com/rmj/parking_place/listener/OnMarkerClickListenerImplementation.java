@@ -2,6 +2,7 @@ package com.rmj.parking_place.listener;
 
 import android.widget.Toast;
 
+import com.androidmapsextensions.ClusterGroup;
 import com.androidmapsextensions.GoogleMap;
 import com.androidmapsextensions.Marker;
 import com.google.android.gms.maps.model.LatLng;
@@ -24,6 +25,9 @@ public class OnMarkerClickListenerImplementation implements GoogleMap.OnMarkerCl
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        if (mapFragment.isCurrentLocationMarker(marker)) {
+            return true;
+        }
         if (mapFragment.isFavoritePlaceMarker(marker)) {
             marker.showInfoWindow();
             return true;
@@ -47,6 +51,7 @@ public class OnMarkerClickListenerImplementation implements GoogleMap.OnMarkerCl
         // String markerIcon = "SELECTED_" + selectedParkingPlace.getStatus().name();
         String markerIcon = selectedParkingPlace.getStatus().name() + "_SELECTED";
         mapFragment.updateParkingPlaceMarker(marker, markerIcon);
+        marker.setClusterGroup(ClusterGroup.NOT_CLUSTERED);
         mapFragment.setSelectedParkingPlaceMarker(marker);
 
 

@@ -86,5 +86,21 @@ namespace ParkingPlaceServer.Controllers
 			User loggedUser = usersService.GetLoggedUser(token);
 			return Request.CreateResponse(HttpStatusCode.OK, loggedUser.FavoritePlaces);
 		}
+
+		[Route("api/users/reservation-and-paid-parking-places")]
+		[HttpGet]
+		public async Task<HttpResponseMessage> GetReservationAndPaidParkingPlaces()
+		{
+			string token = GetHeader("token");
+			if (token == null || (token != null && !TokenManager.ValidateToken(token)))
+			{
+				return Request.CreateResponse(HttpStatusCode.Unauthorized);
+			}
+
+			User loggedUser = usersService.GetLoggedUser(token);
+			ReservationAndPaidParkingPlacesDTO retValue = usersService.GetReservationAndPaidParkingPlaces(loggedUser);
+			return Request.CreateResponse(HttpStatusCode.OK, retValue);
+		}
+
 	}
 }

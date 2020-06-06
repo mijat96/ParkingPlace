@@ -3,6 +3,7 @@ package com.rmj.parking_place.listener;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -30,10 +31,15 @@ import com.androidmapsextensions.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.rmj.parking_place.App;
 import com.rmj.parking_place.R;
+import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.fragments.MapFragment;
 import com.rmj.parking_place.fragments.MapPageFragment;
+import com.rmj.parking_place.model.PaidParkingPlace;
 import com.rmj.parking_place.model.ParkingPlaceStatus;
+import com.rmj.parking_place.model.Reservation;
 import com.rmj.parking_place.utils.ClusterIconUtils;
 
 import java.util.List;
@@ -41,6 +47,7 @@ import java.util.List;
 public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
     private MapFragment mapFragment;
     private MapPageFragment mapPageFragment;
+    private MainActivity mainActivity;
 
     private OnMapClickListenerImplementation onMapClickListenerImplementation;
     private OnMarkerClickListenerImplementation onMarkerClickListenerImplementation;
@@ -50,6 +57,7 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
     public OnMapReadyCallbackImplementation(MapFragment mapFragment, MapPageFragment mapPageFragment) {
         this.mapFragment = mapFragment;
         this.mapPageFragment = mapPageFragment;
+        this.mainActivity = (MainActivity) mapFragment.getActivity();
     }
 
     /**
@@ -86,24 +94,32 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
         });
         googleMap.setClustering(clusteringSettings);
 
-        if (mapFragment.checkLocationPermission()) {
-            if (ContextCompat.checkSelfPermission(mapFragment.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(mapFragment.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
+        boolean useFusedLocation = App.useFusedLocation();
+        if (useFusedLocation) {
+            if (mapFragment.checkLocationPermission()) {
+                if (ContextCompat.checkSelfPermission(mapFragment.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(mapFragment.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                                == PackageManager.PERMISSION_GRANTED) {
 
-                if (mapFragment.getProvider() == null) {
-                    mapFragment.setProvider();
+                    googleMap.setMyLocationEnabled(true);
+
+                    if (mapFragment.getProvider() == null) {
+                        mapFragment.setProvider();
+                    }
+                    //Request location updates:
+                    Location currentLocation = mapFragment.getLocationManager().getLastKnownLocation(mapFragment.getProvider());
+                    mapFragment.setCurrentLocation(currentLocation);
+                    if (currentLocation != null) {
+                        mapFragment.addCurrentLocationMarker(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                    }
                 }
-                //Request location updates:
-                Location currentLocation = mapFragment.getLocationManager().getLastKnownLocation(mapFragment.getProvider());
-                mapFragment.setCurrentLocation(currentLocation);
-
-                googleMap.setMyLocationEnabled(true);
-                googleMap.setBuildingsEnabled(true);
-                //map.getUiSettings().
             }
         }
+        else {
+            googleMap.setMyLocationEnabled(false);
+        }
+        googleMap.setBuildingsEnabled(true);
 
         onMapClickListenerImplementation = new OnMapClickListenerImplementation(mapFragment, mapPageFragment);
         onMarkerClickListenerImplementation = new OnMarkerClickListenerImplementation(mapFragment, mapPageFragment);
@@ -115,10 +131,32 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
         googleMap.setOnCameraChangeListener(onCameraChangeListenerImplementation);
         googleMap.setInfoWindowAdapter(infoWindowAdapterImplementation);
 
+        Reservation reservation = mainActivity.getReservation();
+        PaidParkingPlace paidParkingPlace = mainActivity.getRegularPaidParkingPlace();
         Location currentLocation = mapFragment.getCurrentLocation();
-        if (currentLocation != null) {
-            mapFragment.updateCameraPosition(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                                                                                    true);
+
+        Double latitude = null, longitude = null;
+        com.rmj.parking_place.model.Location location;
+
+        // ukoliko imas zapocetu rezervaciju ili zauzeto mesto, podesi camera position tamo
+        // u suprotnom, i ako imas currentLocation, onda podesi camera position na currentLocation
+        if (reservation != null) {
+            location = reservation.getParkingPlace().getLocation();
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+        else if (paidParkingPlace != null) {
+            location = paidParkingPlace.getParkingPlace().getLocation();
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+        else if (currentLocation != null) {
+            latitude = currentLocation.getLatitude();
+            longitude = currentLocation.getLongitude();
+        }
+
+        if (latitude != null && longitude != null) {
+            mapFragment.updateCameraPosition(new LatLng(latitude, longitude),true);
         }
 
         mapFragment.drawParkingPlaceMarkersIfCan();
@@ -129,7 +167,18 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
 
         mapFragment.drawFavoritePlaceMarkers();
 
-        mapFragment.changePositionOfMyLocationButton(true);
+        int orientation = mapFragment.getResources().getConfiguration().orientation;
+        boolean orientationPortrait;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            orientationPortrait = true;
+        } else {
+            // landscape mode
+            orientationPortrait = false;
+        }
+
+        boolean showOnStartPosition = !mapPageFragment.isFindParkingPlaceFragmentVisible();
+
+        mapFragment.changeMarginsOfMyLocationButton(showOnStartPosition, orientationPortrait);
     }
 
 

@@ -1,4 +1,5 @@
-﻿using ParkingPlaceServer.DTO;
+﻿using Microsoft.Ajax.Utilities;
+using ParkingPlaceServer.DTO;
 using ParkingPlaceServer.Models;
 using ParkingPlaceServer.Models.Security;
 using ParkingPlaceServer.Services;
@@ -53,8 +54,10 @@ namespace ParkingPlaceServer.Controllers
 			{
 				return Request.CreateResponse(HttpStatusCode.BadRequest, e.Message);
 			}
-			
-			lock(parkingPlace)
+
+
+			Reservation reservation;
+			lock (parkingPlace)
 			{
 				if (parkingPlace.Status != ParkingPlaceStatus.EMPTY)
 				{
@@ -71,7 +74,8 @@ namespace ParkingPlaceServer.Controllers
 				}
 
 				parkingPlace.Status = ParkingPlaceStatus.RESERVED;
-				reservationsService.AddReservation(new Reservation(parkingPlace, usersService.GetLoggedUser(token)));
+				reservation = new Reservation(parkingPlace, usersService.GetLoggedUser(token), value.DateTimeAndroid);
+				reservationsService.AddReservation(reservation);
 
 				lock (parkingPlace.Zone)
 				{
@@ -80,7 +84,7 @@ namespace ParkingPlaceServer.Controllers
 				}
 			}
 
-			return Request.CreateResponse(HttpStatusCode.OK);
+			return Request.CreateResponse(HttpStatusCode.OK, new ReservationDTO(reservation));
 		}
 
 		[Route("api/parkingplaces/taking")]
@@ -130,6 +134,7 @@ namespace ParkingPlaceServer.Controllers
 				return Request.CreateResponse(HttpStatusCode.BadRequest, e.Message);
 			}
 
+			PaidParkingPlace paidParkingPlace;
 			lock (parkingPlace)
 			{
 				if (parkingPlace.Status == ParkingPlaceStatus.TAKEN)
@@ -152,8 +157,8 @@ namespace ParkingPlaceServer.Controllers
 
 
 				parkingPlace.Status = ParkingPlaceStatus.TAKEN;
-				paidParkingPlacesService.AddPaidParkingPlace(
-											new PaidParkingPlace(parkingPlace, loggedUser, value.TicketType));
+				paidParkingPlace = new PaidParkingPlace(parkingPlace, loggedUser, value.DateTimeAndroid, value.TicketType);
+				paidParkingPlacesService.AddPaidParkingPlace(paidParkingPlace);
 
 				lock (parkingPlace.Zone)
 				{
@@ -162,7 +167,7 @@ namespace ParkingPlaceServer.Controllers
 				}
 			}
 
-			return Request.CreateResponse(HttpStatusCode.OK);
+			return Request.CreateResponse(HttpStatusCode.OK, new PaidParkingPlaceDTO(paidParkingPlace));
 		}
 
 		[Route("api/parkingplaces/leave")]
@@ -235,7 +240,7 @@ namespace ParkingPlaceServer.Controllers
 		}
 
 		[Route("api/parkingplaces/changes")]
-		public async Task<HttpResponseMessage> GetParkingPlaceChanges([FromUri] long[] zoneIds, [FromUri] long[] versions)
+		public async Task<HttpResponseMessage> GetParkingPlaceChanges([FromUri] string zoneids, [FromUri] string versions)
 		{
 			string token = GetHeader("token");
 			if (token == null || (token != null && !TokenManager.ValidateToken(token)))
@@ -243,7 +248,17 @@ namespace ParkingPlaceServer.Controllers
 				return Request.CreateResponse(HttpStatusCode.Unauthorized);
 			}
 
-			List<Zone> zones = zonesService.GetZones(zoneIds);
+			if (string.IsNullOrEmpty(zoneids) || string.IsNullOrEmpty(versions))
+			{
+				return Request.CreateResponse(HttpStatusCode.BadRequest);
+			}
+
+			long[] zoneIdsArray, versionsArray;
+
+			convertStringToLongArray(zoneids, out zoneIdsArray);
+			convertStringToLongArray(versions, out versionsArray);
+
+			List<Zone> zones = zonesService.GetZones(zoneIdsArray);
 
 			List<ParkingPlaceChangesDTO> changes = new List<ParkingPlaceChangesDTO>();
 			List<ParkingPlacesInitialDTO> initials = new List<ParkingPlacesInitialDTO>();
@@ -257,7 +272,7 @@ namespace ParkingPlaceServer.Controllers
 
 			for (int i = 0; i < zones.Count; i++)
 			{
-				version = versions[i];
+				version = versionsArray[i];
 				zone = zones[i];
 				lock(zone)
 				{
@@ -291,6 +306,23 @@ namespace ParkingPlaceServer.Controllers
 			return Request.CreateResponse(HttpStatusCode.OK, new ParkingPlacesUpdatingDTO(changes, initials));
 		}
 
+		private bool convertStringToLongArray(string str, out long[] array)
+		{
+			
+			string[] strTokens = str.Split(',');
+			array = new long[strTokens.Length];
+
+
+			for (int i = 0; i < strTokens.Length; i++)
+			{
+				if (!long.TryParse(strTokens[i], out array[i]))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 
 	}
 }

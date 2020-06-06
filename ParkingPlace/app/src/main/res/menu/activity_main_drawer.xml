@@ -24,9 +24,16 @@
             android:id="@+id/nav_favorite_places"
             android:icon="@drawable/baseline_favorite_24"
             android:title="@string/menu_favorite_places" />
+        <item
+            android:id="@+id/nav_reservation_and_paid_parking_places"
+            android:title="@string/menu_reservation_and_paid_parking_places" />
     </group>
 
     <group>
+        <item
+            android:title="@string/action_settings"
+            android:icon="@drawable/baseline_settings_24"
+            android:onClick="clickOnItemSettings"/>
         <item
             android:id="@+id/nav_logout"
             android:title="@string/menu_logout"

@@ -10,6 +10,8 @@ namespace ParkingPlaceServer.DTO
 		public long ZoneId { get; set; }
 		public long ParkingPlaceId { get; set; }
 
+		public string DateTimeAndroid { get; set; }
+
 
 		public Dto()
 		{

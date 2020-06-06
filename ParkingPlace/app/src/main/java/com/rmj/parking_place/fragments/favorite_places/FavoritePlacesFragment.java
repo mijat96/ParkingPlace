@@ -164,16 +164,17 @@ public class FavoritePlacesFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ADD_OR_EDIT_FAVORITE_PLACE_REQUEST) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                Location selectedLocation = (Location) data.getParcelableExtra("selected_location");
-                String favoritePlaceName = data.getStringExtra("favorite_place_name");
-                String favoritePlaceTypeStr = data.getStringExtra("favoritePlaceType");
-                FavoritePlaceType favoritePlaceType = FavoritePlaceType.valueOf(favoritePlaceTypeStr);
-                adapter.addOrUpdateItem(favoritePlaceName, favoritePlaceType, selectedLocation);
-            }
+        if (requestCode == ADD_OR_EDIT_FAVORITE_PLACE_REQUEST && resultCode == RESULT_OK) {
+            Location selectedLocation = (Location) data.getParcelableExtra("selected_location");
+            String favoritePlaceName = data.getStringExtra("favorite_place_name");
+            String favoritePlaceTypeStr = data.getStringExtra("favoritePlaceType");
+            FavoritePlaceType favoritePlaceType = FavoritePlaceType.valueOf(favoritePlaceTypeStr);
+            adapter.addOrUpdateItem(favoritePlaceName, favoritePlaceType, selectedLocation);
         }
+        else {
+            adapter.setItemForEditing(null);
+        }
+
     }
 
     @Override

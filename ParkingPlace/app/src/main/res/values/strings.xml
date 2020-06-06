@@ -52,4 +52,29 @@
     <string name="select_location_title">Select location</string>
     <string name="confirm_btn_text">Confirm</string>
     <string name="menu_favorite_places">FavoritePlaces</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="mock_location_title">Allow the use of mock location in this application</string>
+    <string name="mapPageBtnTxt">MAP\nPAGE</string>
+    <string name="registerUserBtnTxt">REGISTER\nUSER</string>
+    <string name="favoritePlacesBtnTxt">FAVORITE\nPLACES</string>
+    <string name="reservationAndPaidParkingPlacesBtnTxt">RESERVATION\nAND PAID\nPARKING\nPLACES</string>
+    <string name="reservationAndPaidParkingPlacesBtnTxtLand">RESERVATION\nAND PAID\nPARKING PLACES</string>
+    <string name="menu_reservation_and_paid_parking_places">ReservationAndPaidParkingPlaces</string>
+    <string name="location_types_title">Location Types</string>
+    <string name="location_header">Location</string>
 </resources>

@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragments.ReservationAndPaidParkingPlacesFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_blue_bright"
+            android:text="RESERVATION"/>
+
+        <LinearLayout
+            android:id="@+id/reservationData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/startAndEndDateTimeAndroidReservation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp" />
+            <TextView
+                android:id="@+id/startAndEndDateTimeServerReservation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp" />
+            <TextView
+                android:id="@+id/latitudeReservation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp" />
+            <TextView
+                android:id="@+id/longitudeReservation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp" />
+            <TextView
+                android:id="@+id/addressReservation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="@dimen/text_margin"
+                android:layout_marginLeft="8dp" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/noReservation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="You currently do not have a parking place reservation."/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_blue_bright"
+            android:text="REGULAR PAID PARKING PLACE"/>
+
+        <LinearLayout
+            android:id="@+id/regularPaidParkingPlaceData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/startAndEndDateTimeAndroidRegularPaidParkingPlace"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp" />
+            <TextView
+                android:id="@+id/startAndEndDateTimeServerRegularPaidParkingPlace"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp" />
+            <TextView
+                android:id="@+id/latitudeRegularPaidParkingPlace"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp" />
+            <TextView
+                android:id="@+id/longitudeRegularPaidParkingPlace"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp" />
+            <TextView
+                android:id="@+id/addressRegularPaidParkingPlace"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="@dimen/text_margin"
+                android:layout_marginLeft="8dp" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/noRegularPaidParkingPlace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="You currently do not have a regular paid parking place."/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_blue_bright"
+            android:text="PAID PARKING PLACES NEARBY FAVORITE PLACES"/>
+
+        <LinearLayout
+            android:id="@+id/paidParkingPlacesNearbyFavoritePlaces"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/firstPaidParkingPlaceData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/startAndEndDateTimeAndroidFirstPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/startAndEndDateTimeServerFirstPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/latitudeFirstPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/longitudeFirstPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/addressFirstPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="@dimen/text_margin"
+                    android:layout_marginLeft="8dp" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/secondPaidParkingPlaceData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/startAndEndDateTimeAndroidSecondPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/startAndEndDateTimeServerSecondPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/latitudeSecondPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/longitudeSecondPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/addressSecondPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="@dimen/text_margin"
+                    android:layout_marginLeft="8dp" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/thirdPaidParkingPlaceData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/startAndEndDateTimeAndroidThirdPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/startAndEndDateTimeServerThirdPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/latitudeThirdPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/longitudeThirdPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp" />
+                <TextView
+                    android:id="@+id/addressThirdPaidParkingPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="@dimen/text_margin"
+                    android:layout_marginLeft="8dp" />
+            </LinearLayout>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/noPaidParkingPlacesNearbyFavoritePlaces"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="You currently do not have paid parking places nearby favorite places."/>
+    </LinearLayout>
+
+</LinearLayout>

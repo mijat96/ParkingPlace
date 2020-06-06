@@ -1,4 +1,5 @@
-﻿using ParkingPlaceServer.Models;
+﻿using ParkingPlaceServer.DTO;
+using ParkingPlaceServer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,6 @@ namespace ParkingPlaceServer.Services
 
 		long AddOrUpdateFavoritePlace(User loggedUser, FavoritePlace favoritePlace);
 		void RemoveFavoritePlace(User loggedUser, long favoritePlaceId);
+		ReservationAndPaidParkingPlacesDTO GetReservationAndPaidParkingPlaces(User loggedUser);
 	}
 }

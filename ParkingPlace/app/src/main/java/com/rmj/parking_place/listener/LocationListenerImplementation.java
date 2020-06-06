@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.rmj.parking_place.App;
 import com.rmj.parking_place.fragments.MapFragment;
 
 public class LocationListenerImplementation implements LocationListener {
@@ -23,7 +24,7 @@ public class LocationListenerImplementation implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         Location oldLocation = mapFragment.getCurrentLocation();
-        if (oldLocation != null) {
+        if (oldLocation != null && location != null) {
             if (oldLocation.getLatitude() == location.getLatitude()
                     && oldLocation.getLongitude() == location.getLongitude()) {
                 return;
@@ -31,17 +32,28 @@ public class LocationListenerImplementation implements LocationListener {
         }
 
         Location currentLocation = location;
+        LatLng currentLocationLatLng;
         mapFragment.setCurrentLocation(currentLocation);
         if (currentLocation == null) {
             Toast.makeText(mapFragment.getActivity(), "Izgubili smo vasu lokaciju!", Toast.LENGTH_SHORT).show();
             return;
         }
         else {
-            if (oldLocation == null) {
-                // ako pre nismo imali prikazanu lokaciju, sada kad smo dobili
-                mapFragment.updateCameraPosition(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), true);
+            currentLocationLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            mapFragment.updateCurrentLocationMarkerPosition(currentLocationLatLng);
+        }
 
-                Toast.makeText(mapFragment.getActivity(), "Ponovo imamo vasu lokaciju!", Toast.LENGTH_SHORT).show();
+        if (oldLocation == null) {
+            // ako pre nismo imali prikazanu lokaciju, sada kad smo dobili
+            if (currentLocationLatLng == null) {
+                currentLocationLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            }
+            mapFragment.updateCameraPosition(currentLocationLatLng, true);
+
+            Toast.makeText(mapFragment.getActivity(), "Ponovo imamo vasu lokaciju!", Toast.LENGTH_SHORT).show();
+
+            if (!App.mockLocationAllowed() && mapFragment.checkMockLocation()) {
+                return;
             }
         }
 
