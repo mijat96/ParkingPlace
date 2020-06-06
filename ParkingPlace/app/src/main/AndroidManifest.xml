@@ -27,7 +27,6 @@
         <activity
             android:name=".actvities.SettingsActivity"
             android:label="@string/title_activity_settings"></activity>
-        <activity android:name=".actvities.AddOrEditFavoritePlaceActivity" />
         <activity
             android:name=".actvities.SelectLocationActivity"
             android:label="@string/select_location_title" />
