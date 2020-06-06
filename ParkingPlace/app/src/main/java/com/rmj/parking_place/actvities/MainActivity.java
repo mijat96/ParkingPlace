@@ -426,4 +426,8 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
             }
         }
     }
+
+    public void navigateToHomeFramgent() {
+        navController.navigate(R.id.nav_home);
+    }
 }

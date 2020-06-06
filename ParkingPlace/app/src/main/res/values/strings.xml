@@ -68,7 +68,6 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="mock_location_header">Mock Location</string>
     <string name="mock_location_title">Allow the use of mock location in this application</string>
     <string name="mapPageBtnTxt">MAP\nPAGE</string>
     <string name="registerUserBtnTxt">REGISTER\nUSER</string>
@@ -76,4 +75,6 @@
     <string name="reservationAndPaidParkingPlacesBtnTxt">RESERVATION\nAND PAID\nPARKING\nPLACES</string>
     <string name="reservationAndPaidParkingPlacesBtnTxtLand">RESERVATION\nAND PAID\nPARKING PLACES</string>
     <string name="menu_reservation_and_paid_parking_places">ReservationAndPaidParkingPlaces</string>
+    <string name="location_types_title">Location Types</string>
+    <string name="location_header">Location</string>
 </resources>

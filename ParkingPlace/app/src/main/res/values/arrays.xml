@@ -9,4 +9,15 @@
         <item>reply</item>
         <item>reply_all</item>
     </string-array>
+
+    <string-array name="location_types_entries">
+        <item>Location</item>
+        <item>Fused Location</item>
+    </string-array>
+
+    <string-array name="location_types_values">
+        <item>location</item>
+        <item>fused_location</item>
+    </string-array>
+
 </resources>
