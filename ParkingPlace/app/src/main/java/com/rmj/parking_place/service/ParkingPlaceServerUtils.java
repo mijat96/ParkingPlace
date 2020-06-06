@@ -124,4 +124,5 @@ public class ParkingPlaceServerUtils {
     public static UserService userService = retrofit.create(UserService.class);
     public static ParkingPlaceService parkingPlaceService = retrofit.create(ParkingPlaceService.class);
     public static ZoneService zoneService = retrofit.create(ZoneService.class);
+    public static ReportService reportService = retrofit.create(ReportService.class);
 }

@@ -173,6 +173,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Comparers\ComparerByVersion.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ParkingPlacesController.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="DAO\PaidParkingPlaceDAO.cs" />
     <Compile Include="DAO\ReservationDAO.cs" />
     <Compile Include="DAO\ZoneDAO.cs" />
+    <Compile Include="DTO\ReportDTO.cs" />
     <Compile Include="DTO\ReservingDto.cs" />
     <Compile Include="DTO\RegistrationDTO.cs" />
     <Compile Include="DTO\LoginDTO.cs" />
@@ -281,6 +283,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Report\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

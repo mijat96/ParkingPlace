@@ -279,3 +279,4 @@ C:\Users\marko\Documents\ftn\5. Master\GitParkingPlace\ParkingPlaceRepository\Pa
 C:\Users\marko\Documents\ftn\5. Master\GitParkingPlace\ParkingPlaceRepository\ParkingPlaceServer\ParkingPlaceServer\obj\Debug\ParkingPlaceServer.csproj.CopyComplete
 C:\Users\marko\Documents\ftn\5. Master\GitParkingPlace\ParkingPlaceRepository\ParkingPlaceServer\ParkingPlaceServer\obj\Debug\ParkingPlaceServer.dll
 C:\Users\marko\Documents\ftn\5. Master\GitParkingPlace\ParkingPlaceRepository\ParkingPlaceServer\ParkingPlaceServer\obj\Debug\ParkingPlaceServer.pdb
+C:\Users\marko\Documents\ftn\5. Master\GitParkingPlace\ParkingPlaceRepository\ParkingPlaceServer\ParkingPlaceServer\obj\Debug\ParkingPlaceServer.csproj.CoreCompileInputs.cache

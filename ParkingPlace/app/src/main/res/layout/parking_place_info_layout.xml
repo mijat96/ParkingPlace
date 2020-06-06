@@ -82,5 +82,11 @@
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
+        <Button
+            android:id="@+id/view_report_parking_fragment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="REPORT"
+            android:layout_gravity="right" />
     </LinearLayout>
 </LinearLayout>

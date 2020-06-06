@@ -1,9 +1,11 @@
 package com.rmj.parking_place.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,11 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.rmj.parking_place.R;
+import com.rmj.parking_place.actvities.ReportIlegalyParkedActivity;
 import com.rmj.parking_place.model.ParkingPlace;
 
 public class ParkingPlaceInfoFragment extends Fragment {
 
     private View view;
+    private MapFragment mapFragment;
 
     public static ParkingPlaceInfoFragment newInstance() {
 
@@ -42,6 +46,14 @@ public class ParkingPlaceInfoFragment extends Fragment {
             textDistance.setText(savedInstanceState.getString("textDistance"));
             textRealDistance.setText(savedInstanceState.getString("textRealDistance"));
         }
+
+        Button search_parking_button = (Button) view.findViewById(R.id.view_report_parking_fragment_button);
+        search_parking_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickOnBtnShowReportView(v);
+            }
+        });
 
         return view;
     }
@@ -81,5 +93,15 @@ public class ParkingPlaceInfoFragment extends Fragment {
         float distanceKm = distance / 1000;
         TextView textDistance = (TextView) view.findViewById(R.id.distance);
         textDistance.setText("Distance: " + distanceKm + "km");
+    }
+
+    public void setMapFragment(MapFragment mapFragment){
+        this.mapFragment = mapFragment;
+    }
+
+    public void clickOnBtnShowReportView(View v){
+        Intent intent = new Intent(getContext(), ReportIlegalyParkedActivity.class);
+        intent.putExtra("selected_parking_place", mapFragment.getSelectedParkingPlace());
+        startActivity(intent);
     }
 }

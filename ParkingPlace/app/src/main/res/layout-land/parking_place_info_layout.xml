@@ -65,6 +65,12 @@
             android:textColor="#fff"
             android:textSize="16sp"
             android:textStyle="bold" />
+        <Button
+            android:id="@+id/view_report_parking_fragment_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="REPORT"
+            android:layout_gravity="right" />
     </LinearLayout>
 
 </LinearLayout>
