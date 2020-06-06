@@ -100,10 +100,11 @@ public class ParkingPlaceInfoFragment extends Fragment {
         this.mapFragment = mapFragment;
     }
 
-    public void clickOnBtnShowReportView(View v){
+    public void clickOnBtnShowReportView(View v) {
         Intent intent = new Intent(getContext(), ReportIlegalyParkedActivity.class);
         intent.putExtra("selected_parking_place", mapFragment.getSelectedParkingPlace());
         startActivity(intent);
+    }
     public void updateParkingPlaceStatus(ParkingPlaceStatus status) {
         TextView textStatus = (TextView) view.findViewById(R.id.status);
         textStatus.setText("Status: " + status.name());
