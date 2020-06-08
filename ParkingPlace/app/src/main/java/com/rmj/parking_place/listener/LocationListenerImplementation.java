@@ -40,7 +40,7 @@ public class LocationListenerImplementation implements LocationListener {
         }
         else {
             currentLocationLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            mapFragment.updateCurrentLocationMarkerPosition(currentLocationLatLng);
+            //mapFragment.updateCurrentLocationMarkerPosition(currentLocationLatLng);
         }
 
         if (oldLocation == null) {

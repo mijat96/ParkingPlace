@@ -101,12 +101,12 @@ public class MapFragment extends Fragment {
     private static HashMap<FromTo, NavigationDTO> navigationCash = new HashMap<FromTo, NavigationDTO>();
 
     //-----------------------------------------------------------------
-    private LocationManager locationManager;
-    private static LocationListenerImplementation locationListenerImpl;
-    private String provider;
+    private static LocationManager locationManager;
+    // private static LocationListenerImplementation locationListenerImpl;
+    // private String provider;
     //-----------------------------------------------------------------
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationRequest locationRequest;
+    private static LocationRequest locationRequest;
     private static LocationCallbackImplementation locationCallbackImplementation;
     //-----------------------------------------------------------------
 
@@ -116,9 +116,7 @@ public class MapFragment extends Fragment {
 
     private AlertDialog locationDialog;
     private Location currentLocation;
-    private com.androidmapsextensions.Marker currentLocationMarker;
-
-    private NotificationDialog notificationDialog;
+    //private com.androidmapsextensions.Marker currentLocationMarker;
 
     // private GoogleMap map;
     private com.androidmapsextensions.GoogleMap map;
@@ -205,38 +203,25 @@ public class MapFragment extends Fragment {
         mainActivity = (MainActivity) getActivity();
         mapPageFragment = (MapPageFragment) getParentFragment();
 
-        boolean useFusedLocation = App.useFusedLocation();
-
         if (savedInstanceState == null) {
             reservation = mainActivity.getReservation();
             paidParkingPlace = mainActivity.getRegularPaidParkingPlace();
             recoveredFragment = false;
 
-            if (useFusedLocation) {
-                setupLocationCallbackAndLocationRequest();
-            }
-            else {
-                setupLocationListener();
-            }
-
+            setupLocationCallbackAndLocationRequest();
+            setupFusedLocationProviderClient();
+            locationManager = (LocationManager) mainActivity.getSystemService(Context.LOCATION_SERVICE);
         }
         else {
             recoveredFragment = true;
             recoverSavedInstance(savedInstanceState);
         }
 
-        if (useFusedLocation) {
-            setupFusedLocationProviderClient();
-        }
-        else {
-            setupLocationManager();
-        }
-
     }
 
-    private void setupLocationListener() {
-        locationListenerImpl = new LocationListenerImplementation(this);
-    }
+//    private void setupLocationListener() {
+//        locationListenerImpl = new LocationListenerImplementation(this);
+//    }
 
     private void setupLocationCallbackAndLocationRequest() {
         locationCallbackImplementation = new LocationCallbackImplementation(this);
@@ -246,8 +231,11 @@ public class MapFragment extends Fragment {
         locationRequest.setFastestInterval(0);
     }
 
-    private void setupLocationManager() {
-        locationManager = (LocationManager) mainActivity.getSystemService(Context.LOCATION_SERVICE);
+    /*private void setupLocationManager() {
+        if (locationManager == null) {
+            locationManager = (LocationManager) mainActivity.getSystemService(Context.LOCATION_SERVICE);
+        }
+
         if (!App.useFusedLocation() && !App.mockLocationAllowed()) {
             if (currentLocation == null) {
                 currentLocation = getCurrentLocationFromLocationManager();
@@ -258,7 +246,7 @@ public class MapFragment extends Fragment {
                 return;
             }
         }
-    }
+    }*/
 
     private void setupFusedLocationProviderClient() {
         if (checkLocationPermission()) {
@@ -271,12 +259,13 @@ public class MapFragment extends Fragment {
                     @Override
                     public void onSuccess(Location location) {
                         currentLocation = location;
-                        if (!App.useFusedLocation() && !App.mockLocationAllowed()) {
+                        if (!App.mockLocationAllowed()) {
                             if (checkMockLocation()) {
-                                mainActivity.navigateToHomeFramgent();
+                                //mainActivity.navigateToHomeFramgent();
                                 return;
                             }
                         }
+
                         if (checkLocationPermission()) {
                             if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                                     == PackageManager.PERMISSION_GRANTED ||
@@ -285,7 +274,6 @@ public class MapFragment extends Fragment {
                                 fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallbackImplementation, null);
                             }
                         }
-
                     }
                 })
                 .addOnFailureListener(mainActivity, new OnFailureListener() {
@@ -318,7 +306,7 @@ public class MapFragment extends Fragment {
         }*/
 
         currentLocation = savedInstanceState.getParcelable("currentLocation");
-        provider = savedInstanceState.getString("provider");
+        // provider = savedInstanceState.getString("provider");
     }
 
     @Override
@@ -357,9 +345,9 @@ public class MapFragment extends Fragment {
             outState.putParcelable("currentLocation", currentLocation);
         }
 
-        if (provider != null) {
+        /*if (provider != null) {
             outState.putString("provider", provider);
-        }
+        }*/
 
        /* if (map != null) {
             outState.putParcelable("cameraPosition", map.getCameraPosition());
@@ -376,9 +364,9 @@ public class MapFragment extends Fragment {
      * po kom kriterijumu zelimo da dobijamo informacije GSP, MOBILNO(WIFI, MObilni internet), GPS+MOBILNO
      * **/
     private void createMapFragmentAndInflate() {
-        if (!App.useFusedLocation()) {
+        /*if (!App.useFusedLocation()) {
             setProvider();
-        }
+        }*/
 
         //kreiramo novu instancu fragmenta
         // mMapFragment = SupportMapFragment.newInstance();
@@ -467,76 +455,34 @@ public class MapFragment extends Fragment {
         // createMapFragmentAndInflate();
 
         if (checkLocationPermission()) {
-            /*boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean wifi = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
             if (!gps && !wifi) {
-                showLocatonDialog();
-            }*/
-            boolean useFusedLocation = App.useFusedLocation();
-
-            boolean doSwitch = (useFusedLocation && fusedLocationProviderClient == null)
-                    || (!useFusedLocation && fusedLocationProviderClient != null);
-
-            if (doSwitch) {
-                switchLocationManagerAndFusedLocationProvider(useFusedLocation);
-            }
-
-            if (!useFusedLocation && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                                        && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 showLocatonDialog();
             }
             else if (ContextCompat.checkSelfPermission(getContext(),
                     Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-                if (doSwitch) {
-                    //Request location updates:
-                    if (useFusedLocation) {
-                        useMyLocationOnMap(true);
-                        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallbackImplementation, null);
-                    }
-                    else {
-                        if (provider == null) {
-                            setProvider();
-                        }
-                        //Request location updates:
-                        currentLocation = getLocationManager().getLastKnownLocation(provider);
-                        if (currentLocation != null) {
-                            addCurrentLocationMarker(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
-                        }
-                        locationManager.requestLocationUpdates(provider, 0, 0, locationListenerImpl);
-                    }
-                    Toast.makeText(getContext(), "ACCESS_FINE_LOCATION", Toast.LENGTH_SHORT).show();
-                }
-                else if (useFusedLocation) {
-                    useMyLocationOnMap(true);
+                //Request location updates:
+                if (fusedLocationProviderClient == null) {
+                    setupFusedLocationProviderClient();
                 }
                 else {
-                    useMyLocationOnMap(false);
+                    fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallbackImplementation, null);
                 }
-
-            }else if(ContextCompat.checkSelfPermission(getContext(),
+                Toast.makeText(getContext(), "ACCESS_FINE_LOCATION", Toast.LENGTH_SHORT).show();
+            }
+            else if(ContextCompat.checkSelfPermission(getContext(),
                     Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
 
-                if (doSwitch) {
-                    //Request location updates:
-                    if (useFusedLocation) {
-                        useMyLocationOnMap(true);
-                        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallbackImplementation, null);
-                    }
-                    else {
-                        if (provider == null) {
-                            setProvider();
-                        }
-                        //Request location updates:
-                        currentLocation = getLocationManager().getLastKnownLocation(provider);
-                        if (currentLocation != null) {
-                            addCurrentLocationMarker(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
-                        }
-                        locationManager.requestLocationUpdates(provider, 0, 0, locationListenerImpl);
-                    }
-                    Toast.makeText(getContext(), "ACCESS_COARSE_LOCATION", Toast.LENGTH_SHORT).show();
+                //Request location updates:
+                if (fusedLocationProviderClient == null) {
+                    setupFusedLocationProviderClient();
                 }
-
+                else {
+                    fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallbackImplementation, null);
+                }
+                Toast.makeText(getContext(), "ACCESS_COARSE_LOCATION", Toast.LENGTH_SHORT).show();
             }
 
             if (currentLocation != null) {
@@ -554,18 +500,18 @@ public class MapFragment extends Fragment {
      * ova metoda se mora pozivati unutar if bloka u kome je uslov da korisnik ima permisiju za lokaciju
      * (ACCESS_FINE_LOCATION or ACCESS_COARSE_LOCATION)
      */
-    private void useMyLocationOnMap(boolean use) {
+    /*private void useMyLocationOnMap(boolean use) {
         if (map != null) {
             map.setMyLocationEnabled(use);
         }
-    }
+    }*/
 
-    private void switchLocationManagerAndFusedLocationProvider(boolean useFusedLocation) {
+    /*private void switchLocationManagerAndFusedLocationProvider(boolean useFusedLocation) {
         if (useFusedLocation) {
             if (locationManager != null) {
                 locationManager.removeUpdates(locationListenerImpl);
             }
-            locationManager = null;
+            // locationManager = null;
             locationListenerImpl = null;
             removeCurrentLocationMarker();
             setupLocationCallbackAndLocationRequest();
@@ -582,9 +528,9 @@ public class MapFragment extends Fragment {
             setupLocationListener();
             setupLocationManager();
         }
-    }
+    }*/
 
-    private Location getCurrentLocationFromLocationManager() {
+    /*private Location getCurrentLocationFromLocationManager() {
         if (checkLocationPermission()) {
             if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED ||
@@ -602,13 +548,13 @@ public class MapFragment extends Fragment {
         }
 
         return null;
-    }
+    }*/
 
-    public String getProvider() {
+    /*public String getProvider() {
         return provider;
-    }
+    }*/
 
-    public void setProvider() {
+    /*public void setProvider() {
         //specificiramo krijterijum da dobijamo informacije sa svih izvora
         //ako korisnik to dopusti
         Criteria criteria = new Criteria();
@@ -616,7 +562,7 @@ public class MapFragment extends Fragment {
         //sistemskom servisu prosledjujemo taj kriterijum da bi
         //mogli da dobijamo informacje sa tog izvora
         provider = locationManager.getBestProvider(criteria, true);
-    }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle savedInstanceState) {
@@ -666,7 +612,12 @@ public class MapFragment extends Fragment {
     private void updateReferencesCascadingInListeners() {
         onMapReadyCallbackImplementation.setMapFragment(this);
         onMapReadyCallbackImplementation.setMapPageFragment(mapPageFragment);
-        locationListenerImpl.setMapFragment(this);
+        //if (App.useFusedLocation()) {
+        locationCallbackImplementation.setMapFragment(this);
+        /*}
+        else {
+            locationListenerImpl.setMapFragment(this);
+        }*/
     }
 
     /**
@@ -855,20 +806,10 @@ public class MapFragment extends Fragment {
                             == PackageManager.PERMISSION_GRANTED) {
 
                         //Request location updates:
-                        if (App.useFusedLocation()) {
-                            if (fusedLocationProviderClient == null) {
-                                setupFusedLocationProviderClient();
-                            }
-                            else {
-                                fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallbackImplementation, null);
-                            }
+                        if (fusedLocationProviderClient == null) {
+                            setupFusedLocationProviderClient();
                         }
-                        else {
-                            if (provider == null) {
-                                setProvider();
-                            }
-                            locationManager.requestLocationUpdates(provider, 0, 0, locationListenerImpl);
-                        }
+                        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallbackImplementation, null);
                     }
 
                 } else if (grantResults.length > 0
@@ -880,20 +821,10 @@ public class MapFragment extends Fragment {
                             Manifest.permission.ACCESS_COARSE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
                         //Request location updates:
-                        if (App.useFusedLocation()) {
-                            if (fusedLocationProviderClient == null) {
-                                setupFusedLocationProviderClient();
-                            }
-                            else {
-                                fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallbackImplementation, null);
-                            }
+                        if (fusedLocationProviderClient == null) {
+                            setupFusedLocationProviderClient();
                         }
-                        else {
-                            if (provider == null) {
-                                setProvider();
-                            }
-                            locationManager.requestLocationUpdates(provider, 0, 0, locationListenerImpl);
-                        }
+                        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallbackImplementation, null);
                     }
 
                 }
@@ -1184,7 +1115,7 @@ public class MapFragment extends Fragment {
         return marker;
     }
 
-    public void addCurrentLocationMarker(LatLng loc) {
+    /*public void addCurrentLocationMarker(LatLng loc) {
         int resourceId = markerIcons.get("CURRENT_LOCATION");
 
         currentLocationMarker = map.addMarker(
@@ -1195,7 +1126,7 @@ public class MapFragment extends Fragment {
                         .clusterGroup(ClusterGroup.NOT_CLUSTERED)
         );
         currentLocationMarker.setFlat(true);
-    }
+    }*/
 
     private void removeMarkers(List<Marker> markers) {
         for (Marker marker : markers) {
@@ -1211,9 +1142,9 @@ public class MapFragment extends Fragment {
     public void onPause() {
         super.onPause();
 
-        if (locationManager != null) {
+        /*if (locationManager != null) {
             locationManager.removeUpdates(locationListenerImpl);
-        }
+        }*/
 
         if (fusedLocationProviderClient != null) {
             fusedLocationProviderClient.removeLocationUpdates(locationCallbackImplementation);
@@ -1885,27 +1816,27 @@ public class MapFragment extends Fragment {
         return fusedLocationProviderClient;
     }
 
-    public void updateCurrentLocationMarkerPosition(LatLng currentLocationLatLng) {
+    /*public void updateCurrentLocationMarkerPosition(LatLng currentLocationLatLng) {
         if (currentLocationMarker == null) {
             addCurrentLocationMarker(currentLocationLatLng);
         }
         else {
             currentLocationMarker.setPosition(currentLocationLatLng);
         }
-    }
+    }*/
 
-    public void removeCurrentLocationMarker() {
+    /*public void removeCurrentLocationMarker() {
         if (currentLocationMarker != null) {
             currentLocationMarker.remove();
             currentLocationMarker = null;
         }
-    }
+    }*/
 
-    public boolean isCurrentLocationMarker(com.androidmapsextensions.Marker marker) {
+    /*public boolean isCurrentLocationMarker(com.androidmapsextensions.Marker marker) {
         if (currentLocationMarker == null) {
             return false;
         }
 
         return marker.equals(currentLocationMarker);
-    }
+    }*/
 }

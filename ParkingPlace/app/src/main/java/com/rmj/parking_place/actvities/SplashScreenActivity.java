@@ -6,8 +6,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.SystemClock;
+import android.util.Log;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -43,7 +46,9 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
                 splashTimeOut = savedInstanceState.getInt("splashTimeOut");
             }
         }
-        
+
+        // detectAnyException();
+
         // uradi inicijalizaciju u pozadinksom threadu
         initTask = new InitTask();
         initTask.execute();
@@ -93,6 +98,32 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
         }
 
         return dialogForCurrentPrivateIpAddress;
+    }
+
+    private void detectAnyException() {
+        // final SplashScreenActivity that = this;
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(final Thread paramThread, final Throwable paramThrowable) {
+                //Catch your exception
+                // Without System.exit() this will not work.
+                new Thread() {
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+                        Log.e("PARKING_PLACE_ERROR", paramThrowable.getMessage());
+                        //Toast.makeText(that,paramThrowable.getMessage(), Toast.LENGTH_LONG).show();
+                        Looper.loop();
+                    }
+                }.start();
+                try
+                {
+                    Thread.sleep(4000); // Let the Toast display before app will get shutdown
+                }
+                catch (InterruptedException e) {    }
+                System.exit(2);
+            }
+        });
     }
 
     @Override

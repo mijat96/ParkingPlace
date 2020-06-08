@@ -33,13 +33,13 @@
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/location_header">
-        <ListPreference
+        <!--<ListPreference
             app:defaultValue="fused_location"
             app:entries="@array/location_types_entries"
             app:entryValues="@array/location_types_values"
             app:key="location_types"
             app:title="@string/location_types_title"
-            app:useSimpleSummaryProvider="true" />
+            app:useSimpleSummaryProvider="true" />-->
 
         <SwitchPreferenceCompat
             app:key="mock_location_allowed"
