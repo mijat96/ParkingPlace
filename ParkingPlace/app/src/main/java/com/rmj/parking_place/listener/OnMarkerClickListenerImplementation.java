@@ -25,9 +25,6 @@ public class OnMarkerClickListenerImplementation implements GoogleMap.OnMarkerCl
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if (mapFragment.isCurrentLocationMarker(marker)) {
-            return true;
-        }
         if (mapFragment.isFavoritePlaceMarker(marker)) {
             marker.showInfoWindow();
             return true;

@@ -20,13 +20,20 @@ import com.rmj.parking_place.model.ParkingPlaceStatus;
 public class ParkingPlaceInfoFragment extends Fragment {
 
     private View view;
-    private MapFragment mapFragment;
+    private MapPageFragment mapPageFragment;
 
     public static ParkingPlaceInfoFragment newInstance() {
 
         ParkingPlaceInfoFragment pif = new ParkingPlaceInfoFragment();
 
         return pif;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mapPageFragment = (MapPageFragment) getParentFragment();
     }
 
     @Nullable
@@ -96,13 +103,9 @@ public class ParkingPlaceInfoFragment extends Fragment {
         textDistance.setText("Distance: " + distanceKm + "km");
     }
 
-    public void setMapFragment(MapFragment mapFragment){
-        this.mapFragment = mapFragment;
-    }
-
     public void clickOnBtnShowReportView(View v) {
         Intent intent = new Intent(getContext(), ReportIlegalyParkedActivity.class);
-        intent.putExtra("selected_parking_place", mapFragment.getSelectedParkingPlace());
+        intent.putExtra("selected_parking_place", mapPageFragment.getSelectedParkingPlace());
         startActivity(intent);
     }
     public void updateParkingPlaceStatus(ParkingPlaceStatus status) {

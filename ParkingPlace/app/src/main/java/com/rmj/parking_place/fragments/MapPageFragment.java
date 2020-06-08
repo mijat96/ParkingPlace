@@ -165,7 +165,6 @@ public class MapPageFragment extends Fragment {
             mapFragment = new MapFragment();
             // mapFragment = (MapFragment) fm.findFragmentById(R.id.map_fragment_id);
             parkingPlaceInfoFragment = ParkingPlaceInfoFragment.newInstance();
-            parkingPlaceInfoFragment.setMapFragment(mapFragment);
             findParkingFragment = new FindParkingFragment();
 
 
@@ -1356,5 +1355,9 @@ public class MapPageFragment extends Fragment {
 
     public int getFindParkingFragmentWidth() {
         return findParkingFragment.getWidth();
+    }
+
+    public ParkingPlace getSelectedParkingPlace() {
+        return mapFragment.getSelectedParkingPlace();
     }
 }

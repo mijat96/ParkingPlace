@@ -38,7 +38,6 @@ public class LocationCallbackImplementation extends LocationCallback {
         Location currentLocation = location;
         mapFragment.setCurrentLocation(currentLocation);
         if (currentLocation == null) {
-            mapFragment.removeCurrentLocationMarker();
             Toast.makeText(mapFragment.getActivity(), "Izgubili smo vasu lokaciju!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -54,5 +53,9 @@ public class LocationCallbackImplementation extends LocationCallback {
         }
 
         mapFragment.tryToFindEmptyParkingPlaceNearbyAndSetMode();
+    }
+
+    public void setMapFragment(MapFragment mapFragment) {
+        this.mapFragment = mapFragment;
     }
 }

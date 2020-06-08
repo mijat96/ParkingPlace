@@ -108,26 +108,10 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
                     ContextCompat.checkSelfPermission(mapFragment.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
 
-                boolean useFusedLocation = App.useFusedLocation();
-                if (useFusedLocation) {
-                    googleMap.setMyLocationEnabled(true);
-                }
-                else {
-                    googleMap.setMyLocationEnabled(false);
-                    if (mapFragment.getProvider() == null) {
-                        mapFragment.setProvider();
-                    }
-                    //Request location updates:
-                    Location currentLocation = mapFragment.getLocationManager().getLastKnownLocation(mapFragment.getProvider());
-                    mapFragment.setCurrentLocation(currentLocation);
-                    if (currentLocation != null) {
-                        mapFragment.addCurrentLocationMarker(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
-                    }
-                }
+                googleMap.setMyLocationEnabled(true);
+                googleMap.setBuildingsEnabled(true);
             }
         }
-
-        googleMap.setBuildingsEnabled(true);
 
         onMapClickListenerImplementation = new OnMapClickListenerImplementation(mapFragment, mapPageFragment);
         onMarkerClickListenerImplementation = new OnMarkerClickListenerImplementation(mapFragment, mapPageFragment);
