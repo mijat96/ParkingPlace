@@ -199,5 +199,326 @@
         "price": 100.0
       }
     ]
+  },
+  {
+    "id": 4,
+    "name": "blu_evrope_zone",
+    "version": 0,
+    "northEast": null,
+    "southWest": null,
+    "parkingPlaces": [
+      {
+        "id": 20,
+        "location": {
+          "latitude": 45.255938,
+          "longitude": 19.811752,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 21,
+        "location": {
+          "latitude": 45.255371,
+          "longitude": 19.812138,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      },
+      {
+        "id": 22,
+        "location": {
+          "latitude": 45.255235,
+          "longitude": 19.812193,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 23,
+        "location": {
+          "latitude": 45.255062,
+          "longitude": 19.812333,
+          "address": null
+        },
+        "status": "TAKEN",
+        "zone": null
+      },
+      {
+        "id": 24,
+        "location": {
+          "latitude": 45.254918,
+          "longitude": 19.812435,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 105,
+        "location": {
+          "latitude": 45.254795,
+          "longitude": 19.812510,
+          "address": null
+        },
+        "status": "TAKEN",
+        "zone": null
+      },
+      {
+        "id": 26,
+        "location": {
+          "latitude": 45.254475,
+          "longitude": 19.812750,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      },
+      {
+        "id": 27,
+        "location": {
+          "latitude": 45.240947,
+          "longitude": 19.821585,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      },
+      {
+        "id": 28,
+        "location": {
+          "latitude": 45.240519,
+          "longitude": 19.821858,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      }
+    ],
+    "parkingPlaceChanges": {},
+    "ticketPrices": [
+      {
+        "duration": 2,
+        "ticketType": "REGULAR",
+        "price": 100.0
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "blu_oslobodjenja_zone",
+    "version": 0,
+    "northEast": null,
+    "southWest": null,
+    "parkingPlaces": [
+      {
+        "id": 110,
+        "location": {
+          "latitude": 45.263938,
+          "longitude": 19.830542,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 111,
+        "location": {
+          "latitude": 45.262569,
+          "longitude": 19.831279,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      },
+      {
+        "id": 112,
+        "location": {
+          "latitude": 45.259787,
+          "longitude": 19.832843,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 113,
+        "location": {
+          "latitude": 45.259810,
+          "longitude": 19.832843,
+          "address": null
+        },
+        "status": "TAKEN",
+        "zone": null
+      },
+      {
+        "id": 114,
+        "location": {
+          "latitude": 45.256249,
+          "longitude": 19.834829,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 115,
+        "location": {
+          "latitude": 45.253642,
+          "longitude": 19.836283,
+          "address": null
+        },
+        "status": "TAKEN",
+        "zone": null
+      },
+      {
+        "id": 116,
+        "location": {
+          "latitude": 45.254509,
+          "longitude": 19.835391,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      },
+      {
+        "id": 117,
+        "location": {
+          "latitude": 45.254444,
+          "longitude": 19.835426,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      },
+      {
+        "id": 118,
+        "location": {
+          "latitude": 45.254400,
+          "longitude": 19.835449,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      }
+    ],
+    "parkingPlaceChanges": {},
+    "ticketPrices": [
+      {
+        "duration": 2,
+        "ticketType": "REGULAR",
+        "price": 100.0
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "kej_zone",
+    "version": 0,
+    "northEast": null,
+    "southWest": null,
+    "parkingPlaces": [
+      {
+        "id": 120,
+        "location": {
+          "latitude": 45.261334,
+          "longitude": 19.856786,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 121,
+        "location": {
+          "latitude": 45.261285,
+          "longitude": 19.856756,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      },
+      {
+        "id": 122,
+        "location": {
+          "latitude": 45.261237,
+          "longitude": 19.856731,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 123,
+        "location": {
+          "latitude": 45.260580,
+          "longitude": 19.856371,
+          "address": null
+        },
+        "status": "TAKEN",
+        "zone": null
+      },
+      {
+        "id": 124,
+        "location": {
+          "latitude": 45.249347,
+          "longitude": 19.854748,
+          "address": null
+        },
+        "status": "EMPTY",
+        "zone": null
+      },
+      {
+        "id": 125,
+        "location": {
+          "latitude": 45.249309,
+          "longitude": 19.854627,
+          "address": null
+        },
+        "status": "TAKEN",
+        "zone": null
+      },
+      {
+        "id": 126,
+        "location": {
+          "latitude": 45.249058,
+          "longitude": 19.855815,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      },
+      {
+        "id": 127,
+        "location": {
+          "latitude": 45.248782,
+          "longitude": 19.855791,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      },
+      {
+        "id": 128,
+        "location": {
+          "latitude": 45.248680,
+          "longitude": 19.855783,
+          "address": null
+        },
+        "status": "RESERVED",
+        "zone": null
+      }
+    ],
+    "parkingPlaceChanges": {},
+    "ticketPrices": [
+      {
+        "duration": 2,
+        "ticketType": "REGULAR",
+        "price": 100.0
+      }
+    ]
   }
 ]

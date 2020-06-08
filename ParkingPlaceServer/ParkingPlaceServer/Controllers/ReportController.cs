@@ -22,12 +22,23 @@ namespace ParkingPlaceServer.Controllers
             string fileName = "";
             var httpRequest = HttpContext.Current.Request;
 
+
             if (httpRequest.Files.Count > 0)
             {
                 foreach (string file in httpRequest.Files)
                 {
                     var postedFile = httpRequest.Files[file];
                     fileName = postedFile.FileName;
+                }
+            }
+
+            //iscupati ostale parametre
+            if (httpRequest.Form.Count > 0)
+            {
+                foreach(string form in httpRequest.Form)
+                {
+                    var parametars = httpRequest.Form[form];
+                    
                 }
             }
             //Sacuvati u bazu sliku

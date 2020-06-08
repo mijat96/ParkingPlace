@@ -21,8 +21,8 @@
     -->
 
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
-        <!-- Jovin api key: --> AIzaSyD6ZrPLnxL2-L7roV1KPFAvZ0APVI1EBDY
-        <!-- Mijatov api key: --> <!-- AIzaSyD6ZrPLnxL2-L7roV1KPFAvZ0APVI1EBDY -->
+        <!-- Jovin api key: --> <!--AIzaSyD6ZrPLnxL2-L7roV1KPFAvZ0APVI1EBDY-->
+        <!-- Mijatov api key: -->  AIzaSyD6ZrPLnxL2-L7roV1KPFAvZ0APVI1EBDY 
     </string>
 
 

@@ -105,7 +105,6 @@ public class ParkingPlaceInfoFragment extends Fragment {
         intent.putExtra("selected_parking_place", mapFragment.getSelectedParkingPlace());
         startActivity(intent);
     }
-
     public void updateParkingPlaceStatus(ParkingPlaceStatus status) {
         TextView textStatus = (TextView) view.findViewById(R.id.status);
         textStatus.setText("Status: " + status.name());

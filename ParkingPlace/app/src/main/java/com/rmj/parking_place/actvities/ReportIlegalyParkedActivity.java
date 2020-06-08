@@ -1,10 +1,15 @@
 package com.rmj.parking_place.actvities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -13,8 +18,10 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.dto.DTO;
@@ -28,6 +35,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -39,6 +49,7 @@ import retrofit2.Response;
 
 public class ReportIlegalyParkedActivity extends AppCompatActivity {
 
+    public static int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 99;
     private Bitmap image;
     static final int CAMERA_PIC_REQUEST = 1337;
     private ParkingPlace selectedParkingPlace = null;
@@ -96,7 +107,7 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
     }
 
     private void openCamera() {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, CAMERA_PIC_REQUEST);
     }
 
@@ -106,19 +117,23 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
             return;
         }
 
-        File f = createFile(selectedParkingPlace.getId().toString());
+        String fname = selectedParkingPlace.getId().toString() + "-" + Calendar.getInstance().getTime().toString() + ".jpg";
+
+        File f = createFile(fname);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 0 /*ignored for PNG*/, bos);
         byte[] bitmapdata = bos.toByteArray();
 
-        FileOutputStream fos = outputStream(bitmapdata, f);
+        saveImage(image, fname);
+        RequestBody req = RequestBody.create(bitmapdata);
+        MultipartBody.Part bodyFile = MultipartBody.Part.createFormData("upload", fname, req);
 
-        RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), f);
-        MultipartBody.Part body = MultipartBody.Part.createFormData("upload", f.getName(), reqFile);
+        MultipartBody.Part bodyParkingId = MultipartBody.Part.createFormData("parkingPlaceId", selectedParkingPlace.getId().toString());
+        MultipartBody.Part bodyZoneId = MultipartBody.Part.createFormData("zoneId", selectedParkingPlace.getZone().getId().toString());
 
         Context context = this;
-        ParkingPlaceServerUtils.reportService.reportParkedCar(body).
+        ParkingPlaceServerUtils.reportService.reportParkedCar(bodyFile, bodyParkingId, bodyZoneId).
             enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -126,23 +141,30 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
                         new AlertDialog.Builder(context)
                                 .setTitle("Report successfully send")
                                 .setMessage("Report successfully send")
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                .setIcon(R.drawable.icon_success)
+                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
                                     public void onClick(DialogInterface dialog, int whichButton) {
                                         dialog.cancel();
                                         finish();
                                     }})
-                                .setNegativeButton(android.R.string.no, null)
                                 .show();
-
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    //failure message
                     t.printStackTrace();
+                    new AlertDialog.Builder(context)
+                            .setTitle("Report failute send")
+                            .setMessage("Report failute send: " + t.getMessage())
+                            .setIcon(R.drawable.icon_failure)
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    dialog.cancel();
+                                }})
+                            .show();
                 }
             });
     }
@@ -157,24 +179,55 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
         return f;
     }
 
-    private FileOutputStream outputStream(byte[] bitmapdata, File f) {
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(f);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            fos.write(bitmapdata);
-            fos.flush();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void saveImage(Bitmap finalBitmap, String image_name) {
+
+        if(!checkEWritexternalStoragePermission()){
+            return;
         }
 
-        if (fos != null) {
-            return fos;
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root);
+        myDir.mkdirs();
+        String fname = "Image-" + image_name;
+        File file = new File(myDir, fname);
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
     }
+
+    public boolean checkEWritexternalStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                    new AlertDialog.Builder(this)
+                            .setTitle("Allow write external storage")
+                            .setMessage("To continue working we need write external storage....Allow now?")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                                }
+                            })
+                            .create()
+                            .show();
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                }
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 }
