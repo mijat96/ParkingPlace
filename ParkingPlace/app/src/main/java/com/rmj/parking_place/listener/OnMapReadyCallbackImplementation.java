@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -73,9 +74,15 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
         }*/
         mapFragment.setCurrentLocation(null);
 
+        int screenHeight = getScreenHeight();
+
         ClusteringSettings clusteringSettings = new ClusteringSettings();
         clusteringSettings.addMarkersDynamically(true);
-        clusteringSettings.clusterSize(96);
+        if(screenHeight < 2340){
+            clusteringSettings.clusterSize(50);
+        }else{
+            clusteringSettings.clusterSize(80);
+        }
         clusteringSettings.clusterOptionsProvider(new ClusterOptionsProvider() {
             @Override
             public ClusterOptions getClusterOptions(List<Marker> markers) {
@@ -196,5 +203,14 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
         onMapClickListenerImplementation.setMapPageFragment(mapPageFragment);
         onMarkerClickListenerImplementation.setMapPageFragment(mapPageFragment);
         onCameraChangeListenerImplementation.setMapPageFragment(mapPageFragment);
+    }
+
+    public int getScreenHeight(){
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        mapFragment.getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        //int width = displayMetrics.widthPixels;
+        //int resolution[] = {height, width};
+        return height;
     }
 }

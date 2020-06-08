@@ -208,7 +208,7 @@
     "southWest": null,
     "parkingPlaces": [
       {
-        "id": 100,
+        "id": 20,
         "location": {
           "latitude": 45.255938,
           "longitude": 19.811752,
@@ -218,7 +218,7 @@
         "zone": null
       },
       {
-        "id": 101,
+        "id": 21,
         "location": {
           "latitude": 45.255371,
           "longitude": 19.812138,
@@ -228,7 +228,7 @@
         "zone": null
       },
       {
-        "id": 102,
+        "id": 22,
         "location": {
           "latitude": 45.255235,
           "longitude": 19.812193,
@@ -238,7 +238,7 @@
         "zone": null
       },
       {
-        "id": 103,
+        "id": 23,
         "location": {
           "latitude": 45.255062,
           "longitude": 19.812333,
@@ -248,7 +248,7 @@
         "zone": null
       },
       {
-        "id": 104,
+        "id": 24,
         "location": {
           "latitude": 45.254918,
           "longitude": 19.812435,
@@ -268,7 +268,7 @@
         "zone": null
       },
       {
-        "id": 106,
+        "id": 26,
         "location": {
           "latitude": 45.254475,
           "longitude": 19.812750,
@@ -278,7 +278,7 @@
         "zone": null
       },
       {
-        "id": 107,
+        "id": 27,
         "location": {
           "latitude": 45.240947,
           "longitude": 19.821585,
@@ -288,7 +288,7 @@
         "zone": null
       },
       {
-        "id": 108,
+        "id": 28,
         "location": {
           "latitude": 45.240519,
           "longitude": 19.821858,
