@@ -78,10 +78,11 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
 
         ClusteringSettings clusteringSettings = new ClusteringSettings();
         clusteringSettings.addMarkersDynamically(true);
+        //POPRAVITI JOS DIMENZIJE U ODNOSU NA MAPU
         if(screenHeight < 2340){
             clusteringSettings.clusterSize(50);
         }else{
-            clusteringSettings.clusterSize(80);
+            clusteringSettings.clusterSize(96);
         }
         clusteringSettings.clusterOptionsProvider(new ClusterOptionsProvider() {
             @Override

@@ -24,6 +24,7 @@ public interface ReportService {
     @POST("/api/reports/sendReport")
     Call<ResponseBody> reportParkedCar(@Part MultipartBody.Part file,
                                        @Part MultipartBody.Part parkingPlaceId,
-                                       @Part MultipartBody.Part zoneId);
+                                       @Part MultipartBody.Part zoneId,
+                                       @Part MultipartBody.Part reason);
 
 }

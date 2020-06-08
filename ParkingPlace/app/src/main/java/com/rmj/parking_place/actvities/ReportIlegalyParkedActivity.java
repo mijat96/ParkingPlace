@@ -126,14 +126,16 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
         byte[] bitmapdata = bos.toByteArray();
 
         saveImage(image, fname);
+        String reason = getSpinnerReason();
         RequestBody req = RequestBody.create(bitmapdata);
         MultipartBody.Part bodyFile = MultipartBody.Part.createFormData("upload", fname, req);
 
         MultipartBody.Part bodyParkingId = MultipartBody.Part.createFormData("parkingPlaceId", selectedParkingPlace.getId().toString());
         MultipartBody.Part bodyZoneId = MultipartBody.Part.createFormData("zoneId", selectedParkingPlace.getZone().getId().toString());
+        MultipartBody.Part bodyReasonReport = MultipartBody.Part.createFormData("reason", reason);
 
         Context context = this;
-        ParkingPlaceServerUtils.reportService.reportParkedCar(bodyFile, bodyParkingId, bodyZoneId).
+        ParkingPlaceServerUtils.reportService.reportParkedCar(bodyFile, bodyParkingId, bodyZoneId, bodyReasonReport).
             enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -228,6 +230,11 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
         } else {
             return true;
         }
+    }
+
+    private String getSpinnerReason(){
+        Spinner spinner = (Spinner) findViewById(R.id.reportTypeSpinner);
+        return  spinner.getSelectedItem().toString();
     }
 
 }

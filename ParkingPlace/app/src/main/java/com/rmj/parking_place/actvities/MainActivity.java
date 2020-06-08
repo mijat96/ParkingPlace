@@ -106,7 +106,7 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_map_page, R.id.nav_favorite_places,
+                R.id.nav_home, R.id.nav_reports, R.id.nav_map_page, R.id.nav_favorite_places,
                                                                     R.id.nav_reservation_and_paid_parking_places)
                 .setDrawerLayout(drawer)
                 .build();
@@ -429,5 +429,23 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
 
     public void navigateToHomeFramgent() {
         navController.navigate(R.id.nav_home);
+    }
+
+    public void leaveParkingPlace(Long parkingPlaceId) {
+        if(regularPaidParkingPlace.getParkingPlace().getId().equals(parkingPlaceId)){
+            regularPaidParkingPlace = null;
+            return;
+        }
+        PaidParkingPlace placeForRemove = null;
+        for (PaidParkingPlace place : paidParkingPlacesForFavoritePlaces){
+            if(place.getParkingPlace().getId().equals(parkingPlaceId)){
+                placeForRemove = place;
+                break;
+            }
+        }
+
+        if(placeForRemove != null){
+            paidParkingPlacesForFavoritePlaces.remove(placeForRemove);
+        }
     }
 }
