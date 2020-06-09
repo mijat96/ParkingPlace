@@ -448,4 +448,12 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
             paidParkingPlacesForFavoritePlaces.remove(placeForRemove);
         }
     }
+
+    public void resetRegularPaidParkingPlace() {
+        this.regularPaidParkingPlace = null;
+    }
+
+    public void resetReservation() {
+        this.reservation = null;
+    }
 }

@@ -72,8 +72,8 @@
     <string name="mapPageBtnTxt">MAP\nPAGE</string>
     <string name="registerUserBtnTxt">REGISTER\nUSER</string>
     <string name="favoritePlacesBtnTxt">FAVORITE\nPLACES</string>
-    <string name="reservationAndPaidParkingPlacesBtnTxt">RESERVATION\nAND PAID\nPARKING\nPLACES</string>
-    <string name="reservationAndPaidParkingPlacesBtnTxtLand">RESERVATION\nAND PAID\nPARKING PLACES</string>
+    <string name="reservationAndPaidParkingPlacesBtnTxt">RESERVATION</string>
+    <string name="reservationAndPaidParkingPlacesBtnTxtLand">RESERVATION</string>
     <string name="menu_reservation_and_paid_parking_places">ReservationAndPaidParkingPlaces</string>
     <string name="location_types_title">Location Types</string>
     <string name="location_header">Location</string>

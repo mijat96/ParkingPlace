@@ -139,7 +139,7 @@ public class MapPageFragment extends Fragment {
                 setCanTakeMode();
                 break;
             case IS_TAKING:
-                setIsTakingMode();
+                setIsTakingMode(false);
                 break;
             default:
                 setNoneMode();
@@ -234,7 +234,7 @@ public class MapPageFragment extends Fragment {
             startTimerForReservationOrTakingOfParkingPlace(reservation.getEndDateTimeAndroid().getTime(), true);
         }
         else if (paidParkingPlace != null && now.before(paidParkingPlace.getEndDateTimeAndroid())) {
-            setIsTakingMode();
+            setIsTakingMode(false);
             startTimerForReservationOrTakingOfParkingPlace(paidParkingPlace.getEndDateTimeAndroid().getTime(), false);
         }
         else {
@@ -706,22 +706,30 @@ public class MapPageFragment extends Fragment {
 
     }
 
-    public void setIsTakingMode() {
+    public void setIsTakingMode(boolean activateLeaveBtn) {
         this.currentMode = Mode.IS_TAKING;
 
         showTxtRemainingTime(R.color.colorTake);
 
         int color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorDisabledButton);
+        int colorActivateBtn = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorLeaveParkingPlace);
         Button btnTake = (Button) view.findViewById(R.id.btnTake);
         btnTake.setEnabled(false);
         btnTake.setBackgroundColor(color);
 
-        color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorDisabledButton);
+        //color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorDisabledButton);
         Button btnReserve = (Button) view.findViewById(R.id.btnReserve);
         btnReserve.setEnabled(false);
         btnReserve.setBackgroundColor(color);
 
         Button btnLeaveParkingPlace = (Button) view.findViewById(R.id.btnLeaveParkingPlace);
+        if(activateLeaveBtn){
+            btnLeaveParkingPlace.setEnabled(true);
+            btnLeaveParkingPlace.setBackgroundColor(colorActivateBtn);
+        }else {
+            btnLeaveParkingPlace.setEnabled(false);
+            btnLeaveParkingPlace.setBackgroundColor(color);
+        }
         btnLeaveParkingPlace.setVisibility(View.VISIBLE);
     }
 
@@ -871,7 +879,7 @@ public class MapPageFragment extends Fragment {
         this.paidParkingPlace = paidParkingPlace;
         mainActivity.savePaidParkingPlace(paidParkingPlace);
         mapFragment.takeParkingPlace(paidParkingPlace);
-        setIsTakingMode();
+        setIsTakingMode(true);
 
         if (isParkingPlaceInfoFragmentVisible()) {
             parkingPlaceInfoFragment.updateParkingPlaceStatus(ParkingPlaceStatus.TAKEN);
@@ -1001,6 +1009,7 @@ public class MapPageFragment extends Fragment {
         ((TextView) view.findViewById(R.id.txtRemainingTime)).setVisibility(View.GONE);
 
         if (timeIsUp) {
+            mainActivity.resetReservation();
             addViolationToUser(true);
             String message = "Your parking place reservation has expired!";
             dialogForExpiredReservationOrTakingParkingPlace = new NotificationDialog(message, mainActivity);
@@ -1046,6 +1055,7 @@ public class MapPageFragment extends Fragment {
         ((TextView) view.findViewById(R.id.txtRemainingTime)).setVisibility(View.GONE);
 
         if (timeIsUp) {
+            mainActivity.resetRegularPaidParkingPlace();
             setNoneMode();
             mapFragment.finishTakingOfParkingPlace();
             addViolationToUser(false);
@@ -1107,6 +1117,7 @@ public class MapPageFragment extends Fragment {
 
     private void stopTimerForUpdatingParkingPlaces() {
         if (timerForUpdatingParkingPlaces != null) {
+
             timerForUpdatingParkingPlaces.cancel();
             timerForUpdatingParkingPlaces.purge();
         }
@@ -1359,5 +1370,13 @@ public class MapPageFragment extends Fragment {
 
     public ParkingPlace getSelectedParkingPlace() {
         return mapFragment.getSelectedParkingPlace();
+    }
+
+    public void activateBtnLeaveParkingPlace() {
+        int color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorLeaveParkingPlace);
+
+        Button btnLeaveParkingPlace = (Button) view.findViewById(R.id.btnLeaveParkingPlace);
+        btnLeaveParkingPlace.setEnabled(true);
+        btnLeaveParkingPlace.setBackgroundColor(color);
     }
 }

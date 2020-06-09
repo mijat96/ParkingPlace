@@ -16,4 +16,5 @@
     <color name="colorEditBtn">#2196F3</color>
     <color name="colorRemoveBtn">#F44336</color>
     <color name="color_stroke">#FFC107</color>
+    <color name="home_page_text_color">#FFEB3B</color>
 </resources>

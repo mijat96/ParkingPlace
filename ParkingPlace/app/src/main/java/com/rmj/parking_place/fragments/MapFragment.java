@@ -1801,13 +1801,15 @@ public class MapFragment extends Fragment {
             // nisu jos pristigla parking mesta
             takenParkingPlaceMarker = getParkingPlaceMarker(location);
         }
+        mapPageFragment.activateBtnLeaveParkingPlace();
     }
 
     public void restoreReservedAndTakenParkingPlace() {
-        if (reservation != null) {
+        Date now = new Date();
+        if (reservation != null && now.before(reservation.getEndDateTimeAndroid())) {
             restoreReservedParkingPlace(reservation.getParkingPlace().getLocation());
         }
-        if (paidParkingPlace != null) {
+        if (paidParkingPlace != null && now.before(paidParkingPlace.getEndDateTimeAndroid())) {
             restoreTakenParkingPlace(paidParkingPlace.getParkingPlace().getLocation());
         }
     }

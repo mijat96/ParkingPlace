@@ -82,7 +82,7 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
         if(screenHeight < 2340){
             clusteringSettings.clusterSize(50);
         }else{
-            clusteringSettings.clusterSize(96);
+            clusteringSettings.clusterSize(110);
         }
         clusteringSettings.clusterOptionsProvider(new ClusterOptionsProvider() {
             @Override

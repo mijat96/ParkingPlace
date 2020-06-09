@@ -202,7 +202,7 @@
   },
   {
     "id": 4,
-    "name": "blu_evrope_zone",
+    "name": "bul_evrope_zone",
     "version": 0,
     "northEast": null,
     "southWest": null,
@@ -309,7 +309,7 @@
   },
   {
     "id": 5,
-    "name": "blu_oslobodjenja_zone",
+    "name": "bul_oslobodjenja_zone",
     "version": 0,
     "northEast": null,
     "southWest": null,
