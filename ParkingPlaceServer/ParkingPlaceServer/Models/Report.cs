@@ -15,6 +15,7 @@ namespace ParkingPlaceServer.Models
         public string Reason { get; set; }
         public int ParkingPlaceId { get; set; }
         public int ZoneId { get; set; }
+        public DateTime DateTime { get; set; }
         public Report() { }
     }
 }

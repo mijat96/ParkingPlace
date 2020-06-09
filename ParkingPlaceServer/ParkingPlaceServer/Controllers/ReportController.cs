@@ -5,6 +5,7 @@ using ParkingPlaceServer.Resources;
 using ParkingPlaceServer.Services;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace ParkingPlaceServer.Controllers
     public class ReportController : ApiController
     {
         private IUsersService usersService = UsersService.Instance;
+        private IZonesService zonesService = ZonesService.Instance;
 
         // POST: Report
         [Route("api/reports/sendReport")]
@@ -77,6 +79,7 @@ namespace ParkingPlaceServer.Controllers
 
             report.UsernameSubmitter = loggedUser.Username;
             report.ImageUrl = filePath + fileName;
+            report.DateTime = DateTime.Now;
 
             using (var db = new ApplicationDbContext())
             {
@@ -95,6 +98,46 @@ namespace ParkingPlaceServer.Controllers
                 return Ok();
                 //return Request.CreateResponse(HttpStatusCode.OK);
             }
+        }
+
+        [Route("api/reports/getReports")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> getReports()
+        {
+            string token = GetHeader("token");
+            if (token == null || (token != null && !TokenManager.ValidateToken(token)))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
+
+            User loggedUser = usersService.GetLoggedUser(token);
+            List<ReportDTO> allUserReports = new List<ReportDTO>();
+            using (var db = new ApplicationDbContext())
+            {
+                List<Report> listReports = db.Reports.ToList();
+                //allUserReports =  db.Reports.Where(r => r.UsernameSubmitter.Equals(loggedUser.Username))
+                //                                          .Select(r => new ReportDTO(r, zonesService.GetZone(r.ZoneId)
+                //                                                                                    .GetParkingPlace(r.ParkingPlaceId)
+                //                                                                                    .Location.Address))
+                //                                           .ToList();
+                foreach (Report r in listReports)
+                {
+                    if (r.UsernameSubmitter.Equals(loggedUser.Username))
+                    {
+                        string address = zonesService.GetZone(r.ZoneId).GetParkingPlace(r.ParkingPlaceId).Location.Address;
+                        allUserReports.Add(new ReportDTO(r, address));
+                    }
+
+                }
+            }
+
+            if(allUserReports != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, allUserReports);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.NotFound);
+
         }
 
         private string GetHeader(string key)

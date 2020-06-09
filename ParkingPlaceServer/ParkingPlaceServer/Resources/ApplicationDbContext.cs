@@ -16,9 +16,9 @@ namespace ParkingPlaceServer.Resources
         {
         }
 
-        public static ApplicationDbContext Create()
-        {
-            return new ApplicationDbContext();
-        }
+        //public static ApplicationDbContext Create()
+        //{
+        //    return new ApplicationDbContext();
+        //}
     }
 }

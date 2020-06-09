@@ -210,6 +210,15 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202006082202268_InitialCreate.cs" />
+    <Compile Include="Migrations\202006082202268_InitialCreate.designer.cs">
+      <DependentUpon>202006082202268_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202006090124300_FirstMigration.cs" />
+    <Compile Include="Migrations\202006090124300_FirstMigration.designer.cs">
+      <DependentUpon>202006090124300_FirstMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\FavoritePlace.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\PaidParkingPlace.cs" />
@@ -325,6 +334,14 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202006082202268_InitialCreate.resx">
+      <DependentUpon>202006082202268_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202006090124300_FirstMigration.resx">
+      <DependentUpon>202006090124300_FirstMigration.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
