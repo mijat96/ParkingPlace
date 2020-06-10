@@ -8,6 +8,8 @@ import android.view.Menu;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.rmj.parking_place.App;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
@@ -17,6 +19,7 @@ import com.rmj.parking_place.dto.ReservationAndPaidParkingPlacesDTO;
 import com.rmj.parking_place.dto.ReservationDTO;
 import com.rmj.parking_place.fragments.favorite_places.FavoritePlacesFragment;
 import com.rmj.parking_place.model.FavoritePlace;
+import com.rmj.parking_place.model.Location;
 import com.rmj.parking_place.model.PaidParkingPlace;
 import com.rmj.parking_place.model.ParkingPlace;
 import com.rmj.parking_place.model.Reservation;
@@ -126,6 +129,11 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
                     // unutar downloadZones bice pozvan downloadReservationAndPaidParkingPlaces
                 }
                 else {
+                    LatLngBounds bounds;
+                    for (Zone zone : zones) {
+                        bounds = makeLatLngBoundsMapboxsdk(zone.getNorthEast(), zone.getSouthWest());
+                        zone.setBounds(bounds);
+                    }
                     downloadReservationAndPaidParkingPlaces();
                 }
                 return null;
@@ -222,7 +230,14 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
                             if (zones == null) {
                                 zones = new ArrayList<Zone>();
                             }
+
                             if (!zones.isEmpty()) {
+                                LatLngBounds bounds;
+                                for (Zone zone : zones) {
+                                    bounds = makeLatLngBoundsMapboxsdk(zone.getNorthEast(), zone.getSouthWest());
+                                    zone.setBounds(bounds);
+                                }
+
                                 new AsyncTask<Object, Void, Void>() {
                                     @Override
                                     protected Void doInBackground(Object[] objects) {
@@ -245,6 +260,13 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
 
         /*new GetRequestAsyncTask(this).execute(App.getParkingPlaceServerUrl() + "/api/zones",
                 HttpRequestAndResponseType.GET_ZONES.name(), TokenUtils.getToken());*/
+    }
+
+    private LatLngBounds makeLatLngBoundsMapboxsdk(Location northEast, Location southWest) {
+        return new LatLngBounds.Builder()
+                .include(new LatLng(northEast.getLatitude(), northEast.getLongitude()))
+                .include(new LatLng(southWest.getLatitude(), southWest.getLongitude()))
+                .build();
     }
 
     private void downloadFavoritePlaces() {

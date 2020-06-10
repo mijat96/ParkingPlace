@@ -77,4 +77,5 @@
     <string name="menu_reservation_and_paid_parking_places">ReservationAndPaidParkingPlaces</string>
     <string name="location_types_title">Location Types</string>
     <string name="location_header">Location</string>
+    <string name="city_title">Select city</string>
 </resources>

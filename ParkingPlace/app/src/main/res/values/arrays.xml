@@ -20,4 +20,12 @@
         <item>fused_location</item>
     </string-array>-->
 
+    <string-array name="cities_values">
+        <item>1</item>
+    </string-array>
+
+    <string-array name="cities_entries" >
+        <item>Novi Sad</item>
+    </string-array>
+
 </resources>

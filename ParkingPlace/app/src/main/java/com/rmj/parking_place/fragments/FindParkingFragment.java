@@ -1,6 +1,7 @@
 package com.rmj.parking_place.fragments;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -20,11 +21,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.actvities.SelectLocationActivity;
 import com.rmj.parking_place.listener.OnCreateViewFinishedListener;
-import com.rmj.parking_place.model.Location;
 import com.rmj.parking_place.model.ParkingPlace;
 import com.rmj.parking_place.model.ParkingPlaceStatus;
 import com.rmj.parking_place.model.Zone;
@@ -52,6 +53,7 @@ public class FindParkingFragment extends Fragment {
     private MainActivity mainActivity;
 
     private OnCreateViewFinishedListener onCreateViewFinishedListener;
+    private final int earthRadius = 6378137;
 
 
     public FindParkingFragment() {
@@ -144,8 +146,8 @@ public class FindParkingFragment extends Fragment {
             }
         });
 
-        Button search_parking_button = (Button) view.findViewById(R.id.search_parking_button);
-        search_parking_button.setOnClickListener(new View.OnClickListener() {
+        Button searchParkingButton = (Button) view.findViewById(R.id.search_parking_button);
+        searchParkingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clickOnBtnSearchParkingPlace(v);
@@ -245,13 +247,14 @@ public class FindParkingFragment extends Fragment {
         float distance = 0;
         if(!editTextDistance.getText().toString().matches("")){
             distance = Float.parseFloat(editTextDistance.getText().toString());
+            distance *= 1000;
         }
 
-        HashMap<Location, ParkingPlace> places = mapPageFragment.getParkingPlaces();
-        ArrayList<ParkingPlace> parkingPlaces = new ArrayList<ParkingPlace>();
+//        HashMap<Location, ParkingPlace> places = mapPageFragment.getParkingPlaces();
+//        ArrayList<ParkingPlace> parkingPlaces = new ArrayList<ParkingPlace>();
         zones = mapPageFragment.getZones();
 
-        for (ParkingPlace parkingPlace: places.values()) {
+        /*for (ParkingPlace parkingPlace: places.values()) {
             if(!addressTextInput.matches("") && addressTextInput.equals(parkingPlace.getLocation().getAddress()) && chosedSearchMethod.matches("address")){
                 Toast.makeText(mainActivity, "search address",Toast.LENGTH_SHORT).show();
                 parkingPlaces.add(parkingPlace);
@@ -260,12 +263,12 @@ public class FindParkingFragment extends Fragment {
                 Toast.makeText(mainActivity, "search address",Toast.LENGTH_SHORT).show();
                 parkingPlaces.add(parkingPlace);
             }
-            /*else if(!textLocation.getText().toString().matches("") && textLocation.getText().toString().matches("selected")
-                    && chosedSearchMethod.matches("marker")) {*/
+            *//*else if(!textLocation.getText().toString().matches("") && textLocation.getText().toString().matches("selected")
+                    && chosedSearchMethod.matches("marker")) {*//*
             else if(clickedLocation != null && chosedSearchMethod.matches("marker")) {
                 float distanceMarkerCurrentLocation = computeDistanceBetweenTwoPoints(latitude, longitude,
                         parkingPlace.getLocation().getLatitude(), parkingPlace.getLocation().getLongitude());
-                if(distanceMarkerCurrentLocation <= distance*1000){
+                if(distanceMarkerCurrentLocation <= distance){
                     parkingPlaces.add(parkingPlace);
                 }
                 //Toast.makeText(this, "search location",Toast.LENGTH_SHORT).show();
@@ -282,14 +285,86 @@ public class FindParkingFragment extends Fragment {
             double longitude = parkingPlaces.get(0).getLocation().getLongitude();
             com.google.android.gms.maps.model.LatLng lng = new com.google.android.gms.maps.model.LatLng(latitude, longitude);
             fragm.updateCameraPosition(lng, true);
+        }*/
+
+        switch (chosedSearchMethod) {
+            case "address":
+                filterByAddress(addressTextInput);
+                break;
+            case "zone":
+                filterByZone(zones, zoneTextInput);
+                break;
+            case "marker":
+                filterByMarkerLocationAndDistance(clickedLocation, distance);
+                break;
+            default:
+                Toast.makeText(mainActivity, "select search method and fill in the field",Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 
-    float computeDistanceBetweenTwoPoints(double latitudeA, double longitudeA, double latitudeB, double longitudeB) {
+    private void filterByMarkerLocationAndDistance(LatLng clickedLocation, float distance) {
+        if (clickedLocation == null) {
+            Toast.makeText(mainActivity, "clickedLocation == null", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            double halfDistance = distance / 2;
+            LatLng topLeft = moveFor(clickedLocation, -halfDistance, -halfDistance);
+            LatLng topRight = moveFor(clickedLocation, -halfDistance, halfDistance);
+            LatLng bottomLeft = moveFor(clickedLocation, halfDistance, -halfDistance);
+            LatLng bottomRight = moveFor(clickedLocation, halfDistance, halfDistance);
+            LatLngBounds bounds = LatLngBounds.builder()
+                                                .include(topLeft)
+                                                .include(topRight)
+                                                .include(bottomLeft)
+                                                .include(bottomRight)
+                                                .build();
+            mapPageFragment.updateCameraBounds(bounds);
+        }
+    }
+
+    private LatLng moveFor(LatLng latLng, double latMeters, double lonMeters) { // in meters
+        //Coordinate offsets in radians
+        double dLat = latMeters / earthRadius;
+        double dLon = lonMeters / (earthRadius * Math.cos(Math.PI * latLng.latitude / 180));
+
+        double newLat = latLng.latitude + dLat * 180 / Math.PI;
+        double newLon = latLng.longitude + dLon * 180 / Math.PI;
+
+        return new LatLng(newLat, newLon);
+    }
+
+    private void filterByZone(List<Zone> zones, String zoneTextInput) {
+        for (Zone zone : zones) {
+            if (zone.getName().equals(zoneTextInput)) {
+                mapPageFragment.updateCameraBounds(zone.getLatLngBounds());
+                return;
+            }
+        }
+
+        Toast.makeText(mainActivity, "Not found zone:  " + zoneTextInput, Toast.LENGTH_SHORT).show();
+    }
+
+    private void filterByAddress(String addressTextInput) {
+        if (!addressTextInput.isEmpty()) {
+            LatLng latLng = GeocoderUtils.getLatLngFromLocationName(addressTextInput);
+            if (latLng == null) {
+                Toast.makeText(mainActivity, "latLng == null", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                mapPageFragment.updateCameraPosition(latLng);
+            }
+        }
+        else {
+            Toast.makeText(mainActivity, "addressTextInput.isEmpty()", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /*float computeDistanceBetweenTwoPoints(double latitudeA, double longitudeA, double latitudeB, double longitudeB) {
         float[] results = new float[1];
         android.location.Location.distanceBetween(latitudeA, longitudeA, latitudeB, longitudeB, results);
         return results[0];
-    }
+    }*/
 
     public void onCheckboxSearchClicked(View v){
         boolean checked = ((CheckBox) v).isChecked();

@@ -570,14 +570,14 @@ public class MapPageFragment extends Fragment {
         }
 
         com.mapbox.mapboxsdk.geometry.LatLngBounds cameraBounds = convertLatLngBoundsToLatLngBoundsMapboxsdk(currentCameraBounds);
-        com.mapbox.mapboxsdk.geometry.LatLngBounds zoneBounds;
+        // com.mapbox.mapboxsdk.geometry.LatLngBounds zoneBounds;
         com.mapbox.mapboxsdk.geometry.LatLngBounds intersectBounds;
 
         synchronized (this.zonesForUpdating) {
             this.zonesForUpdating.clear();
             for (Zone zone : this.zones) {
-                zoneBounds = makeLatLngBoundsMapboxsdk(zone.getNorthEast(), zone.getSouthWest());
-                intersectBounds = cameraBounds.intersect(zoneBounds);
+                // zoneBounds = makeLatLngBoundsMapboxsdk(zone.getNorthEast(), zone.getSouthWest());
+                intersectBounds = cameraBounds.intersect(zone.getBounds());
                 if (intersectBounds != null && !intersectBounds.isEmptySpan()) {
                     this.zonesForUpdating.add(zone);
                 }
@@ -585,12 +585,12 @@ public class MapPageFragment extends Fragment {
         }
     }
 
-    private com.mapbox.mapboxsdk.geometry.LatLngBounds makeLatLngBoundsMapboxsdk(Location northEast, Location southWest) {
+    /*private com.mapbox.mapboxsdk.geometry.LatLngBounds makeLatLngBoundsMapboxsdk(Location northEast, Location southWest) {
         return new com.mapbox.mapboxsdk.geometry.LatLngBounds.Builder()
                 .include(new LatLng(northEast.getLatitude(), northEast.getLongitude()))
                 .include(new LatLng(southWest.getLatitude(), southWest.getLongitude()))
                 .build();
-    }
+    }*/
 
     private com.mapbox.mapboxsdk.geometry.LatLngBounds convertLatLngBoundsToLatLngBoundsMapboxsdk(LatLngBounds bounds) {
         return new com.mapbox.mapboxsdk.geometry.LatLngBounds.Builder()
@@ -1378,5 +1378,13 @@ public class MapPageFragment extends Fragment {
         Button btnLeaveParkingPlace = (Button) view.findViewById(R.id.btnLeaveParkingPlace);
         btnLeaveParkingPlace.setEnabled(true);
         btnLeaveParkingPlace.setBackgroundColor(color);
+    }
+
+    public void updateCameraPosition(com.google.android.gms.maps.model.LatLng latLng) {
+        mapFragment.updateCameraPosition(latLng, 18, true);
+    }
+
+    public void updateCameraBounds(LatLngBounds latLngBounds) {
+        mapFragment.updateCameraBounds(latLngBounds, true);
     }
 }

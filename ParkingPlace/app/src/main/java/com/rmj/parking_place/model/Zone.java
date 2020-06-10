@@ -9,6 +9,8 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.Relation;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.rmj.parking_place.database.TicketPriceDb;
 import com.rmj.parking_place.database.ZoneWithLocationsAndTicketPrices;
 
@@ -24,6 +26,7 @@ public class Zone implements Parcelable {
     private Long version;
     private Location northEast;
     private Location southWest;
+    private com.mapbox.mapboxsdk.geometry.LatLngBounds bounds;
     private List<ParkingPlace> parkingPlaces;
     private List<TicketPrice> ticketPrices;
 
@@ -32,12 +35,14 @@ public class Zone implements Parcelable {
     }
 
     public Zone(Long id, String name, Long version, Location northEast, Location southWest,
+                    com.mapbox.mapboxsdk.geometry.LatLngBounds bounds,
                     List<ParkingPlace> parkingPlaces, List<TicketPrice> ticketPrices) {
         this.id = id;
         this.name = name;
         this.version = version;
         this.northEast = northEast;
         this.southWest = southWest;
+        this.bounds = bounds;
         this.parkingPlaces = parkingPlaces;
         this.ticketPrices = ticketPrices;
     }
@@ -49,6 +54,7 @@ public class Zone implements Parcelable {
         this.version = null;
         this.northEast = null;
         this.southWest = null;
+        this.bounds = null;
         this.ticketPrices = new ArrayList<TicketPrice>();
         for (TicketPrice ticketPrice : zone.ticketPrices) {
             this.ticketPrices.add(ticketPrice);
@@ -69,6 +75,7 @@ public class Zone implements Parcelable {
         }
         northEast = in.readParcelable(Location.class.getClassLoader());
         southWest = in.readParcelable(Location.class.getClassLoader());
+        bounds = in.readParcelable(LatLngBounds.class.getClassLoader());
         parkingPlaces = readParkingPlaces(in);
         ticketPrices = in.createTypedArrayList(TicketPrice.CREATOR);
     }
@@ -183,21 +190,21 @@ public class Zone implements Parcelable {
         this.southWest = southWest;
     }
 
+    public LatLngBounds getBounds() { return bounds; }
+
+    public void setBounds(LatLngBounds bounds) { this.bounds = bounds; }
+
     public List<ParkingPlace> getParkingPlaces() {
         return parkingPlaces;
     }
 
-    public void setParkingPlaces(List<ParkingPlace> parkingPlaces) {
-        this.parkingPlaces = parkingPlaces;
-    }
+    public void setParkingPlaces(List<ParkingPlace> parkingPlaces) { this.parkingPlaces = parkingPlaces; }
 
     public List<TicketPrice> getTicketPrices() {
         return ticketPrices;
     }
 
-    public void setTicketPrices(List<TicketPrice> ticketPrices) {
-        this.ticketPrices = ticketPrices;
-    }
+    public void setTicketPrices(List<TicketPrice> ticketPrices) { this.ticketPrices = ticketPrices; }
 
     @Override
     public boolean equals(Object o) {
@@ -234,7 +241,15 @@ public class Zone implements Parcelable {
         }
         dest.writeParcelable(northEast, flags);
         dest.writeParcelable(southWest, flags);
+        dest.writeParcelable(bounds, flags);
         writeParkingPlaces(dest, flags, parkingPlaces);
         dest.writeTypedList(ticketPrices);
+    }
+
+    public com.google.android.gms.maps.model.LatLngBounds getLatLngBounds() {
+        return com.google.android.gms.maps.model.LatLngBounds.builder()
+                .include(new LatLng(northEast.getLatitude(), northEast.getLongitude()))
+                .include(new LatLng(southWest.getLatitude(), southWest.getLongitude()))
+                .build();
     }
 }

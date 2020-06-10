@@ -1023,8 +1023,15 @@ public class MapFragment extends Fragment {
 
     public void updateCameraPosition(LatLng position, boolean withAnimation) {
         if(map != null) {
+
+            updateCameraPosition(position, 15, withAnimation);
+        }
+    }
+
+    public void updateCameraPosition(LatLng position, float zoom, boolean withAnimation) {
+        if(map != null) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(position).zoom(15).build();
+                    .target(position).zoom(zoom).build();
             updateCameraPosition(cameraPosition, withAnimation);
         }
     }
@@ -1037,6 +1044,18 @@ public class MapFragment extends Fragment {
             }
             else {
                 // map.getCameraPosition().zoom
+                map.moveCamera(cameraUpdate);
+            }
+        }
+    }
+
+    public void updateCameraBounds(LatLngBounds bounds, boolean withAnimation) {
+        if(map != null) {
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 0);
+            if (withAnimation) {
+                map.animateCamera(cameraUpdate);
+            }
+            else {
                 map.moveCamera(cameraUpdate);
             }
         }

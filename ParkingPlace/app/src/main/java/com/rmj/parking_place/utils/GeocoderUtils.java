@@ -36,7 +36,10 @@ public class GeocoderUtils {
     public static LatLng getLatLngFromLocationName(String locationName) {
         LatLng latLng;
         try {
-            List<Address> addresses = geocoder.getFromLocationName(locationName, 1);
+            List<Address> addresses = geocoder.getFromLocationName(locationName, 1,
+                                                    45.222314, 19.767787,
+                                                    45.308942,19.900966);
+            // trazi adresu unutar granica Novog Sada
             if (addresses.isEmpty()) {
                 latLng = null;
             }
