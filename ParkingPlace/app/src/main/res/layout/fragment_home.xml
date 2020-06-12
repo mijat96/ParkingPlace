@@ -1,92 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-android:id="@+id/parent"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="#FFFFFF">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
 
-<androidx.constraintlayout.widget.Guideline
-    android:id="@+id/guideline_ver"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    app:layout_constraintGuide_percent=".5" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_ver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".5" />
 
-<androidx.constraintlayout.widget.Guideline
-    android:id="@+id/guideline_hor"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    app:layout_constraintGuide_percent=".5" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_hor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".5" />
 
-<Button
-    android:id="@+id/mapPageBtn"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_margin="4dp"
-    android:textColor="@android:color/white"
-    android:textAlignment="center"
-    android:textSize="40dp"
-    android:selectAllOnFocus="true"
-    android:background="@drawable/map"
-    app:layout_constraintBottom_toTopOf="@+id/guideline_hor"
-    app:layout_constraintDimensionRatio="w,1:1.5"
-    app:layout_constraintHeight_default="percent"
-    app:layout_constraintHeight_percent=".5"
-    app:layout_constraintRight_toLeftOf="@+id/guideline_ver"
-    app:layout_constraintTop_toTopOf="parent"/>
     <!--android:text="@string/mapPageBtnTxt"-->
 
-<Button
-    android:id="@+id/reservationAndPaidParkingPlacesBtn"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_margin="4dp"
-    android:background="@drawable/reservation"
-    android:textColor="@color/home_page_text_color"
-    android:textAlignment="textEnd"
-    android:textSize="30dp"
-    app:layout_constraintBottom_toTopOf="@+id/guideline_hor"
-    app:layout_constraintDimensionRatio="w,1:1.5"
-    app:layout_constraintHeight_default="percent"
-    app:layout_constraintHeight_percent=".5"
-    app:layout_constraintLeft_toRightOf="@+id/guideline_ver"
-    app:layout_constraintTop_toTopOf="parent"/>
     <!--android:text="@string/reservationAndPaidParkingPlacesBtnTxt"-->
 
-<Button
-    android:id="@+id/favoritePlacesBtn"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_margin="4dp"
-    android:textColor="@android:color/white"
-    android:textAlignment="center"
-    android:textSize="40dp"
-    android:background="@drawable/favorite_places"
-    app:layout_constraintDimensionRatio="w,1:1.5"
-    app:layout_constraintHeight_default="percent"
-    app:layout_constraintHeight_percent=".5"
-    app:layout_constraintRight_toLeftOf="@+id/guideline_ver"
-    app:layout_constraintTop_toBottomOf="@+id/guideline_hor"
-    app:layout_constraintBottom_toBottomOf="parent"/>
+    <TextView
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PARKING APP"
+        android:textSize="25dp"
+        android:textAlignment="center"/>
+
+    <!--<TextView
+        android:id="@+id/textView2"
+        android:layout_width="198dp"
+        android:layout_height="66dp"
+        android:orientation="horizontal"
+        android:text="RESERVATION AND PAID"
+        android:textAlignment="center"
+        android:textSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="288dp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="204dp"
+        android:layout_height="31dp"
+        android:layout_marginEnd="208dp"
+        android:orientation="horizontal"
+        android:text="MAP"
+        android:textAlignment="center"
+        android:textSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="288dp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="204dp"
+        android:layout_height="31dp"
+        android:layout_marginEnd="204dp"
+        android:orientation="horizontal"
+        android:text="FAVORIT PLACES"
+        android:textAlignment="center"
+        android:textSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="640dp" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="204dp"
+        android:layout_height="31dp"
+        android:layout_marginEnd="4dp"
+        android:orientation="horizontal"
+        android:text="REGISTRATION"
+        android:textAlignment="center"
+        android:textSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="640dp" />-->
+
+    <Button
+        android:id="@+id/mapPageBtn"
+        android:layout_width="188dp"
+        android:layout_height="186dp"
+        android:layout_margin="4dp"
+        android:layout_marginRight="9dp"
+        android:background="@drawable/map_home_icon"
+        android:selectAllOnFocus="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="40dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_hor"
+        app:layout_constraintDimensionRatio="w,1:1.5"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent=".5"
+        app:layout_constraintRight_toLeftOf="@+id/guideline_ver"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.477"/>
+
+
+    <Button
+        android:id="@+id/reservationAndPaidParkingPlacesBtn"
+        android:layout_width="184dp"
+        android:layout_height="194dp"
+        android:layout_margin="4dp"
+        android:layout_marginLeft="16dp"
+        android:background="@drawable/reservation_home_icon"
+        android:textAlignment="textEnd"
+        android:textColor="@color/home_page_text_color"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_hor"
+        app:layout_constraintDimensionRatio="w,1:1.5"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent=".5"
+        app:layout_constraintLeft_toRightOf="@+id/guideline_ver"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.45" />
+
+
     <!--android:text="@string/favoritePlacesBtnTxt"-->
 
-<Button
-    android:id="@+id/registerUserBtn"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_margin="4dp"
-    android:textColor="@android:color/white"
-    android:textAlignment="center"
-    android:textSize="40dp"
-    android:background="@drawable/registration"
-    app:layout_constraintDimensionRatio="w,1:1.5"
-    app:layout_constraintHeight_default="percent"
-    app:layout_constraintHeight_percent=".5"
-    app:layout_constraintLeft_toRightOf="@+id/guideline_ver"
-    app:layout_constraintTop_toBottomOf="@+id/guideline_hor"
-    app:layout_constraintBottom_toBottomOf="parent"/>
+    <Button
+        android:id="@+id/favoritePlacesBtn"
+        android:layout_width="198dp"
+        android:layout_height="191dp"
+        android:layout_margin="4dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/favorite_home_icon"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="w,1:1.5"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent=".5"
+        app:layout_constraintRight_toLeftOf="@+id/guideline_ver"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_hor"
+        app:layout_constraintVertical_bias="0.385" />
+
+    <Button
+        android:id="@+id/registerUserBtn"
+        android:layout_width="178dp"
+        android:layout_height="189dp"
+        android:layout_marginLeft="15dp"
+        android:background="@drawable/registration"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="w,1:1.5"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent=".5"
+        app:layout_constraintLeft_toRightOf="@+id/guideline_ver"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_hor"
+        app:layout_constraintVertical_bias="0.397" />
     <!--android:text="@string/registerUserBtnTxt"-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

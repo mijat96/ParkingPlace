@@ -26,6 +26,7 @@
             android:title="@string/menu_favorite_places" />
         <item
             android:id="@+id/nav_reservation_and_paid_parking_places"
+            android:icon="@drawable/reservation_home_icon"
             android:title="@string/menu_reservation_and_paid_parking_places" />
     </group>
 
@@ -36,6 +37,7 @@
             android:onClick="clickOnItemSettings"/>
         <item
             android:id="@+id/nav_logout"
+            android:icon="@drawable/logout_icon"
             android:title="@string/menu_logout"
             android:onClick="clickOnItemLogout"/>
     </group>

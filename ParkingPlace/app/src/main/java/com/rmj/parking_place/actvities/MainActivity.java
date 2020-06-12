@@ -29,6 +29,7 @@ import com.rmj.parking_place.service.ParkingPlaceServerUtils;
 import com.rmj.parking_place.utils.TokenUtils;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -58,7 +59,6 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
 
     private static ZoneRepository zoneRepository;
     private List<Zone> zones;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -478,4 +478,5 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
     public void resetReservation() {
         this.reservation = null;
     }
+
 }

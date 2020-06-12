@@ -34,7 +34,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_subtitle">parking place app</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
@@ -74,8 +74,14 @@
     <string name="favoritePlacesBtnTxt">FAVORITE\nPLACES</string>
     <string name="reservationAndPaidParkingPlacesBtnTxt">RESERVATION</string>
     <string name="reservationAndPaidParkingPlacesBtnTxtLand">RESERVATION</string>
-    <string name="menu_reservation_and_paid_parking_places">ReservationAndPaidParkingPlaces</string>
+    <string name="menu_reservation_and_paid_parking_places">ReservationAndPaidParking</string>
     <string name="location_types_title">Location Types</string>
     <string name="location_header">Location</string>
     <string name="city_title">Select city</string>
+    <string name="channel_name">NotificationReservationAndTaken</string>
+    <string name="channel_description">Notification for expire reservation and taken parking place</string>
+
+    <string name="report_description">Take photo and choose report type!</string>
+    <string name="alert_open_camera">camera</string>
+    <string name="alert_open_gallery">gallery</string>
 </resources>
