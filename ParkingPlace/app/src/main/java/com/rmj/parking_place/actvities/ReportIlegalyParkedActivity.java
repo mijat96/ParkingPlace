@@ -5,10 +5,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -32,6 +36,7 @@ import com.rmj.parking_place.service.ParkingPlaceServerUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,6 +57,7 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
     public static int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 99;
     private Bitmap image;
     static final int CAMERA_PIC_REQUEST = 1337;
+    static final int GALLERY_PIC_REQUEST = 1338;
     private ParkingPlace selectedParkingPlace = null;
     private static String[] reportTypes = {
             ReportTypes.BAD_PARKED.name(),
@@ -99,16 +105,53 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == CAMERA_PIC_REQUEST && resultCode == RESULT_OK) {
             image = (Bitmap) data.getExtras().get("data");
             ImageView imageview = (ImageView) findViewById(R.id.show_captured_image); //sets imageview as the bitmap
             imageview.setImageBitmap(image);
+        }else if(requestCode == GALLERY_PIC_REQUEST && resultCode == RESULT_OK){
+            Uri selectedImage = data.getData();
+
+            try {
+                image = getBitmapFromUri(selectedImage);
+            }catch (Exception e){}
+            ImageView imageview = (ImageView) findViewById(R.id.show_captured_image);
+            imageview.setImageURI(selectedImage);
         }
+
+    }
+
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor =
+                getContentResolver().openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        return image;
     }
 
     private void openCamera() {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, CAMERA_PIC_REQUEST);
+        new AlertDialog.Builder(this)
+                .setTitle("Open camera or gallery")
+                .setMessage("Open camera for take photo or gallery for load")
+                .setIcon(R.drawable.icon_success)
+                .setPositiveButton(R.string.alert_open_camera, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(cameraIntent, CAMERA_PIC_REQUEST);
+                    }})
+                .setNegativeButton(R.string.alert_open_gallery, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent();
+                        intent.setAction(android.content.Intent.ACTION_GET_CONTENT);
+                        intent.setType("image/*");
+                        startActivityForResult(intent, GALLERY_PIC_REQUEST);
+                    }
+                })
+                .show();
     }
 
     private void sendReport() {

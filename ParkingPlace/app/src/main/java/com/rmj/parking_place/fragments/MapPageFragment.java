@@ -5,13 +5,22 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.RingtoneManager;
 import android.os.AsyncTask;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -90,6 +99,7 @@ public class MapPageFragment extends Fragment {
 
     private Mode currentMode;
     private TimerWithEndDateTime timerForReservationOrTakingOfParkingPlace;
+    private TimerWithEndDateTime timerForNotificationReservationOrTakingOfParkingPlace;
     private Timer timerForUpdatingParkingPlaces;
 
     private MapFragment mapFragment;
@@ -105,6 +115,11 @@ public class MapPageFragment extends Fragment {
     private MainActivity mainActivity;
     private View view;
 
+    public static final int NOTIFICATION_ID = 888;
+    private NotificationManagerCompat mNotificationManagerCompat;
+    private Notification notification;
+
+    private Context mContext;
     private static OnCreateViewFinishedListenerImplementation onCreateViewFinishedListenerImplementation;
     private static NotificationRepository notificationRepository;
 
@@ -129,9 +144,29 @@ public class MapPageFragment extends Fragment {
             zonesForUpdating = savedInstanceState.getParcelableArrayList("zonesForUpdating");
         }
 
+        createNotificationReservationExpire();
         //detectAnyException();
-
+        mNotificationManagerCompat = NotificationManagerCompat.from(mContext.getApplicationContext());//(getActivity().getApplicationContext());
+        //createNotificationChannel();
         Toast.makeText(getActivity(), "onCreate()",Toast.LENGTH_SHORT).show();
+    }
+
+    private void createNotificationReservationExpire() {
+        String notificationChannelId = "notifikacija";
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext.getApplicationContext(), notificationChannelId);//(getActivity().getApplicationContext(), notificationChannelId);
+
+        notification = builder
+                .setSmallIcon(R.drawable.icon_failure)
+                .setContentTitle("Reservation expire")
+                .setContentText("Your reservation is expire")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .build();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mContext = context;
     }
 
     private void setCurrentModeAgain() {
@@ -260,6 +295,68 @@ public class MapPageFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        Toast.makeText(mainActivity, "onStart()",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Toast.makeText(mainActivity, "onResume()",Toast.LENGTH_SHORT).show();
+        if (zones == null || (zones != null && zones.isEmpty())) {
+            zones = mainActivity.getZones();
+        }
+        checkTimerForReservationOrTakingOfParkingPlaceAndStartIfNeeded();
+
+        startTimerForUpdatingParkingPlaces();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Toast.makeText(mainActivity, "onPause()",Toast.LENGTH_SHORT).show();
+        if(reservation != null){
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    //TODO your background code
+                    boolean end = false;
+                    while(!end){
+                        Date currentDateTime = new Date();
+                        long currentDateTimeInMillis = currentDateTime.getTime();
+                        final long remainingTimeInSeconds = (reservation.getEndDateTimeAndroid().getTime() - currentDateTimeInMillis) / 1000;
+
+                        if(remainingTimeInSeconds < 0){
+                            showNotification(true);
+                            end = true;
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        stopTimerForUpdatingParkingPlaces();
+        stopTimerForReservationOrTakingOfParkingPlace();
+        Toast.makeText(mainActivity, "onStop()",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        cancelDialogForExpiredReservationOrTakingParkingPlace();
+        cancelDialogForSelectingTicketType();
+        cancelDialogForMockLocation();
+        cancelDialogForCurrentLocationNotFound();
+
+        Toast.makeText(mainActivity, "onDestroy()",Toast.LENGTH_SHORT).show();
+    }
+
     private void initializeButtons() {
         Button reserveBtn = (Button) view.findViewById(R.id.btnReserve);
         reserveBtn.setOnClickListener(new View.OnClickListener() {
@@ -367,29 +464,6 @@ public class MapPageFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Toast.makeText(mainActivity, "onStart()",Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Toast.makeText(mainActivity, "onResume()",Toast.LENGTH_SHORT).show();
-        if (zones == null || (zones != null && zones.isEmpty())) {
-            zones = mainActivity.getZones();
-        }
-        /*else {
-            // iscrtaj markere ako nisu iscrtani
-            mapFragment.drawParkingPlaceMarkersIfCan();
-        }*/
-
-        checkTimerForReservationOrTakingOfParkingPlaceAndStartIfNeeded();
-
-        startTimerForUpdatingParkingPlaces();
-    }
-
     public void showDialogForMockLocation() {
         dialogForMockLocation = new DialogForMockLocation(getActivity());
         dialogForMockLocation.showDialog();
@@ -414,35 +488,6 @@ public class MapPageFragment extends Fragment {
             }
         }
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Toast.makeText(mainActivity, "onPause()",Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        stopTimerForUpdatingParkingPlaces();
-        stopTimerForReservationOrTakingOfParkingPlace();
-        Toast.makeText(mainActivity, "onStop()",Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        //stopTimerForUpdatingParkingPlaces();
-
-        cancelDialogForExpiredReservationOrTakingParkingPlace();
-        cancelDialogForSelectingTicketType();
-        cancelDialogForMockLocation();
-        cancelDialogForCurrentLocationNotFound();
-
-        Toast.makeText(mainActivity, "onDestroy()",Toast.LENGTH_SHORT).show();
-    }
-
-
 
     private void cancelDialogForCurrentLocationNotFound() {
         if (dialogForCurrentLocationNotFound != null
@@ -856,6 +901,7 @@ public class MapPageFragment extends Fragment {
                         Toast.makeText(mainActivity, t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
     }
 
     private void takeParkingPlaceOnServer(TakingDTO dto) {
@@ -928,8 +974,6 @@ public class MapPageFragment extends Fragment {
         dto.setTicketType(ticketType);
         takeParkingPlaceOnServer(dto);
     }
-
-
 
     private void takeParkingPlace(PaidParkingPlace paidParkingPlace) {
         this.paidParkingPlace = paidParkingPlace;
@@ -1053,11 +1097,63 @@ public class MapPageFragment extends Fragment {
         }
     }
 
+    public void startTimerForNotificationReservationOrTakingOfParkingPlace(long endDateTimeInMillis, boolean reservation){
+        timerForNotificationReservationOrTakingOfParkingPlace = new TimerWithEndDateTime(endDateTimeInMillis, reservation);
+        timerForNotificationReservationOrTakingOfParkingPlace.setStarted(true);
+        timerForNotificationReservationOrTakingOfParkingPlace.scheduleAtFixedRate(new TimerTask() {
+            Date currentDateTime = new Date();
+            long currentDateTimeInMillis = currentDateTime.getTime();
+            final long remainingTimeInSeconds = (endDateTimeInMillis - currentDateTimeInMillis) / 1000;
+
+            @Override
+            public void run() {
+                if (remainingTimeInSeconds < 0) {
+                    Toast.makeText(mContext, "Prikaz notifikacije", Toast.LENGTH_SHORT).show();
+                    stopTimerForNotificationReservationOrTakingOfParkingPlace();
+                    showNotification(reservation);
+                }
+            }
+        }, 0, 1000);
+    }
+
+    private void stopTimerForNotificationReservationOrTakingOfParkingPlace() {
+        if (timerForNotificationReservationOrTakingOfParkingPlace != null) {
+            timerForNotificationReservationOrTakingOfParkingPlace.setStarted(false);
+            timerForNotificationReservationOrTakingOfParkingPlace.cancel();
+            timerForNotificationReservationOrTakingOfParkingPlace.purge();
+            // timerForReservationOrTakingOfParkingPlace = new Timer();
+        }
+    }
+
+
+    /*private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getActivity().getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+            //notificationManager.createNotificationChannel(channel);
+       }
+    }*/
+
+    private void showNotification(boolean reservation) {
+        if(reservation){
+            mNotificationManagerCompat.notify(NOTIFICATION_ID, notification);
+        }
+
+    }
+
     private void addViolationToUser(boolean reservation) {
         // TODO
         // reservation or taking VIOLATION
     }
-
 
     public void finishReservationOfParkingPlace(boolean timeIsUp) {
         stopTimerForReservationOrTakingOfParkingPlace();
@@ -1100,6 +1196,9 @@ public class MapPageFragment extends Fragment {
         }
 
         mapFragment.finishReservationOfParkingPlace();
+
+        //PRIKAZ NOTIFIKACIJA RADI
+        //showNotification(true);
     }
 
     /**
@@ -1300,7 +1399,6 @@ public class MapPageFragment extends Fragment {
         mapFragment.changePaddingOfGoogleMap(true);
     }
 
-
     /*public void onClickHideFindFragmentButton(View view){
         ((LinearLayout) view.findViewById(R.id.find_parking_frame)).setVisibility(View.GONE);
         DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -1363,13 +1461,9 @@ public class MapPageFragment extends Fragment {
         return zones;
     }
 
-
-
-
     public void setInvisibilityOfMapPageFragmenView() {
         ((LinearLayout) view.findViewById(R.id.find_parking_frame)).setVisibility(View.GONE);
     }
-
 
     public void setVisibilityOfFindParkingButton() {
         ImageButton findParkingButton = (ImageButton) view.findViewById(R.id.findParkingButton);
