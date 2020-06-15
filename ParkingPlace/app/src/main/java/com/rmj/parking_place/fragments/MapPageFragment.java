@@ -1,9 +1,18 @@
 package com.rmj.parking_place.fragments;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.RingtoneManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -11,6 +20,7 @@ import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 
+import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +35,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.MainActivity;
+import com.rmj.parking_place.database.NotificationDb;
+import com.rmj.parking_place.database.NotificationRepository;
 import com.rmj.parking_place.dialogs.DialogForMockLocation;
 import com.rmj.parking_place.dialogs.DialogForSelectingTicketType;
 import com.rmj.parking_place.dialogs.NotificationDialog;
@@ -52,7 +64,9 @@ import com.rmj.parking_place.model.ParkingPlaceStatus;
 import com.rmj.parking_place.model.Reservation;
 import com.rmj.parking_place.model.TicketType;
 import com.rmj.parking_place.model.Zone;
+import com.rmj.parking_place.receivers.NotificationPublisher;
 import com.rmj.parking_place.service.ParkingPlaceServerUtils;
+import com.rmj.parking_place.utils.NotificationUtils;
 import com.rmj.parking_place.utils.ParametersForUpdatingZones;
 import com.rmj.parking_place.utils.TimerWithEndDateTime;
 
@@ -92,6 +106,7 @@ public class MapPageFragment extends Fragment {
     private View view;
 
     private static OnCreateViewFinishedListenerImplementation onCreateViewFinishedListenerImplementation;
+    private static NotificationRepository notificationRepository;
 
     public MapPageFragment() {
         // Required empty public constructor
@@ -105,6 +120,7 @@ public class MapPageFragment extends Fragment {
 
 
         if (savedInstanceState == null) {
+            notificationRepository = new NotificationRepository(mainActivity);
             mainActivity.resetZonesIfNeeded();
             this.zonesForUpdating = new ArrayList<Zone>();
         }
@@ -783,6 +799,38 @@ public class MapPageFragment extends Fragment {
         }
     }
 
+    private void setupNotification(boolean forReserving) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                String notificationTitle;
+                String notificationText;
+                String notificationType;
+                long notificationId;
+                if (forReserving) {
+                    notificationTitle = mainActivity.getString(R.string.takeParkingPlaceNotificationTitle);
+                    notificationText = mainActivity.getString(R.string.takeParkingPlaceNotificationText);
+                    notificationType = "reseravation_notification";
+                    notificationId = reservation.getId();
+                }
+                else {
+                    notificationTitle = mainActivity.getString(R.string.reserveParkingPlaceNotificationTitle);
+                    notificationText = mainActivity.getString(R.string.reserveParkingPlaceNotificationText);
+                    notificationType = "taking_notification";
+                    notificationId = paidParkingPlace.getId();
+                }
+
+                long dateTime = System.currentTimeMillis() + 10000*6*3;
+                NotificationDb notificationDb = new NotificationDb(notificationId, notificationTitle, notificationText,
+                        notificationType, dateTime);
+                NotificationUtils.scheduleNotification(notificationDb);
+                notificationRepository.insertNotification(notificationDb);
+
+                return null;
+            }
+        }.execute();
+    }
+
     private void reserveParkingPlaceOnServer(ReservingDTO dto) {
         ParkingPlaceServerUtils.parkingPlaceService.reserveParkingPlace(dto)
                 .enqueue(new Callback<ReservationDTO>() {
@@ -799,6 +847,7 @@ public class MapPageFragment extends Fragment {
                             Reservation reservation = new Reservation(reservationDTO.getId(), reservationDTO.getStartDateTimeAndroid(),
                                     reservationDTO.getStartDateTimeServer(), parkingPlace);
                             reserveParkingPlace(reservation);
+                            setupNotification(true);
                         }
                     }
 
@@ -819,6 +868,12 @@ public class MapPageFragment extends Fragment {
                                     Toast.LENGTH_SHORT).show();
                         }
                         else {
+                            if (isInIsReservingAndCanTakeMode()) {
+                                finishReservationOfParkingPlace(false);
+                                NotificationUtils.cancelNotification("reservation_notification",
+                                                                                            reservation.getId().intValue());
+                            }
+
                             PaidParkingPlaceDTO paidParkingPlaceDTO = response.body();
                             ParkingPlace parkingPlace = paidParkingPlaceDTO.getParkingPlace();
                             parkingPlace.setZone(mainActivity.getZone(paidParkingPlaceDTO.getZoneId()));
@@ -826,6 +881,7 @@ public class MapPageFragment extends Fragment {
                                     paidParkingPlaceDTO.getStartDateTimeAndroid(), paidParkingPlaceDTO.getStartDateTimeServer(),
                                     paidParkingPlaceDTO.getTicketType(), paidParkingPlaceDTO.isArrogantUser());
                             takeParkingPlace(paidParkingPlace);
+                            setupNotification(false);
                         }
                     }
 
@@ -857,9 +913,9 @@ public class MapPageFragment extends Fragment {
     }
 
     public void continueWithTakingOfParkingPlace(TicketType ticketType) {
-        if (isInIsReservingAndCanTakeMode()) {
+       /* if (isInIsReservingAndCanTakeMode()) {
             finishReservationOfParkingPlace(false);
-        }
+        }*/
 
         TakingDTO dto = null;
         try {
@@ -1087,6 +1143,8 @@ public class MapPageFragment extends Fragment {
                                         Toast.LENGTH_SHORT).show();
                             }
                             else {
+                                NotificationUtils.cancelNotification( "taking_notification",
+                                                                                            reservation.getId().intValue());
                                 setNoneMode();
                                 paidParkingPlace = null;
                                 mainActivity.leaveParkingPlace(dto.getParkingPlaceId());

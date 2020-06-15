@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rmj.parking_place">
+
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -14,6 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:name=".App"
@@ -23,11 +25,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".actvities.AddOrEditFavoritePlaceActivity"></activity>
-        <activity android:name=".actvities.ReportIlegalyParkedActivity"></activity>
+
+        <receiver
+            android:name=".receivers.BootCompletedReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" /> <!-- boot lock (pin, pattern, or otherwise) -->
+                <!--<action android:name="android.intent.action.QUICKBOOT_POWERON" />-->
+                <!--For HTC devices-->
+                <!--<action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>-->
+
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receivers.NotificationPublisher"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity android:name=".actvities.AddOrEditFavoritePlaceActivity" />
+        <activity android:name=".actvities.ReportIlegalyParkedActivity" />
         <activity
             android:name=".actvities.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
         <activity
             android:name=".actvities.SelectLocationActivity"
             android:label="@string/select_location_title" />

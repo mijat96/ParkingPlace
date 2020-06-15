@@ -78,4 +78,8 @@
     <string name="location_types_title">Location Types</string>
     <string name="location_header">Location</string>
     <string name="city_title">Select city</string>
+    <string name="takeParkingPlaceNotificationText">Remaining time for taking of parking place:  5 min</string>
+    <string name="takeParkingPlaceNotificationTitle">Soon expire taking of parking place</string>
+    <string name="reserveParkingPlaceNotificationTitle">Remaining time for reservation of parking place:  1 min</string>
+    <string name="reserveParkingPlaceNotificationText">Soon expire reservation of parking place</string>
 </resources>

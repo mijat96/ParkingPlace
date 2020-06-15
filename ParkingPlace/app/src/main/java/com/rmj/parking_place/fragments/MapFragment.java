@@ -250,9 +250,9 @@ public class MapFragment extends Fragment {
 
     private void setupFusedLocationProviderClient() {
         if (checkLocationPermission()) {
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                    ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
                 fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mainActivity);
                 fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -267,9 +267,9 @@ public class MapFragment extends Fragment {
                         }
 
                         if (checkLocationPermission()) {
-                            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                            if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION)
                                     == PackageManager.PERMISSION_GRANTED ||
-                                    ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                                    ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION)
                                             == PackageManager.PERMISSION_GRANTED) {
                                 fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallbackImplementation, null);
                             }
@@ -460,7 +460,7 @@ public class MapFragment extends Fragment {
             if (!gps && !wifi) {
                 showLocatonDialog();
             }
-            else if (ContextCompat.checkSelfPermission(getContext(),
+            else if (ContextCompat.checkSelfPermission(mainActivity,
                     Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
                 //Request location updates:
@@ -472,7 +472,7 @@ public class MapFragment extends Fragment {
                 }
                 Toast.makeText(getContext(), "ACCESS_FINE_LOCATION", Toast.LENGTH_SHORT).show();
             }
-            else if(ContextCompat.checkSelfPermission(getContext(),
+            else if(ContextCompat.checkSelfPermission(mainActivity,
                     Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
 
                 //Request location updates:

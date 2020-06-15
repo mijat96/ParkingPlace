@@ -102,6 +102,10 @@ public class PaidParkingPlace implements Parcelable {
         return new Date(this.startDateTimeServer.getTime() + duration);
     }
 
+    public Long getId() { return id; }
+
+    public void setId(Long id) { this.id = id; }
+
     public ParkingPlace getParkingPlace() {
         return parkingPlace;
     }
