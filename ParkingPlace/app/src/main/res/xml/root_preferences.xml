@@ -57,4 +57,11 @@
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/storage_header">
+        <SwitchPreferenceCompat
+            app:key="saveImageInStorage"
+            app:title="@string/storage_settings_title"
+            app:defaultValue="true"/>
+    </PreferenceCategory>
+
 </PreferenceScreen>

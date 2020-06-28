@@ -29,14 +29,12 @@ import com.rmj.parking_place.service.ParkingPlaceServerUtils;
 import com.rmj.parking_place.utils.TokenUtils;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
-import androidx.room.Room;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
-                            implements FavoritePlacesFragment.OnListFragmentInteractionListener {
+                            implements FavoritePlacesFragment.OnListFragmentInteractionListener{
 
     private AppBarConfiguration mAppBarConfiguration;
     private NavController navController;
@@ -59,6 +57,7 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
 
     private static ZoneRepository zoneRepository;
     private List<Zone> zones;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +115,11 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private void getZonesFromDB() {

@@ -104,5 +104,25 @@ namespace ParkingPlaceServer.Services
 			return false;
 		}
 
+		public bool AgainTakeParkingPlace(User loggedUser, long id)
+        {
+            if (loggedUser.RegularPaidParkingPlace.ParkingPlace.Id.Equals(id))
+            {
+				loggedUser.RegularPaidParkingPlace.AgainTake = true;
+				return true;
+            }
+
+			foreach(PaidParkingPlace p in loggedUser.PaidParkingPlacesForFavoritePlaces)
+			{
+                if (p.ParkingPlace.Id.Equals(id))
+                {
+					p.AgainTake = true;
+					return true;
+                }
+            }
+
+			return false;
+        }
+
 	}
 }

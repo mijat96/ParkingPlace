@@ -11,6 +11,7 @@ import com.rmj.parking_place.database.NotificationDb;
 import com.rmj.parking_place.database.NotificationRepository;
 import com.rmj.parking_place.utils.NotificationUtils;
 
+import java.util.Date;
 import java.util.List;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
@@ -31,7 +32,9 @@ public class BootCompletedReceiver extends BroadcastReceiver {
                     List<NotificationDb> notifications = notificationRepository.getNotifications();
                     Log.d("PARKING_PLACE_DEBUG", "notifications.size() ==" + notifications.size());
                     for (NotificationDb notification : notifications) {
-                        NotificationUtils.scheduleNotification(notification);
+                        //if(new Date().before(new Date(notification.getDateTime()))){
+                            NotificationUtils.scheduleNotification(notification);
+                        //}
                     }
 
                     return null;

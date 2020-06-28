@@ -16,7 +16,6 @@ public interface ZoneDao {
     @Query("SELECT * FROM zone")
     List<ZoneWithLocationsAndTicketPrices> getAll();
 
-
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(ZoneDb zone);

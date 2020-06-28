@@ -60,7 +60,7 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration": 2,
+        "duration":1,
         "ticketType": "REGULAR",
         "price": 100.0
       }
@@ -107,7 +107,7 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration": 2,
+        "duration":1,
         "ticketType": "REGULAR",
         "price": 100.0
       }
@@ -194,7 +194,7 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration": 2,
+        "duration":1,
         "ticketType": "REGULAR",
         "price": 100.0
       }
@@ -301,7 +301,7 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration": 2,
+        "duration":1,
         "ticketType": "REGULAR",
         "price": 100.0
       }
@@ -408,7 +408,7 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration": 2,
+        "duration":1,
         "ticketType": "REGULAR",
         "price": 100.0
       }
@@ -515,7 +515,7 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration": 2,
+        "duration":1,
         "ticketType": "REGULAR",
         "price": 100.0
       }

@@ -190,6 +190,7 @@
     <Compile Include="DAO\PaidParkingPlaceDAO.cs" />
     <Compile Include="DAO\ReservationDAO.cs" />
     <Compile Include="DAO\ZoneDAO.cs" />
+    <Compile Include="DTO\ParkingPlaceForReservationInNotificationDTO.cs" />
     <Compile Include="DTO\ReportDTO.cs" />
     <Compile Include="DTO\PaidParkingPlaceDTO.cs" />
     <Compile Include="DTO\ReservationAndPaidParkingPlacesDTO.cs" />

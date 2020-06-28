@@ -106,22 +106,30 @@ namespace ParkingPlaceServer
 				{
 					if (paidParkingPlace.GetEndDateTimeServer() < DateTime.Now)
 					{
-						zone = zonesService.GetZone(paidParkingPlace.ParkingPlace.Zone.Id);
-						lock (zone)
+						if (paidParkingPlace.AgainTake)
 						{
-							parkingPlace = zone.GetParkingPlace(paidParkingPlace.ParkingPlace.Id);
-							lock (parkingPlace)
-							{
-								parkingPlace.Status = ParkingPlaceStatus.EMPTY;
-							}
-
-							zone.Version++;
-							zone.AddParkingPlaceChange(parkingPlace.Id, parkingPlace.Status);
+							paidParkingPlace.StartDateTimeServer = DateTime.Now;
+							paidParkingPlace.StartDateTimeAndroid = DateTime.Now;
 						}
-						paidParkingPlace.LeavePaidParkingPlaceInUser();
-						paidParkingPlace.User.AddViolation(false);
+						else
+						{
+							zone = zonesService.GetZone(paidParkingPlace.ParkingPlace.Zone.Id);
+							lock (zone)
+							{
+								parkingPlace = zone.GetParkingPlace(paidParkingPlace.ParkingPlace.Id);
+								lock (parkingPlace)
+								{
+									parkingPlace.Status = ParkingPlaceStatus.EMPTY;
+								}
 
-						paidParkingPlacesForRemoving.Add(paidParkingPlace);
+								zone.Version++;
+								zone.AddParkingPlaceChange(parkingPlace.Id, parkingPlace.Status);
+							}
+							paidParkingPlace.LeavePaidParkingPlaceInUser();
+							paidParkingPlace.User.AddViolation(false);
+
+							paidParkingPlacesForRemoving.Add(paidParkingPlace);
+						}
 					}
 				}
 

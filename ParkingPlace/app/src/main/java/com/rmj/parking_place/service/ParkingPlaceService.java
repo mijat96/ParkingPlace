@@ -8,13 +8,17 @@ import com.rmj.parking_place.dto.ReservationDTO;
 import com.rmj.parking_place.dto.ReservingDTO;
 import com.rmj.parking_place.dto.TakingDTO;
 import com.rmj.parking_place.dto.TokenDTO;
+import com.rmj.parking_place.model.ParkingPlace;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Path;
 
 
 public interface ParkingPlaceService {
@@ -41,5 +45,21 @@ public interface ParkingPlaceService {
     })
     @PUT("/api/parkingplaces/leave")
     Call<ResponseBody> leaveParkingPlace(@Body DTO dto);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("/api/parking/place/getParking/{id}")
+    Call<ParkingPlace> getParkingPlace(@Path("id") Long id);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("/api/parking/place/againTake/{id}")
+    Call<ParkingPlace> againTakeParkinPlace(@Path("id") Long id);
+
+
 
 }

@@ -86,6 +86,10 @@ public class App extends Application {
         return sharedPreferences.getBoolean("mock_location_allowed",false);
     }
 
+    public static boolean saveImageInStorage() {
+        return sharedPreferences.getBoolean("saveImageInStorage",true);
+    }
+
     /*public static boolean useFusedLocation() {
         String locationType = sharedPreferences.getString("location_types","fused_location");
         return locationType.equals("fused_location");

@@ -64,6 +64,7 @@
 
     <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>
+    <string name="storage_settings_title">Save image in gallery</string>
     <string name="attachment_title">Download incoming attachments</string>
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
@@ -77,6 +78,7 @@
     <string name="menu_reservation_and_paid_parking_places">ReservationAndPaidParking</string>
     <string name="location_types_title">Location Types</string>
     <string name="location_header">Location</string>
+    <string name="storage_header">Storage</string>
     <string name="city_title">Select city</string>
     <string name="takeParkingPlaceNotificationText">Remaining time for taking of parking place:  5 min</string>
     <string name="takeParkingPlaceNotificationTitle">Soon expire taking of parking place</string>

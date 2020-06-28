@@ -10,10 +10,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.RingtoneManager;
 import android.os.SystemClock;
 
+import com.google.gson.Gson;
 import com.rmj.parking_place.App;
 import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.database.NotificationDb;
 import com.rmj.parking_place.database.NotificationRepository;
+import com.rmj.parking_place.model.ParkingPlace;
 import com.rmj.parking_place.receivers.NotificationPublisher;
 
 import org.json.JSONArray;
@@ -52,6 +54,7 @@ public class NotificationUtils {
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_TYPE, notification.getType());
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_TITLE, notification.getTitle());
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_TEXT, notification.getText());
+        notificationIntent.putExtra(NotificationPublisher.PARKING_PLACE_ID, (int) notification.getParkingPlaceId());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) notification.getId(), notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

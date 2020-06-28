@@ -15,7 +15,9 @@ namespace ParkingPlaceServer.Models
 		public bool ArrogantUser { get; set; }
 		public User User { get; set; }
 
-		private static long idGenerator = 0;
+        public bool AgainTake { get; set; }
+
+        private static long idGenerator = 0;
 		private static readonly string formatSpecifier = "G";
 		private static readonly CultureInfo culture = CultureInfo.CreateSpecificCulture("de-DE");
 
@@ -34,6 +36,7 @@ namespace ParkingPlaceServer.Models
 			ArrogantUser = false;
 			User = user;
 			User.RegularPaidParkingPlace = this;
+			AgainTake = false;
 		}
 
 		public DateTime GetEndDateTimeAndroid()

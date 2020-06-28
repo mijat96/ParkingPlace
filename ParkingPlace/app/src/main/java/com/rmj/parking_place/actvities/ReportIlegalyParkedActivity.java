@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -27,6 +28,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.rmj.parking_place.App;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.dto.DTO;
 import com.rmj.parking_place.dto.ReportDTO;
@@ -168,7 +170,10 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
         image.compress(Bitmap.CompressFormat.JPEG, 0 /*ignored for PNG*/, bos);
         byte[] bitmapdata = bos.toByteArray();
 
-        saveImage(image, fname);
+        if(App.saveImageInStorage()){
+            saveImage(image, fname);
+        }
+
         String reason = getSpinnerReason();
         RequestBody req = RequestBody.create(bitmapdata);
         MultipartBody.Part bodyFile = MultipartBody.Part.createFormData("upload", fname, req);

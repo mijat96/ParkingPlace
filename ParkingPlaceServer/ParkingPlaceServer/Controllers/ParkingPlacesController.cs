@@ -306,6 +306,95 @@ namespace ParkingPlaceServer.Controllers
 			return Request.CreateResponse(HttpStatusCode.OK, new ParkingPlacesUpdatingDTO(changes, initials));
 		}
 
+		[Route("api/parking/place/getParking/{id}")]
+		public async Task<HttpResponseMessage> GetParkingPlace(long id)
+        {
+			string token = GetHeader("token");
+			if (token == null || (token != null && !TokenManager.ValidateToken(token)))
+			{
+				return Request.CreateResponse(HttpStatusCode.Unauthorized);
+			}
+
+			User loggedUser = usersService.GetLoggedUser(token);
+
+			bool againTaked = paidParkingPlacesService.AgainTakeParkingPlace(loggedUser, id);
+
+			if (!againTaked)
+			{
+				return Request.CreateResponse(HttpStatusCode.BadRequest);
+			}
+
+			ParkingPlaceForReservationInNotificationDTO parking =
+				new ParkingPlaceForReservationInNotificationDTO();
+			return Request.CreateResponse(HttpStatusCode.OK, parking);
+
+			//string token = GetHeader("token");
+			//if (token == null || (token != null && !TokenManager.ValidateToken(token)))
+			//{
+			//	return Request.CreateResponse(HttpStatusCode.Unauthorized);
+			//}
+
+			//List<Zone> zones = null;
+			//try
+			//{
+			//	zones = zonesService.GetZones();
+			//}
+			//catch (Exception e)
+			//{
+			//	return Request.CreateResponse(HttpStatusCode.BadRequest, e.Message);
+			//}
+
+			//ParkingPlace parkingPlace = null;
+			//try
+			//{
+			//	foreach(Zone z in zones)
+			//             {
+			//                 foreach(ParkingPlace p in z.ParkingPlaces)
+			//                 {
+			//                     if (p.Id.Equals(id))
+			//                     {
+			//				parkingPlace = p;
+			//				parkingPlace.Zone = z;
+			//				break;
+
+			//			}
+			//                 }
+			//             }
+			//}
+			//catch (Exception e)
+			//{
+			//	return Request.CreateResponse(HttpStatusCode.BadRequest, e.Message);
+			//}
+
+			//ParkingPlaceForReservationInNotificationDTO parking =
+			//	new ParkingPlaceForReservationInNotificationDTO(parkingPlace);
+
+			//return Request.CreateResponse(HttpStatusCode.OK, parking);
+		}
+
+		[Route("api/parking/place/againTake/{id}")]
+		public async Task<HttpResponseMessage> AgainTake(long id)
+		{
+			string token = GetHeader("token");
+			if (token == null || (token != null && !TokenManager.ValidateToken(token)))
+			{
+				return Request.CreateResponse(HttpStatusCode.Unauthorized);
+			}
+
+			User loggedUser = usersService.GetLoggedUser(token);
+
+			bool againTaked = paidParkingPlacesService.AgainTakeParkingPlace(loggedUser, id);
+
+            if (!againTaked)
+            {
+				return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+
+			ParkingPlaceForReservationInNotificationDTO parking =
+				new ParkingPlaceForReservationInNotificationDTO();
+			return Request.CreateResponse(HttpStatusCode.OK, parking);
+		}
+
 		private bool convertStringToLongArray(string str, out long[] array)
 		{
 			

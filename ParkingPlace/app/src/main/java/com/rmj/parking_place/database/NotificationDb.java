@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.rmj.parking_place.model.ParkingPlace;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -16,17 +18,19 @@ public class NotificationDb {
     private String text;
     private String type;
     private long dateTime;
+    private long parkingPlaceId;
 
     public NotificationDb() {
 
     }
 
-    public NotificationDb(long id, String title, String text, String type, long dateTime) {
+    public NotificationDb(long id, String title, String text, String type, long dateTime, long parkingPlaceId) {
         this.id = id;
         this.title = title;
         this.text = text;
         this.type = type;
         this.dateTime = dateTime;
+        this.parkingPlaceId = parkingPlaceId;
     }
 
     public long getId() { return id; }
@@ -60,4 +64,8 @@ public class NotificationDb {
     public void setDateTime(long dateTime) {
         this.dateTime = dateTime;
     }
+
+    public void setParkingPlaceId(long parkingPlaceId) { this.parkingPlaceId = parkingPlaceId; }
+
+    public long getParkingPlaceId() { return parkingPlaceId; }
 }

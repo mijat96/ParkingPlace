@@ -15,5 +15,7 @@ namespace ParkingPlaceServer.Services
 		bool RemovePaidParkingPlace(User loggedUser, long parkingPlaceId);
 		bool CheckWheterIsParkingPlaceNearByFavoritePlace(List<FavoritePlace> favoritePlaces, 
 								double currentLocationLatitude, double currentLocationLongitude);
+
+		bool AgainTakeParkingPlace(User loggedUser, long id);
 	}
 }
