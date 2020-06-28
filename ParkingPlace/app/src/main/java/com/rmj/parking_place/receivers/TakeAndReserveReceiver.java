@@ -29,12 +29,13 @@ public class TakeAndReserveReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         notificationRepository = new NotificationRepository(context);
         int paringPlaceId = intent.getIntExtra(PARKING_PLACE_ID, 0);
+        int notificationId = intent.getIntExtra(NOTIFICATION_ID, 0);
         Toast.makeText(context, "Again take, id:" + paringPlaceId , Toast.LENGTH_SHORT).show();
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
                 //kontaktiranje api-ja za produzenje zauzeca
-                getParkingPlace(paringPlaceId);
+                getParkingPlace(paringPlaceId, notificationId);
                 return null;
             }
         }.execute();
@@ -103,7 +104,7 @@ public class TakeAndReserveReceiver extends BroadcastReceiver {
                 });
     }
 
-    private void getParkingPlace(long parkingPlaceId) {
+    private void getParkingPlace(long parkingPlaceId, long notificationId) {
         ParkingPlaceServerUtils.parkingPlaceService.getParkingPlace(parkingPlaceId)
                 .enqueue(new Callback<ParkingPlace>() {
                     @Override
@@ -111,7 +112,7 @@ public class TakeAndReserveReceiver extends BroadcastReceiver {
                         if (response == null || (response != null && !response.isSuccessful())) {
 
                         }else {
-                            setupNotification(parkingPlaceId);
+                            setupNotification(notificationId);
                         }
                     }
 

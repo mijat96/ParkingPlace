@@ -1235,6 +1235,7 @@ public class MapPageFragment extends Fragment{
                             else {
                                 //Kada se pokrene ponovo app a pa se stisne leave nema te rezervacije vise
                                 NotificationUtils.cancelNotification( "taking_notification", paidParkingPlace.getId().intValue());
+                                                                                    //reservation.getId().intValue());
                                 setNoneMode();
                                 paidParkingPlace = null;
                                 mainActivity.leaveParkingPlace(dto.getParkingPlaceId());
