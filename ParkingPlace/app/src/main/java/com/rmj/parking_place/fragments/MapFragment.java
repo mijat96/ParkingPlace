@@ -24,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -47,6 +48,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -577,6 +579,7 @@ public class MapFragment extends Fragment {
             FragmentManager fm = getChildFragmentManager();
             mMapFragment = (com.androidmapsextensions.SupportMapFragment) fm.getFragment(savedInstanceState, "mMapFragment");
             map = mMapFragment.getExtendedMap();
+            setMapTheme();
 
             updateReferencesCascadingInListeners();
 
@@ -607,6 +610,23 @@ public class MapFragment extends Fragment {
         }
 
         return view;
+    }
+
+    public void setMapTheme() {
+        if (map == null) {
+            return;
+        }
+
+        String currentTheme = App.getCurrentTheme();
+        if (currentTheme.equals("light")) {
+            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(mainActivity, R.raw.mapstyle_standard));
+        }
+        else if (currentTheme.equals("dark")) {
+            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(mainActivity, R.raw.mapstyle_night));
+        }
+        else {
+            throw new RuntimeException("Unknown theme selected for map");
+        }
     }
 
     private void updateReferencesCascadingInListeners() {

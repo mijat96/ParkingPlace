@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
@@ -25,6 +26,8 @@ public class App extends Application {
         context = getApplicationContext();
         // sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        setTheme(null);
     }
 
     public static Context getAppContext() {
@@ -94,5 +97,34 @@ public class App extends Application {
         String locationType = sharedPreferences.getString("location_types","fused_location");
         return locationType.equals("fused_location");
     }*/
+
+    public static String getCurrentTheme() {
+        return sharedPreferences.getString("theme","");
+    }
+
+    public static void setTheme(String theme) {
+        String currentTheme;
+        if (theme != null) {
+            currentTheme = theme;
+        }
+        else {
+            currentTheme = getCurrentTheme();
+        }
+
+        if (currentTheme.equals("light") || currentTheme.equals("")) {
+            if (currentTheme.equals("")) {
+                SharedPreferences.Editor edit= sharedPreferences.edit();
+                edit.putString("theme", "light");
+                edit.commit();
+            }
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+        else if (currentTheme.equals("dark")) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else {
+            throw new RuntimeException("Unknown theme selected");
+        }
+    }
 
 }

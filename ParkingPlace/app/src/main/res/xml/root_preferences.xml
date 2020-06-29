@@ -45,15 +45,23 @@
             app:key="mock_location_allowed"
             app:title="@string/mock_location_title"
             app:defaultValue="true"/>
-    </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/location_header">
         <ListPreference
-            app:defaultValue="fused_location"
+            app:defaultValue="1"
             app:entries="@array/cities_entries"
             app:entryValues="@array/cities_values"
             app:key="city"
             app:title="@string/city_title"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/theme_header">
+        <ListPreference
+            app:defaultValue="light"
+            app:entries="@array/theme_entries"
+            app:entryValues="@array/theme_values"
+            app:key="theme"
+            app:title="@string/theme_title"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 

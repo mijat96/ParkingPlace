@@ -5,8 +5,11 @@ import android.view.MenuItem;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.rmj.parking_place.App;
 import com.rmj.parking_place.R;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -37,6 +40,16 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
+
+            final ListPreference themeListPreference = findPreference("theme");
+            themeListPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValueObj) {
+                    String newValue = (String) newValueObj;
+                    App.setTheme(newValue);
+                    return true;
+                }
+            });
         }
     }
 }

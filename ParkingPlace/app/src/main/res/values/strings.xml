@@ -14,10 +14,12 @@
     <string name="prompt_password">Password</string>
     <string name="prompt_repeat_password">Repeat password</string>
     <string name="prompt_car_registration_number">Car registration number</string>
-    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in">Sign In</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="action_sign_up">Sign up</string>
+    <string name="sign_in_link"><b><u>Sign In</u></b></string>
+    <string name="action_sign_up">Sign Up</string>
     <string name="action_sign_up_short">Sign up</string>
+    <string name="sign_up_link"><b><u>Sign Up</u></b></string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
@@ -90,4 +92,6 @@
     <string name="report_description">Take photo and choose report type!</string>
     <string name="alert_open_camera">camera</string>
     <string name="alert_open_gallery">gallery</string>
+    <string name="theme_header">Theme</string>
+    <string name="theme_title">Select theme</string>
 </resources>

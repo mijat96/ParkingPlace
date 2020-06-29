@@ -32,6 +32,7 @@ import com.androidmapsextensions.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.rmj.parking_place.App;
 import com.rmj.parking_place.R;
@@ -68,6 +69,7 @@ public class  OnMapReadyCallbackImplementation implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mapFragment.setMap(googleMap);
+        mapFragment.setMapTheme();
         /*if (mapFragment.isRecoveredFragment()) {
             mapFragment.restoreParkingPlaceMarkers();
             mapFragment.restoreNavigationPathPolyline();

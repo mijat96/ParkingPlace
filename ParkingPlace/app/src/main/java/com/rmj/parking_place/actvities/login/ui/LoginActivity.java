@@ -2,6 +2,7 @@ package com.rmj.parking_place.actvities.login.ui;
 
 import android.app.Activity;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -13,6 +14,7 @@ import androidx.annotation.StringRes;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -37,6 +39,9 @@ public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        TextView registerLink = findViewById(R.id.registerLink);
+        registerLink.setMovementMethod(LinkMovementMethod.getInstance());
 
         Intent intent = getIntent();
         String toastMessage = intent.getStringExtra("");
@@ -155,7 +160,7 @@ public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
         super.onStop();
     }
 
-    public void clickOnBtnRegister(View view) {
+    public void clickOnRegisterLink(View view) {
         Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
         startActivity(intent);
     }
