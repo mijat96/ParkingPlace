@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.material.button.MaterialButton;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.rmj.parking_place.R;
 import com.rmj.parking_place.actvities.MainActivity;
@@ -665,11 +666,13 @@ public class MapPageFragment extends Fragment{
 
         Button btnReserve = (Button) view.findViewById(R.id.btnReserve);
         btnReserve.setEnabled(false);
-        btnReserve.setBackgroundColor(color);
+        //btnReserve.setBackgroundColor(color);
+        btnReserve.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorDisabledButton));
 
-        Button btnTake = (Button) view.findViewById(R.id.btnTake);
+        MaterialButton btnTake = (MaterialButton) view.findViewById(R.id.btnTake);
         btnTake.setEnabled(false);
-        btnTake.setBackgroundColor(color);
+        //btnTake.setBackgroundColor(color);
+        btnTake.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorDisabledButton));
 
         // ((TextView) findViewById(R.id.txtRemainingTime)).setVisibility(View.INVISIBLE);
         // ((LinearLayout) findViewById(R.id.northPanel)).setVisibility(View.GONE);
@@ -682,13 +685,15 @@ public class MapPageFragment extends Fragment{
         int color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorReserve);
         Button btnReserve = (Button) view.findViewById(R.id.btnReserve);
         btnReserve.setEnabled(true);
-        btnReserve.setBackgroundColor(color);
+        //btnReserve.setBackgroundColor(color);
+        btnReserve.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorReserve));
 
         color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorDisabledButton);
 
         Button btnTake = (Button) view.findViewById(R.id.btnTake);
         btnTake.setEnabled(false);
-        btnTake.setBackgroundColor(color);
+        //btnTake.setBackgroundColor(color);
+        btnTake.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorDisabledButton));
 
         // ((LinearLayout) findViewById(R.id.northPanel)).setVisibility(View.VISIBLE);
     }
@@ -699,13 +704,15 @@ public class MapPageFragment extends Fragment{
         int color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorTake);
         Button btnTake = (Button) view.findViewById(R.id.btnTake);
         btnTake.setEnabled(true);
-        btnTake.setBackgroundColor(color);
+        //btnTake.setBackgroundColor(color);
+        btnTake.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorTake));
 
         color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorDisabledButton);
 
         Button btnReserve = (Button) view.findViewById(R.id.btnReserve);
         btnReserve.setEnabled(false);
-        btnReserve.setBackgroundColor(color);
+        //btnReserve.setBackgroundColor(color);
+        btnReserve.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorDisabledButton));
         // ((LinearLayout) findViewById(R.id.northPanel)).setVisibility(View.VISIBLE);
     }
 
@@ -725,11 +732,13 @@ public class MapPageFragment extends Fragment{
 
         Button btnReserve = (Button) view.findViewById(R.id.btnReserve);
         btnReserve.setEnabled(false);
-        btnReserve.setBackgroundColor(color);
+        //btnReserve.setBackgroundColor(color);
+        btnReserve.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorDisabledButton));
 
         Button btnTake = (Button) view.findViewById(R.id.btnTake);
         btnTake.setEnabled(false);
-        btnTake.setBackgroundColor(color);
+        //btnTake.setBackgroundColor(color);
+        btnTake.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorDisabledButton));
     }
 
     public void setIsReservingAndCanTakeMode() {
@@ -742,12 +751,14 @@ public class MapPageFragment extends Fragment{
         color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorDisabledButton);
         Button btnReserve = (Button) view.findViewById(R.id.btnReserve);
         btnReserve.setEnabled(false);
-        btnReserve.setBackgroundColor(color);
+        //btnReserve.setBackgroundColor(color);
+        btnReserve.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorDisabledButton));
 
         color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorTake);
         Button btnTake = (Button) view.findViewById(R.id.btnTake);
         btnTake.setEnabled(true);
-        btnTake.setBackgroundColor(color);
+        //btnTake.setBackgroundColor(color);
+        btnTake.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorTake));
 
     }
 
@@ -760,12 +771,15 @@ public class MapPageFragment extends Fragment{
         int colorActivateBtn = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorLeaveParkingPlace);
         Button btnTake = (Button) view.findViewById(R.id.btnTake);
         btnTake.setEnabled(false);
-        btnTake.setBackgroundColor(color);
+        //btnTake.setBackgroundColor(color);
+        btnTake.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorDisabledButton));
+
 
         //color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorDisabledButton);
         Button btnReserve = (Button) view.findViewById(R.id.btnReserve);
         btnReserve.setEnabled(false);
-        btnReserve.setBackgroundColor(color);
+        //btnReserve.setBackgroundColor(color);
+        btnReserve.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorDisabledButton));
 
         Button btnLeaveParkingPlace = (Button) view.findViewById(R.id.btnLeaveParkingPlace);
         if(activateLeaveBtn){
@@ -784,12 +798,14 @@ public class MapPageFragment extends Fragment{
         int color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorReserve);
         Button btnReserve = (Button) view.findViewById(R.id.btnReserve);
         btnReserve.setEnabled(true);
-        btnReserve.setBackgroundColor(color);
+        //btnReserve.setBackgroundColor(color);
+        btnReserve.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext, R.color.colorReserve));
 
         color = ContextCompat.getColor(mainActivity.getApplicationContext(), R.color.colorTake);
         Button btnTake = (Button) view.findViewById(R.id.btnTake);
         btnTake.setEnabled(true);
-        btnTake.setBackgroundColor(color);
+        //btnTake.setBackgroundColor(color);
+        btnTake.setBackgroundTintList(ContextCompat.getColorStateList(this.mContext,  R.color.colorTake));
     }
 
     public void clickOnBtnReserve(View view) {
@@ -854,7 +870,7 @@ public class MapPageFragment extends Fragment{
                     notificationId = paidParkingPlace.getId();
                     parkingPlaceId = paidParkingPlace.getParkingPlace().getId();
                     //dateTime = paidParkingPlace.getEndDateTimeAndroid().getTime();
-                    dateTime = System.currentTimeMillis() + 10*1000;
+                    dateTime = System.currentTimeMillis() + 7200*1000-900*1000;
                 }
 
                 NotificationDb notificationDb = new NotificationDb(notificationId, notificationTitle, notificationText,

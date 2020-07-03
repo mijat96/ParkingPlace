@@ -137,7 +137,7 @@ public class TakeAndReserveReceiver extends BroadcastReceiver {
                 notificationText = "Soon occupied parking space expires";
                 notificationType = "taking_notification";
                 notificationId = reservation;
-                dateTime = System.currentTimeMillis() + 30*1000;
+                dateTime = System.currentTimeMillis() + 7200*1000-900*1000;
 
 
                 NotificationDb notificationDb = new NotificationDb(notificationId, notificationTitle, notificationText,

@@ -5,7 +5,7 @@
     android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    >
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_ver"
@@ -25,11 +25,13 @@
 
     <!--android:text="@string/reservationAndPaidParkingPlacesBtnTxt"-->
 
-    <TextView
+
+    <com.google.android.material.textview.MaterialTextView
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="PARKING APP"
+        android:textColor="@color/colorAddBtn"
         android:textSize="25dp"
         android:textAlignment="center"/>
 

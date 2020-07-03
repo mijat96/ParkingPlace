@@ -2,6 +2,8 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
+        <item name="colorPrimary">@color/appBarColor</item>
+        <!--<item name="colorOnSurface">@color/colorReserve</item>-->
     </style>
     <!-- Base application theme. -->
     <!--<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -16,14 +18,21 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-
-
-    <style name="Widget.ParkingPlace.ButtonStyle" parent="Widget.MaterialComponents.Button">
-        <item name="background">?attr/colorSecondary</item>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
     </style>
 
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+<!--
+    <style name="Widget.ParkingPlace.ButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="background">?attr/colorSecondary</item>
+    </style>-->
+
+    <style name="reserveButtonStyle" parent="Widget.MaterialComponents.Button">
+        <!--<item name="backgroundTint">@color/colorReserve</item>-->
+        <item name="backgroundTint">@color/colorReserve</item>
+    </style>
+
+    <style name="takeButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/colorTake</item>
+    </style>
 </resources>

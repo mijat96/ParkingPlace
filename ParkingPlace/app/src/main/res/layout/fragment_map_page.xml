@@ -31,18 +31,18 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
-            <Button
+            <com.google.android.material.button.MaterialButton style="@style/reserveButtonStyle"
                 android:id="@+id/btnReserve"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
                 android:layout_weight=".1"
-                android:background="@color/colorReserve"
-                android:textColor="@android:color/white"
                 android:text="@string/btnReserveText"
-                android:layout_marginRight="3dp" />
+                android:textColor="@android:color/white"
+                android:background="@color/colorReserve"
+                android:layout_marginRight="3dp"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton style="@style/takeButtonStyle"
                 android:id="@+id/btnTake"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

@@ -3,7 +3,7 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryVariant">#3700B3</color>
     <color name="colorOnPrimary">#FFFFFF</color>
-    <color name="colorSecondary">#03DAC6</color>
+    <color name="colorSecondary">#3700B3</color>
     <color name="colorSecondaryVariant">#018786</color>
     <color name="colorOnSecondary">#000000</color>
 
@@ -20,6 +20,7 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="colorPrimaryDark">#3700B3</color>
 
+    <color name="appBarColor">#279F2C</color>
     <color name="colorNorthPanelBackground">#2196F3</color>
     <color name="colorReserve">#FF7322</color>
     <color name="colorTake">#F44336</color>
