@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/colorNorthPanelBackground">
+        android:background="@color/appBarColor">
 
         <TextView
             android:id="@+id/find_parking_title"
@@ -127,6 +127,8 @@
             android:layout_gravity="end"
             android:paddingTop="5dp"
             android:paddingBottom="15dp"
-            android:layout_alignParentRight="true"/>
+            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
+            android:backgroundTint="@color/colorTake"/>
     </LinearLayout>
 </LinearLayout>

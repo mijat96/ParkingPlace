@@ -19,10 +19,13 @@
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
+        <item name="android:textColor">@color/colorBackground</item>
     </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-<!--
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" >
+    </style>
+
+    <!--
     <style name="Widget.ParkingPlace.ButtonStyle" parent="Widget.MaterialComponents.Button">
         <item name="background">?attr/colorSecondary</item>
     </style>-->
@@ -35,4 +38,5 @@
     <style name="takeButtonStyle" parent="Widget.MaterialComponents.Button">
         <item name="backgroundTint">@color/colorTake</item>
     </style>
+
 </resources>

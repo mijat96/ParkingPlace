@@ -14,7 +14,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/parking_splash_screen"
+        android:src="@drawable/parking__place_icon"
         android:contentDescription="@string/splash_screen"
         tools:context=".actvities.SplashActivity" />
     

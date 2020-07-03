@@ -9,7 +9,8 @@
         android:id="@+id/horizontalLinear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/appBarColor">
 
         <TextView
             android:id="@+id/parking_info_title"
@@ -87,6 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="REPORT"
+            android:backgroundTint="@color/colorTake"
             android:layout_gravity="right" />
     </LinearLayout>
 </LinearLayout>
