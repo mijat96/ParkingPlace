@@ -60,9 +60,19 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration":1,
+        "duration": 1,
         "ticketType": "REGULAR",
         "price": 100.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "MONTHLY",
+        "price": 1000.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "YEARLY",
+        "price": 10000.0
       }
     ]
   },
@@ -107,9 +117,19 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration":1,
+        "duration": 1,
         "ticketType": "REGULAR",
         "price": 100.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "MONTHLY",
+        "price": 1000.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "YEARLY",
+        "price": 10000.0
       }
     ]
   },
@@ -194,9 +214,19 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration":1,
+        "duration": 1,
         "ticketType": "REGULAR",
         "price": 100.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "MONTHLY",
+        "price": 1000.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "YEARLY",
+        "price": 10000.0
       }
     ]
   },
@@ -301,9 +331,19 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration":1,
+        "duration": 1,
         "ticketType": "REGULAR",
         "price": 100.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "MONTHLY",
+        "price": 1000.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "YEARLY",
+        "price": 10000.0
       }
     ]
   },
@@ -408,9 +448,19 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration":1,
+        "duration": 1,
         "ticketType": "REGULAR",
         "price": 100.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "MONTHLY",
+        "price": 1000.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "YEARLY",
+        "price": 10000.0
       }
     ]
   },
@@ -515,9 +565,19 @@
     "parkingPlaceChanges": {},
     "ticketPrices": [
       {
-        "duration":1,
+        "duration": 1,
         "ticketType": "REGULAR",
         "price": 100.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "MONTHLY",
+        "price": 1000.0
+      },
+      {
+        "duration": 1,
+        "ticketType": "YEARLY",
+        "price": 10000.0
       }
     ]
   }
