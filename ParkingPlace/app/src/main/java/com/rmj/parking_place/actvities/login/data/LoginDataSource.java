@@ -20,14 +20,14 @@ import retrofit2.Response;
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
 public class LoginDataSource {
-
+/*
     private static String LOGIN_URL;
 
-    private SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences;*/
     private TokenUtils tokenUtils;
 
     public LoginDataSource() {
-        LOGIN_URL = App.getParkingPlaceServerUrl() + "/api/authentication/login";
+        // LOGIN_URL = App.getParkingPlaceServerUrl() + "/api/authentication/login";
     }
 
     public Result<LoggedInUser> login(String username, String password) {
