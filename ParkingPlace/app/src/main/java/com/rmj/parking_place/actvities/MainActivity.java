@@ -394,7 +394,10 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
 
     public void clickOnItemLogout(MenuItem item) {
         TokenUtils.removeToken();
-        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        // brisemo ceo back stack
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     public void clickOnItemSettings(MenuItem item) {

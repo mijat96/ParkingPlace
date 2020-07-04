@@ -83,11 +83,12 @@ public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
                 if (loginResult.getError() != null) {
                     showLoginFailed(loginResult.getError());
                 }
-                if (loginResult.getSuccess() != null) {
+                else if (loginResult.getSuccess() != null) {
+                    setResult(Activity.RESULT_OK);
                     updateUiWithUser(loginResult.getSuccess());
                     finish();
                 }
-                setResult(Activity.RESULT_OK);
+
 
                 //Complete and destroy login activity once successful
                 //finish();

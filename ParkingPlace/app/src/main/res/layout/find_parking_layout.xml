@@ -188,7 +188,7 @@
                         android:layout_marginLeft="6dp"
                         android:layout_marginRight="3dp"
                         android:inputType="number"
-                        android:hint="km"
+                        android:hint="Distance (km)"
                         android:imeOptions="actionDone"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 

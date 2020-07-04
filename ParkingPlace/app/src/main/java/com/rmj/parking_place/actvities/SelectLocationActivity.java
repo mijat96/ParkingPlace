@@ -22,6 +22,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.rmj.parking_place.App;
 import com.rmj.parking_place.R;
 
 public class SelectLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -48,6 +49,7 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
         else {
             mapFragment = (com.androidmapsextensions.SupportMapFragment) fm.getFragment(savedInstanceState, "mapFragment");
             map = mapFragment.getExtendedMap();
+            setMapTheme();
         }
 
         initActionBar();
@@ -64,6 +66,7 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+        setMapTheme();
         if (startPosition == null) {
             startPosition = new LatLng(45.253335,19.844794);
         }
@@ -112,5 +115,22 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
         returnIntent.putExtra("picked_point", map.getCameraPosition().target);
         setResult(Activity.RESULT_OK,returnIntent);
         finish();
+    }
+
+    public void setMapTheme() {
+        if (map == null) {
+            return;
+        }
+
+        String currentTheme = App.getCurrentTheme();
+        if (currentTheme.equals("light")) {
+            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.mapstyle_standard));
+        }
+        else if (currentTheme.equals("dark")) {
+            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.mapstyle_night));
+        }
+        else {
+            throw new RuntimeException("Unknown theme selected for map");
+        }
     }
 }
