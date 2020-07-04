@@ -22,7 +22,7 @@ Ideja ove aplikacije je da korisniku što više olakša pronalaženje, rezervisa
   Izgled aplikacije
 </p>
 
-Tutorial (pregled funkcionalnosti) za ovu android aplikaciju mozete pronaci na [youtube](https://www.youtube.com/watch?v=NxsAiXolX74&feature=youtu.be)-u.
+Tutorial (pregled funkcionalnosti) za ovu android aplikaciju mozete pronaci na [youtube](https://youtu.be/Z8EJt2L03dY)-u.
 
 
 ## Author
