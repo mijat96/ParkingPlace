@@ -11,7 +11,7 @@
         "location": {
           "latitude": 45.292943,
           "longitude": 19.819809,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -21,7 +21,7 @@
         "location": {
           "latitude": 45.292981,
           "longitude": 19.819819,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -31,7 +31,7 @@
         "location": {
           "latitude": 45.292078,
           "longitude": 19.818243,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -41,7 +41,7 @@
         "location": {
           "latitude": 45.293003,
           "longitude": 19.819865,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -51,7 +51,7 @@
         "location": {
           "latitude": 45.293056,
           "longitude": 19.819881,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "TAKEN",
         "zone": null
@@ -78,7 +78,7 @@
         "location": {
           "latitude": 45.260536,
           "longitude": 19.809327,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -88,7 +88,7 @@
         "location": {
           "latitude": 45.260590,
           "longitude": 19.809297,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -98,7 +98,7 @@
         "location": {
           "latitude": 45.260640,
           "longitude": 19.809256,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -125,7 +125,7 @@
         "location": {
           "latitude": 45.247881,
           "longitude": 19.839430,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -135,7 +135,7 @@
         "location": {
           "latitude": 45.247838,
           "longitude": 19.839458,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -145,7 +145,7 @@
         "location": {
           "latitude": 45.247785,
           "longitude": 19.839486,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -155,7 +155,7 @@
         "location": {
           "latitude": 45.247811,
           "longitude": 19.839088,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "TAKEN",
         "zone": null
@@ -165,7 +165,7 @@
         "location": {
           "latitude": 45.247748,
           "longitude": 19.839127,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -175,7 +175,7 @@
         "location": {
           "latitude": 45.247688,
           "longitude": 19.839160,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "TAKEN",
         "zone": null
@@ -185,7 +185,7 @@
         "location": {
           "latitude": 45.235807,
           "longitude": 19.846622,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -212,7 +212,7 @@
         "location": {
           "latitude": 45.255938,
           "longitude": 19.811752,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -222,7 +222,7 @@
         "location": {
           "latitude": 45.255371,
           "longitude": 19.812138,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -232,7 +232,7 @@
         "location": {
           "latitude": 45.2550652688,
           "longitude": 19.8123744371,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -242,7 +242,7 @@
         "location": {
           "latitude": 45.255062,
           "longitude": 19.812333,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "TAKEN",
         "zone": null
@@ -252,7 +252,7 @@
         "location": {
           "latitude": 45.254918,
           "longitude": 19.812435,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -262,7 +262,7 @@
         "location": {
           "latitude": 45.254795,
           "longitude": 19.812510,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "TAKEN",
         "zone": null
@@ -272,7 +272,7 @@
         "location": {
           "latitude": 45.254475,
           "longitude": 19.812750,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -282,7 +282,7 @@
         "location": {
           "latitude": 45.240947,
           "longitude": 19.821585,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -292,7 +292,7 @@
         "location": {
           "latitude": 45.240519,
           "longitude": 19.821858,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -319,7 +319,7 @@
         "location": {
           "latitude": 45.263938,
           "longitude": 19.830542,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -329,7 +329,7 @@
         "location": {
           "latitude": 45.262569,
           "longitude": 19.831279,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -339,7 +339,7 @@
         "location": {
           "latitude": 45.259787,
           "longitude": 19.832843,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -349,7 +349,7 @@
         "location": {
           "latitude": 45.259810,
           "longitude": 19.832843,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "TAKEN",
         "zone": null
@@ -359,7 +359,7 @@
         "location": {
           "latitude": 45.256249,
           "longitude": 19.834829,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -369,7 +369,7 @@
         "location": {
           "latitude": 45.253642,
           "longitude": 19.836283,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "TAKEN",
         "zone": null
@@ -379,7 +379,7 @@
         "location": {
           "latitude": 45.254509,
           "longitude": 19.835391,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -389,7 +389,7 @@
         "location": {
           "latitude": 45.254444,
           "longitude": 19.835426,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -399,7 +399,7 @@
         "location": {
           "latitude": 45.254400,
           "longitude": 19.835449,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -426,7 +426,7 @@
         "location": {
           "latitude": 45.261334,
           "longitude": 19.856786,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -436,7 +436,7 @@
         "location": {
           "latitude": 45.261285,
           "longitude": 19.856756,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -446,7 +446,7 @@
         "location": {
           "latitude": 45.261237,
           "longitude": 19.856731,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -456,7 +456,7 @@
         "location": {
           "latitude": 45.260580,
           "longitude": 19.856371,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "TAKEN",
         "zone": null
@@ -466,7 +466,7 @@
         "location": {
           "latitude": 45.249347,
           "longitude": 19.854748,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "EMPTY",
         "zone": null
@@ -476,7 +476,7 @@
         "location": {
           "latitude": 45.249309,
           "longitude": 19.854627,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "TAKEN",
         "zone": null
@@ -486,7 +486,7 @@
         "location": {
           "latitude": 45.249058,
           "longitude": 19.855815,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -496,7 +496,7 @@
         "location": {
           "latitude": 45.248782,
           "longitude": 19.855791,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null
@@ -506,7 +506,7 @@
         "location": {
           "latitude": 45.248680,
           "longitude": 19.855783,
-          "address": null
+          "address": "Novi Sad"
         },
         "status": "RESERVED",
         "zone": null

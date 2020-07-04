@@ -46,11 +46,22 @@
             android:text="@string/report_description"
             android:textSize="20dp"/>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_height="1dp"
+            android:background="@color/appBarColor"/>
+
         <ImageView
             android:id="@+id/show_captured_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:tooltipText="Photo"/>
+            android:layout_width="378dp"
+            android:layout_height="328dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="25dp"
+            android:contentDescription="Take image"
+            android:background="@color/colorDisabledButton"
+            android:padding="1dp"/>
 
     </LinearLayout>
 

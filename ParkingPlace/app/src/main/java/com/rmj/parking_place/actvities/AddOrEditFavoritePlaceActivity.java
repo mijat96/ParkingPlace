@@ -2,6 +2,7 @@ package com.rmj.parking_place.actvities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -88,8 +89,19 @@ public class AddOrEditFavoritePlaceActivity extends AppCompatActivity {
             }
             spinner.setSelection(position, true);
         }
+
+        initActionBar();
     }
 
+    private void initActionBar() {
+        // Toolbar toolbar = findViewById(R.id.toolbar);
+        // setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.color.appBarColor));
+        }
+    }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -136,7 +148,7 @@ public class AddOrEditFavoritePlaceActivity extends AppCompatActivity {
     }
 
     public void clickOnBtnSave(View view) {
-        Toast.makeText(this, "CAOOOOOOOOOOO", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "CAOOOOOOOOOOO", Toast.LENGTH_SHORT).show();
 
         EditText nameEditText = findViewById(R.id.favoritePlaceName);
         String name = nameEditText.getText().toString().trim();
