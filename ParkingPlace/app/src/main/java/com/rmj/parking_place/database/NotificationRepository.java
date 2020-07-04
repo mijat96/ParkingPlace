@@ -1,8 +1,7 @@
 package com.rmj.parking_place.database;
 
-import android.content.Context;
 
-import androidx.room.Room;
+import com.rmj.parking_place.App;
 
 import java.util.List;
 
@@ -10,8 +9,9 @@ public class NotificationRepository {
     private AppDatabase db;
     private NotificationDao notificationDao;
 
-    public NotificationRepository(Context context) {
-        db = Room.databaseBuilder(context, AppDatabase.class, "database-name").build();
+    public NotificationRepository() {
+        //db = Room.databaseBuilder(context, AppDatabase.class, "parking-place-db").build();
+        db = App.getDatabase();
         notificationDao = db.notificationDao();
     }
 
@@ -26,4 +26,5 @@ public class NotificationRepository {
     public void deleteById(long id) {
         notificationDao.deleteById(id);
     }
+
 }

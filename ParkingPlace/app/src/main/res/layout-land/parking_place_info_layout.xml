@@ -1,34 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="?attr/colorOnBackground" />
+
     <LinearLayout
         android:id="@+id/horizontalLinear"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/appBarColor">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/parking_info_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="PARKING INFO"
-            android:textColor="#fff"
             android:textAlignment="center"
             android:textSize="20sp"
             android:textStyle="bold" />
+    </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="?attr/colorOnBackground" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
         <TextView
             android:id="@+id/address"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="6dp"
             android:text="Lokacija"
-            android:textColor="#fff"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -38,7 +50,6 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="6dp"
             android:text="Zona"
-            android:textColor="#fff"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -48,7 +59,6 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="6dp"
             android:text="Status"
-            android:textColor="#fff"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -56,18 +66,16 @@
             android:id="@+id/distance"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginRight="6dp"
+            android:layout_marginLeft="6dp"
             android:text="Distance"
-            android:textColor="#fff"
             android:textSize="16sp"
             android:textStyle="bold" />
         <TextView
             android:id="@+id/realDistance"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginRight="6dp"
+            android:layout_marginLeft="6dp"
             android:text="Real Distance: Computing..."
-            android:textColor="#fff"
             android:textSize="16sp"
             android:textStyle="bold" />
         <Button
@@ -75,8 +83,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="REPORT"
-            android:backgroundTint="@color/colorTake"
+            android:textColor="@color/colorFirstLight"
+            android:backgroundTint="@color/colorButton"
+            android:layout_marginRight="3dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginBottom="3dp"
             android:layout_gravity="right" />
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="?attr/colorOnBackground" />
 </LinearLayout>

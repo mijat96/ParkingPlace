@@ -15,7 +15,7 @@ import com.rmj.parking_place.actvities.login.data.model.LoggedInUser;
 
 public class LoginViewModel extends ViewModel {
 
-    private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
+    //private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     private LoginActivity loginActivity;
     private LoginRepository loginRepository;
@@ -25,9 +25,9 @@ public class LoginViewModel extends ViewModel {
         this.loginRepository = loginRepository;
     }
 
-    LiveData<LoginFormState> getLoginFormState() {
+    /*LiveData<LoginFormState> getLoginFormState() {
         return loginFormState;
-    }
+    }*/
 
     LiveData<LoginResult> getLoginResult() {
         return loginResult;
@@ -50,7 +50,7 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
-    public void loginDataChanged(String username, String password) {
+    /*public void loginDataChanged(String username, String password) {
         if (!isUserNameValid(username)) {
             loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
         } else if (!isPasswordValid(password)) {
@@ -59,9 +59,9 @@ public class LoginViewModel extends ViewModel {
             loginFormState.setValue(new LoginFormState(true));
         }
     }
-
+*/
     // A placeholder username validation check
-    private boolean isUserNameValid(String username) {
+    /*private boolean isUserNameValid(String username) {
         if (username == null) {
             return false;
         }
@@ -70,10 +70,10 @@ public class LoginViewModel extends ViewModel {
         } else {
             return !username.trim().isEmpty();
         }
-    }
+    }*/
 
     // A placeholder password validation check
-    private boolean isPasswordValid(String password) {
+    /*private boolean isPasswordValid(String password) {
         return password != null && password.trim().length() > 5;
-    }
+    }*/
 }

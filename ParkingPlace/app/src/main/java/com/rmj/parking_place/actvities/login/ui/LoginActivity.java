@@ -52,12 +52,12 @@ public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory(this))
                 .get(LoginViewModel.class);
 
-        final EditText usernameEditText = findViewById(R.id.username);
-        final EditText passwordEditText = findViewById(R.id.password);
+        final EditText usernameEditText = findViewById(R.id.usernameEditText);
+        final EditText passwordEditText = findViewById(R.id.passwordEditText);
         final Button loginButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
-        loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
+       /* loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
             public void onChanged(@Nullable LoginFormState loginFormState) {
                 if (loginFormState == null) {
@@ -71,7 +71,7 @@ public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
                     passwordEditText.setError(getString(loginFormState.getPasswordError()));
                 }
             }
-        });
+        });*/
 
         loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
             @Override
@@ -94,7 +94,7 @@ public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
             }
         });
 
-        TextWatcher afterTextChangedListener = new TextWatcher() {
+       /* TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // ignore
@@ -112,9 +112,7 @@ public class LoginActivity extends CheckWifiActivity /*AppCompatActivity*/ {
             }
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.addTextChangedListener(afterTextChangedListener);
-
-        final LoginActivity that = this;
+        passwordEditText.addTextChangedListener(afterTextChangedListener);*/
 
         passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 

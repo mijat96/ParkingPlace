@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="top"
-        android:background="@color/appBarColor">
+        android:background="?attr/android:colorBackground">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

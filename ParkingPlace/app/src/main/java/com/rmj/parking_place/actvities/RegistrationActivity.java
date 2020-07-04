@@ -33,10 +33,10 @@ public class RegistrationActivity extends CheckWifiActivity /*AppCompatActivity*
         TextView registerLink = findViewById(R.id.loginLink);
         registerLink.setMovementMethod(LinkMovementMethod.getInstance());
 
-        final EditText usernameEditText = findViewById(R.id.username_reg);
-        final EditText passwordEditText = findViewById(R.id.password_reg);
-        final EditText repeatPasswordEditText = findViewById(R.id.repeat_password);
-        final EditText carRegistrationNumberEditText = findViewById(R.id.car_registration_number);
+        final EditText usernameEditText = findViewById(R.id.usernameRegEditText);
+        final EditText passwordEditText = findViewById(R.id.passwordRegEditText);
+        final EditText repeatPasswordEditText = findViewById(R.id.repeatPasswordEditText);
+        final EditText carRegistrationNumberEditText = findViewById(R.id.carRegistrationNumberdEditText);
         final Button registerButton = findViewById(R.id.btn_register);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading_reg);
 

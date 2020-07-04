@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.room.Room;
 
+import com.rmj.parking_place.App;
 import com.rmj.parking_place.model.Location;
 import com.rmj.parking_place.model.ParkingPlace;
 import com.rmj.parking_place.model.TicketPrice;
@@ -24,8 +25,9 @@ public class ZoneRepository {
     private ZoneSouthWestLocationCrossRefDao zoneSouthWestLocationCrossRefDao;
     private ZoneTicketPriceCrossRefDao zoneTicketPriceCrossRefDao;
 
-    public ZoneRepository(Context context) {
-        db = Room.databaseBuilder(context, AppDatabase.class, "database-name").build();
+    public ZoneRepository() {
+        // db = Room.databaseBuilder(context, AppDatabase.class, "database-name").build();
+        db = App.getDatabase();
         zoneDao = db.zoneDao();
         locationDao = db.locationDao();
         ticketPriceDao = db.ticketPriceDao();

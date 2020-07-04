@@ -43,7 +43,7 @@ public class NotificationPublisher extends BroadcastReceiver {
             protected Void doInBackground(Void... voids) {
                 publishNotification(context, notificationId, notificationType, notificationTitle, notificationText, paringPlaceId);
 
-                notificationRepository = new NotificationRepository(context);
+                notificationRepository = new NotificationRepository();
                 notificationRepository.deleteById(notificationId);
 
                 return null;

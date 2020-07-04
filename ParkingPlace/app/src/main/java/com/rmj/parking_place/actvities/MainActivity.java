@@ -65,7 +65,7 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            zoneRepository = new ZoneRepository(this);
+            zoneRepository = new ZoneRepository();
 
             getZonesFromDB();
             downloadFavoritePlaces();

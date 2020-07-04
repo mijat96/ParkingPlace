@@ -1,134 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?attr/android:colorBackground">
 
-    <LinearLayout
-        android:id="@+id/searchLinear"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/appBarColor">
-
-        <TextView
-            android:id="@+id/find_parking_title"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="FIND PARKING"
-            android:textColor="#fff"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textAlignment="center"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:orientation="vertical">
-
-            <CheckBox
-                android:id="@+id/addressCheckBox"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Address"
-                android:textColor="#fff"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
-            <CheckBox
-                android:id="@+id/zoneCheckBox"
+                android:layout_height="5dp"
+                android:background="?attr/colorOnBackground" />
+
+            <LinearLayout
+                android:id="@+id/searchLinear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Zone"
-                android:textColor="#fff"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
-            <CheckBox
-                android:id="@+id/markerCheckBox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Marker location"
-                android:textColor="#fff"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/find_parking_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="FIND PARKING"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textAlignment="center"/>
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:background="?attr/colorOnBackground" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <CheckBox
+                        android:id="@+id/addressCheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Address"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                    <CheckBox
+                        android:id="@+id/zoneCheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Zone"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                    <CheckBox
+                        android:id="@+id/markerCheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Marker location"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:background="?attr/colorOnBackground" />
+
+                <!--
+                <Button
+                    android:id="@+id/closeSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="X"
+                    android:layout_gravity="right"/>
+                -->
+
+
+                <!--<EditText
+                    android:id="@+id/address_text_input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:focusable="false"
+                    android:hint="Input address"
+                    android:inputType="text"
+                    android:visibility="gone"
+                    android:layout_gravity="center"/>-->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/address_text_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:hint="Input address"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    android:imeOptions="actionDone"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/addressTextInputEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!--<EditText
+                            android:id="@+id/zone_text_input"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:focusable="false"
+                            android:hint="Input zone"
+                            android:inputType="text"
+                            android:visibility="gone"
+                            android:layout_gravity="center"/>-->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/zone_text_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:hint="Input zone"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    android:imeOptions="actionDone"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/zoneTextInputEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <LinearLayout
+                    android:id="@+id/input_location_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="3dp"
+                    android:visibility="gone">
+                    <!--<TextView
+                        android:id="@+id/location_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:layout_marginRight="10dp"
+                        android:textAlignment="center"
+                        android:textSize="@dimen/text_size_for_selected_location"
+                        android:textColor="@color/colorBorder"
+                        android:background="@drawable/background_with_border"
+                        android:text="Not Selected"/>-->
+
+                    <Button
+                        android:id="@+id/selectLocationBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="3dp"
+                        android:text="Select..."
+                        android:textColor="@color/colorFirstLight"
+                        android:backgroundTint="@color/colorButton"/>
+
+                    <!--<EditText
+                        android:id="@+id/location_distance_text_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="number"
+                        android:hint="Distance"/>-->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/location_distance_text_input"
+                        android:layout_width="130dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="3dp"
+                        android:inputType="number"
+                        android:hint="Distance (km)"
+                        android:imeOptions="actionDone"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/locationDistanceInputEditText"
+                            android:layout_width="130dp"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+               <!-- <View
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:background="?attr/colorOnBackground" />-->
+
+                <Button
+                    android:id="@+id/search_parking_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SEARCH"
+                    android:textColor="@color/colorFirstLight"
+                    android:layout_gravity="end"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="15dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_alignParentRight="true"
+                    android:backgroundTint="@color/colorButton"/>
+            </LinearLayout>
         </LinearLayout>
-
-        <!--
-        <Button
-            android:id="@+id/closeSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="X"
-            android:layout_gravity="right"/>
-        -->
-
-
-        <EditText
-            android:id="@+id/address_text_input"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:focusable="false"
-            android:hint="Input address"
-            android:inputType="text"
-            android:visibility="gone"
-            android:layout_gravity="center"/>
-
-        <EditText
-            android:id="@+id/zone_text_input"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:focusable="false"
-            android:hint="Input zone"
-            android:inputType="text"
-            android:visibility="gone"
-            android:layout_gravity="center"/>
-
-        <LinearLayout
-            android:id="@+id/input_location_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginLeft="3dp"
-            android:visibility="gone">
-            <TextView
-                android:id="@+id/location_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:layout_marginRight="10dp"
-                android:textAlignment="center"
-                android:textSize="@dimen/text_size_for_selected_location"
-                android:textColor="@color/colorBorder"
-                android:background="@drawable/background_with_border"
-                android:text="Not Selected"/>
-
-            <Button
-                android:id="@+id/selectLocationBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:text="Select..."/>
-
-            <EditText
-                android:id="@+id/location_distance_text_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:inputType="number"
-                android:hint="Enter distance"/>
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/search_parking_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SEARCH"
-            android:layout_gravity="end"
-            android:paddingTop="5dp"
-            android:paddingBottom="15dp"
-            android:layout_marginRight="5dp"
-            android:layout_alignParentRight="true"
-            android:backgroundTint="@color/colorTake"/>
-    </LinearLayout>
+    </ScrollView>
 </LinearLayout>

@@ -120,7 +120,7 @@ public class MapPageFragment extends Fragment{
         mainActivity = (MainActivity) getActivity();
 
         if (savedInstanceState == null) {
-            notificationRepository = new NotificationRepository(mainActivity);
+            notificationRepository = new NotificationRepository();
             mainActivity.resetZonesIfNeeded();
             this.zonesForUpdating = new ArrayList<Zone>();
         }

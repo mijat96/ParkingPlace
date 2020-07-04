@@ -27,7 +27,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... voids) {
-                    notificationRepository = new NotificationRepository(context);
+                    notificationRepository = new NotificationRepository();
 
                     List<NotificationDb> notifications = notificationRepository.getNotifications();
                     Log.d("PARKING_PLACE_DEBUG", "notifications.size() ==" + notifications.size());

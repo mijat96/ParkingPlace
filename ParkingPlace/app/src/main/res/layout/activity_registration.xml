@@ -12,7 +12,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".actvities.RegistrationActivity">
 
-    <EditText
+  <!--  <EditText
         android:id="@+id/username_reg"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -22,15 +22,35 @@
         android:hint="@string/prompt_username"
         android:textColorHint="@color/appBarColor"
         android:textColor="@color/black_color"
-        android:background="@color/colorSecondLight"
         android:textSize="30dp"
         android:inputType="textEmailAddress"
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/username_reg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="24dp"
+        android:hint="@string/prompt_username"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-    <EditText
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/usernameRegEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--<EditText
         android:id="@+id/password_reg"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -40,16 +60,39 @@
         android:hint="@string/prompt_password"
         android:textColorHint="@color/appBarColor"
         android:textColor="@color/black_color"
-        android:background="@color/colorSecondLight"
         android:textSize="30dp"
         android:imeActionLabel="@string/action_sign_up_short"
         android:inputType="textPassword"
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username_reg" />
+        app:layout_constraintTop_toBottomOf="@+id/username_reg" />-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password_reg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="24dp"
+        android:hint="@string/prompt_password"
+        android:imeActionLabel="@string/action_sign_up_short"
+        app:endIconMode="password_toggle"
+        android:selectAllOnFocus="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/username_reg"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-    <EditText
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordRegEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--<EditText
         android:id="@+id/repeat_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -57,7 +100,6 @@
         android:layout_marginTop="30dp"
         android:layout_marginEnd="24dp"
         android:hint="@string/prompt_repeat_password"
-        android:background="@color/colorSecondLight"
         android:textColorHint="@color/appBarColor"
         android:textColor="@color/black_color"
         android:textSize="30dp"
@@ -66,9 +108,33 @@
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_reg" />
+        app:layout_constraintTop_toBottomOf="@+id/password_reg" />-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/repeat_password"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="24dp"
+        android:hint="@string/prompt_repeat_password"
+        android:imeActionLabel="@string/action_sign_up_short"
+        app:endIconMode="password_toggle"
+        android:selectAllOnFocus="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/password_reg"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-    <EditText
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/repeatPasswordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--<EditText
         android:id="@+id/car_registration_number"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -76,7 +142,6 @@
         android:layout_marginTop="30dp"
         android:layout_marginEnd="24dp"
         android:hint="@string/prompt_car_registration_number"
-        android:background="@color/colorSecondLight"
         android:textColorHint="@color/appBarColor"
         android:textColor="@color/black_color"
         android:textSize="30dp"
@@ -85,7 +150,30 @@
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/repeat_password" />
+        app:layout_constraintTop_toBottomOf="@+id/repeat_password" />-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/car_registration_number"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="24dp"
+        android:hint="@string/prompt_car_registration_number"
+        android:imeOptions="actionDone"
+        android:selectAllOnFocus="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/repeat_password"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/carRegistrationNumberdEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapCharacters"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btn_register"

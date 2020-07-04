@@ -1,9 +1,33 @@
 <resources>
 
+    <!--<style name="EditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@color/colorSecondLight</item>
+    </style>-->
+
+   <!-- <style name="HintTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textSize">20sp</item> &lt;!&ndash; floating hint text size &ndash;&gt;
+    </style>-->
+
+    <!--<style name="AppTheme.TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="hintTextAppearance">@style/HintTextAppearance</item>
+    </style>-->
+
+   <!-- <style name="FragmentBackgroundStyle" parent="">
+        <item name="background">?attr/colorSecondary</item>
+    </style>&ndash;&gt;-->
+
+   <!-- <style name="MapFragmentsTextAppearanceStyle" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">?attr/colorOnBackground</item>
+    </style>-->
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="colorPrimary">@color/appBarColor</item>
+       <!-- <item name="colorPrimaryVariant">@color/appBarColor</item>
+        <item name="colorPrimaryDark">@color/appBarColor</item>-->
         <!--<item name="colorOnSurface">@color/colorReserve</item>-->
+        <!--<item name="editTextBackground">@color/colorSecondLight</item>-->
+<!--        <item name="editTextStyle">@style/EditTextStyle</item>-->
     </style>
     <!-- Base application theme. -->
     <!--<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">

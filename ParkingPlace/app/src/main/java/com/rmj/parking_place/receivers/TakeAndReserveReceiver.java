@@ -27,7 +27,7 @@ public class TakeAndReserveReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        notificationRepository = new NotificationRepository(context);
+        notificationRepository = new NotificationRepository();
         int paringPlaceId = intent.getIntExtra(PARKING_PLACE_ID, 0);
         int notificationId = intent.getIntExtra(NOTIFICATION_ID, 0);
         Toast.makeText(context, "Again take, id:" + paringPlaceId , Toast.LENGTH_SHORT).show();

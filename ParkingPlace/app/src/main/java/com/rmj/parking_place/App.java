@@ -11,23 +11,36 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
+import androidx.room.Room;
 
 import com.rmj.parking_place.actvities.MainActivity;
 import com.rmj.parking_place.actvities.login.ui.LoginActivity;
+import com.rmj.parking_place.database.AppDatabase;
 import com.rmj.parking_place.utils.TokenUtils;
 
 public class App extends Application {
 
     private static Context context;
     private static SharedPreferences sharedPreferences;
+    private static AppDatabase db;
 
+
+    @Override
     public void onCreate() {
         super.onCreate();
+
         context = getApplicationContext();
+
+        db = Room.databaseBuilder(context, AppDatabase.class, "parking-place-db").build();
+
         // sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         setTheme(null);
+    }
+
+    public static AppDatabase getDatabase() {
+        return db;
     }
 
     public static Context getAppContext() {
@@ -127,4 +140,13 @@ public class App extends Application {
         }
     }
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+
+        if (db != null && db.isOpen()) {
+            db.close();
+            db = null;
+        }
+    }
 }
