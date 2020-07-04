@@ -1605,7 +1605,7 @@ public class MapFragment extends Fragment {
                 bottomPadding = 0;
             }
             else {
-                bottomPadding = mapPageFragment.getFindParkingFragmentHeight();
+                bottomPadding = mapPageFragment.getFindParkingFragmentHeight() + 40;
             }
             map.setPadding(0, 0, 0, bottomPadding);
         }

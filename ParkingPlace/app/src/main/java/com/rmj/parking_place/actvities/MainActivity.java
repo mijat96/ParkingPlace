@@ -460,11 +460,17 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
         navController.navigate(R.id.nav_home);
     }
 
-    public void leaveParkingPlace(Long parkingPlaceId) {
-        if(regularPaidParkingPlace.getParkingPlace().getId().equals(parkingPlaceId)){
+    public void leaveRegularPaidParkingPlace(Long parkingPlaceId) {
+        if(regularPaidParkingPlace != null && regularPaidParkingPlace.getParkingPlace().getId().equals(parkingPlaceId)){
             regularPaidParkingPlace = null;
             return;
         }
+
+        /*if (paidParkingPlacesForFavoritePlaces == null ||
+                (paidParkingPlacesForFavoritePlaces != null && paidParkingPlacesForFavoritePlaces.isEmpty())) {
+
+        }
+
         PaidParkingPlace placeForRemove = null;
         for (PaidParkingPlace place : paidParkingPlacesForFavoritePlaces){
             if(place.getParkingPlace().getId().equals(parkingPlaceId)){
@@ -475,7 +481,7 @@ public class MainActivity extends /*AppCompatActivity*/ CheckWifiActivity
 
         if(placeForRemove != null){
             paidParkingPlacesForFavoritePlaces.remove(placeForRemove);
-        }
+        }*/
     }
 
     public void resetRegularPaidParkingPlace() {

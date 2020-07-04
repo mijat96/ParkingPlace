@@ -126,7 +126,11 @@ namespace ParkingPlaceServer
 								zone.AddParkingPlaceChange(parkingPlace.Id, parkingPlace.Status);
 							}
 							paidParkingPlace.LeavePaidParkingPlaceInUser();
-							paidParkingPlace.User.AddViolation(false);
+							if (paidParkingPlace.TicketType == TicketType.REGULAR)
+							{
+								paidParkingPlace.User.AddViolation(false);
+							}
+							//za mesecne i godisnje karte nema kaznjavanja, jer njih samo sistem moze osloboditi
 
 							paidParkingPlacesForRemoving.Add(paidParkingPlace);
 						}

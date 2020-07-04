@@ -1254,7 +1254,7 @@ public class MapPageFragment extends Fragment{
                                                                                     //reservation.getId().intValue());
                                 setNoneMode();
                                 paidParkingPlace = null;
-                                mainActivity.leaveParkingPlace(dto.getParkingPlaceId());
+                                mainActivity.leaveRegularPaidParkingPlace(dto.getParkingPlaceId());
                                 mapFragment.finishTakingOfParkingPlace();
                                 Toast.makeText(mainActivity, "Parking place is empty now (on server).",
                                         Toast.LENGTH_SHORT).show();
