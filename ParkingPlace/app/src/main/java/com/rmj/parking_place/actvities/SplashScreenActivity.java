@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 
 import com.rmj.parking_place.App;
@@ -52,6 +53,17 @@ public class SplashScreenActivity extends CheckWifiActivity /*AppCompatActivity*
         // uradi inicijalizaciju u pozadinksom threadu
         initTask = new InitTask();
         initTask.execute();
+        initActionBar();
+    }
+
+    private void initActionBar() {
+        // Toolbar toolbar = findViewById(R.id.toolbar);
+        // setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.color.appBarColor));
+        }
     }
 
     @Override

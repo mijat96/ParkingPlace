@@ -101,11 +101,12 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.color.appBarColor));
         }
     }
 
     public void clickOnBtnConfirm(MenuItem item) {
-        Toast.makeText(this, "CAOOOOOOOOOOO", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "CAOOOOOOOOOOO", Toast.LENGTH_SHORT).show();
 
         Intent returnIntent = new Intent();
         returnIntent.putExtra("picked_point", map.getCameraPosition().target);

@@ -71,5 +71,4 @@
             app:title="@string/storage_settings_title"
             app:defaultValue="true"/>
     </PreferenceCategory>
-
 </PreferenceScreen>

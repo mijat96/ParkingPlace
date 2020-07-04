@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -103,6 +104,7 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        initActionBar();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -122,6 +124,16 @@ public class ReportIlegalyParkedActivity extends AppCompatActivity {
             imageview.setImageURI(selectedImage);
         }
 
+    }
+
+    private void initActionBar() {
+        // Toolbar toolbar = findViewById(R.id.toolbar);
+        // setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.color.appBarColor));
+        }
     }
 
     private Bitmap getBitmapFromUri(Uri uri) throws IOException {
